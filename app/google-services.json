@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "890839200580",
+    "project_id": "petmanager-7b0c9",
+    "storage_bucket": "petmanager-7b0c9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:890839200580:android:09db17102042befe6ddd11",
+        "android_client_info": {
+          "package_name": "com.wency.petmanager"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "890839200580-ne3fcka9nmta9afp9879qmfintgjua48.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBDv4H8hvqxAnOT59kAOAKI1IU2XbNQrmE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "890839200580-ne3fcka9nmta9afp9879qmfintgjua48.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

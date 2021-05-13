@@ -7,4 +7,38 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="white_breeze">#F6F5F0</color>
+    <color name="sandstorm">#F0E4D7</color>
+    <color name="pink_soft_kiss">#F3D8D1</color>
+    <color name="blue_rainy_day">#CED6E0</color>
+    <color name="purple_cloud">#C7BBBC</color>
+    <color name="green_sea_salt">#CDD2CB</color>
+    <color name="brown_clay">#E1DBCE</color>
+    <color name="white_linen">#EEEFEA</color>
+    <color name="white_linen2">#E3E4E0</color>
+    <color name="grey_shiplap">#A5A09C</color>
+    <color name="green_canvas">#7E9392</color>
+    <color name="blue_sunday">#9AB1BC</color>
+    <color name="blue_pillow">#E7EEF4</color>
+    <color name="grey_cotton">#BAB8BD</color>
+    <color name="blue_blanket">#78868F</color>
+    <color name="black_sleep">#43474A</color>
+    <color name="brown_grey">#8A817C</color>
+    <color name="grey_medium">#BCB8B1</color>
+    <color name="white_grey">#F4F3EE</color>
+    <color name="brown_smog">#8A7D80</color>
+    <color name="blue_billow">#626670</color>
+    <color name="brown_sand">#AF9F8C</color>
+    <color name="green_grass">#7F867B</color>
+    <color name="green_matcha">#C7C7BB</color>
+    <color name="pink_durty_rose">#D4C8BE</color>
+    <color name="blue_warm">#6C8CBF</color>
+    <color name="blue_soft">#758EB7</color>
+
+
+
+    <color name="timeline_color">@color/grey_medium</color>
+    <color name="home_background">@color/white_breeze</color>
+    <color name="app_background">@color/brown_grey</color>
+
 </resources>

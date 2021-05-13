@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="diary"
+            type="com.wency.petmanager.data.Diary" />
+        <variable
+            name="viewModel"
+            type="com.wency.petmanager.home.HomeViewModel" />
+
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        >
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/timelineLayout"
+            android:layout_width="20dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="@dimen/timeline_horizontal_position"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <LinearLayout
+                android:id="@+id/timelineVerticalLine"
+                android:layout_width="@dimen/timeline_line_width"
+                android:layout_height="match_parent"
+                android:background="@color/timeline_color"
+                android:orientation="vertical"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        <TextView
+            android:id="@+id/diaryDateText"
+            android:layout_width="wrap_content"
+            android:layout_height="20dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="@dimen/text_margin_to_timeline"
+            android:text="@{diary.date}"
+            app:layout_constraintEnd_toStartOf="@+id/timelineLayout"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="2021.05.12" />
+
+        <ImageView
+            android:id="@+id/eventPoint"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/timeline_point_size"
+            android:src="@drawable/ic_timeline_point"
+            app:layout_constraintBottom_toBottomOf="@+id/diaryDateText"
+            app:layout_constraintEnd_toEndOf="@+id/timelineLayout"
+            app:layout_constraintStart_toStartOf="@+id/timelineLayout"
+            app:layout_constraintTop_toTopOf="@+id/diaryDateText" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/petParticipantRecycler"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="5dp"
+            android:orientation="vertical"
+            app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+            app:layout_constraintBottom_toBottomOf="@+id/contentCardRecycler"
+            app:layout_constraintEnd_toStartOf="@+id/timelineLayout"
+            app:layout_constraintTop_toBottomOf="@+id/diaryDateText"
+            tools:listitem="@layout/sub_item_timeline_pet_list" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/contentCardRecycler"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:orientation="horizontal"
+            android:paddingStart="@dimen/timeline_card_position"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/diaryDateText"
+            tools:listitem="@layout/sub_item_timeline_diary" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

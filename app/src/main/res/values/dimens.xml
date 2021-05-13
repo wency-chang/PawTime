@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="timeline_point_size">10dp</dimen>
+    <dimen name="timeline_line_width">4dp</dimen>
+    <dimen name="timeline_horizontal_position">120dp</dimen>
+    <dimen name="timeline_card_position">140dp</dimen>
+    <dimen name="timeline_card_vertical_margin">10dp</dimen>
+    <dimen name="text_margin_to_timeline">8dp</dimen>
+    <dimen name="timeline_subitem_height">140dp</dimen>
+    <dimen name="timeline_card_radius">8dp</dimen>
+    <dimen name="card_max_height">180dp</dimen>
+    <dimen name="pet_participant_header_size">30dp</dimen>
+    <dimen name="timeline_horizontal_location">0.3</dimen>
+    <dimen name="timeline_title_text_size">12sp</dimen>
+</resources>

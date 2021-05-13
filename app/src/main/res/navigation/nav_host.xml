@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_host"
+    app:startDestination="@id/homeFragment">
+
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.wency.petmanager.home.HomeFragment"
+        android:label="HomeFragment" />
+    <fragment
+        android:id="@+id/diaryCreateFragment"
+        android:name="com.wency.petmanager.diary.DiaryCreateFragment"
+        android:label="DiaryCreateFragment" />
+    <fragment
+        android:id="@+id/diaryDetailFragment"
+        android:name="com.wency.petmanager.diary.DiaryDetailFragment"
+        android:label="DiaryDetailFragment" />
+    <fragment
+        android:id="@+id/logInFragment"
+        android:name="com.wency.petmanager.login.LogInFragment"
+        android:label="LogInFragment" />
+    <fragment
+        android:id="@+id/missionCreateFragment"
+        android:name="com.wency.petmanager.mission.MissionCreateFragment"
+        android:label="MissionCreateFragment" />
+    <fragment
+        android:id="@+id/petProfile"
+        android:name="com.wency.petmanager.profile.PetProfileFragment"
+        android:label="PetProfile" />
+    <dialog
+        android:id="@+id/addFriendDialog"
+        android:name="com.wency.petmanager.friend.AddFriendDialog"
+        android:label="AddFriendDialog" />
+    <fragment
+        android:id="@+id/diaryEditFragment"
+        android:name="com.wency.petmanager.diary.DiaryEditFragment"
+        android:label="DiaryEditFragment" />
+    <fragment
+        android:id="@+id/scheduleCreateFragment"
+        android:name="com.wency.petmanager.schedule.ScheduleCreateFragment"
+        android:label="ScheduleCreateFragment" />
+    <fragment
+        android:id="@+id/scheduleDetailFragment"
+        android:name="com.wency.petmanager.schedule.ScheduleDetailFragment"
+        android:label="ScheduleDetailFragment" />
+    <fragment
+        android:id="@+id/scheduleEditFragment"
+        android:name="com.wency.petmanager.schedule.ScheduleEditFragment"
+        android:label="ScheduleEditFragment" />
+</navigation>
