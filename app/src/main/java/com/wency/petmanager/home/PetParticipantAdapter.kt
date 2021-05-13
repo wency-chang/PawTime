@@ -6,13 +6,13 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.wency.petmanager.data.Pet
-import com.wency.petmanager.databinding.SubItemTimelinePetListBinding
+import com.wency.petmanager.databinding.SubItemTimelinePetParticipantBinding
 
 class PetParticipantAdapter(private val photo: List<String>): RecyclerView.Adapter< PetParticipantAdapter.ItemPetViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemPetViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
-        return ItemPetViewHolder(SubItemTimelinePetListBinding.inflate(layoutInflater,parent,false))
+        return ItemPetViewHolder(SubItemTimelinePetParticipantBinding.inflate(layoutInflater,parent,false))
     }
 
     override fun onBindViewHolder(holder: ItemPetViewHolder, position: Int) {
@@ -20,7 +20,7 @@ class PetParticipantAdapter(private val photo: List<String>): RecyclerView.Adapt
         holder.bind(photo[position])
     }
 
-    class ItemPetViewHolder(val binding: SubItemTimelinePetListBinding): RecyclerView.ViewHolder(binding.root){
+    class ItemPetViewHolder(val binding: SubItemTimelinePetParticipantBinding): RecyclerView.ViewHolder(binding.root){
         fun bind(photo: String){
             binding.petPhoto = photo
             binding.executePendingBindings()

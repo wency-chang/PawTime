@@ -5,8 +5,9 @@
 
     <data>
         <variable
-            name="diary"
-            type="com.wency.petmanager.data.Diary" />
+            name="date"
+            type="String" />
+
         <variable
             name="viewModel"
             type="com.wency.petmanager.home.HomeViewModel" />
@@ -49,7 +50,7 @@
             android:layout_height="20dp"
             android:layout_marginTop="10dp"
             android:layout_marginEnd="@dimen/text_margin_to_timeline"
-            android:text="@{diary.date}"
+            android:text="@{date}"
             app:layout_constraintEnd_toStartOf="@+id/timelineLayout"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="2021.05.12" />
@@ -67,29 +68,37 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/petParticipantRecycler"
             android:layout_width="wrap_content"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="5dp"
+            android:layout_marginBottom="3dp"
             android:orientation="vertical"
             app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
             app:layout_constraintBottom_toBottomOf="@+id/contentCardRecycler"
             app:layout_constraintEnd_toStartOf="@+id/timelineLayout"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/diaryDateText"
-            tools:listitem="@layout/sub_item_timeline_pet_list" />
+            app:spanCount="2"
+            tools:listitem="@layout/sub_item_timeline_pet_participant"
+            android:visibility="invisible"/>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/contentCardRecycler"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:clipToPadding="false"
+            android:layout_marginBottom="12dp"
             android:orientation="horizontal"
             android:paddingStart="@dimen/timeline_card_position"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/diaryDateText"
-            tools:listitem="@layout/sub_item_timeline_diary" />
+            app:layout_constraintVertical_bias="0.0"
+            tools:listitem="@layout/sub_item_timeline_photo" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

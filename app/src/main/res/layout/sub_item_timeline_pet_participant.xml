@@ -15,7 +15,7 @@
 
 
             <ImageView
-                android:layout_width="45dp"
+                android:layout_width="40dp"
                 android:layout_height="wrap_content"
                 imageUrlCircle="@{petPhoto}"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -25,9 +25,5 @@
                 android:layout_margin="6dp"
                 android:background="@drawable/bg_timeline_pet_header"
                 />
-
-
-
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

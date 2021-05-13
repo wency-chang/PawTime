@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.wency.petmanager.data.Diary
 import com.wency.petmanager.data.Pet
+import com.wency.petmanager.data.TimelineItem
 import com.wency.petmanager.home.ContentCardAdapter
 import com.wency.petmanager.home.PetParticipantAdapter
 import com.wency.petmanager.home.PetHeaderAdapter
@@ -68,6 +69,21 @@ fun bindImage(imgView: ImageView, imgUrl: String?) {
             .into(imgView)
     }
 }
+@BindingAdapter("imageUrlSquare")
+fun bindImageSquare(imgView: ImageView, imgUrl: String?) {
+    imgUrl?.let {
+        val imgUri = it.toUri().buildUpon().build()
+        Glide.with(imgView.context)
+            .load(imgUri)
+            .centerCrop()
+//            .apply(
+//                RequestOptions()
+//                    .placeholder(R.drawable.ic_placeholder)
+//                    .error(R.drawable.ic_placeholder))
+            .into(imgView)
+    }
+}
+
 
 @BindingAdapter("petPhotoIconAdapter")
 fun petOptionBindRecyclerView(recyclerView: RecyclerView, data: List<Pet>?) {
@@ -81,7 +97,7 @@ fun petOptionBindRecyclerView(recyclerView: RecyclerView, data: List<Pet>?) {
 }
 
 @BindingAdapter("timelineAdapter")
-fun timelineBindRecyclerView(recyclerView: RecyclerView, data: List<Diary>?) {
+fun timelineBindRecyclerView(recyclerView: RecyclerView, data: List<TimelineItem>?) {
     val adapter = recyclerView.adapter as TimeLineMainAdapter
     adapter.submitList(data)
 }

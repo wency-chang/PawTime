@@ -2,7 +2,7 @@ package com.wency.petmanager.data
 
 import java.util.*
 
-data class Mission(
+data class MissionGroup(
     val title: String,
     val startDate: Date,
     val endDate: Date,

@@ -5,8 +5,8 @@
 
     <data>
         <variable
-            name="image"
-            type="String" />
+            name="event"
+            type="com.wency.petmanager.data.Event" />
 
     </data>
 
@@ -15,22 +15,11 @@
         android:layout_height="wrap_content"
         >
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/item_event_title"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="I'm title"
-
-            android:textSize="@dimen/timeline_title_text_size"/>
-
 
         <androidx.cardview.widget.CardView
-            android:id="@+id/item_event_cardview"
-            android:layout_width="wrap_content"
-            android:layout_height="140dp"
+            android:id="@+id/item_schedule_cardView"
+            android:layout_width="140dp"
+            android:layout_height="wrap_content"
             android:layout_margin="5dp"
             android:outlineAmbientShadowColor="@color/green_sea_salt"
             android:outlineSpotShadowColor="@color/app_background"
@@ -39,18 +28,28 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/item_event_title">
-
-            <ImageView
-                imageUrl="@{image}"
+            app:layout_constraintTop_toTopOf="parent">
+            <TextView
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:background="@drawable/bg_timeline_event_image"
-                tools:src="@drawable/ic_launcher_foreground" />
+                android:layout_height="wrap_content"
+                android:id="@+id/scheduleTime"
+                android:layout_gravity="top|center_horizontal"
+                android:layout_marginTop="10dp"
+                android:text="@{event.time}"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/scheduleTitle"
+                android:layout_gravity="bottom|center_horizontal"
+                android:text="@{event.title}"
+                android:layout_marginTop="40dp"
+                android:layout_marginBottom="10dp"/>
+
 
         </androidx.cardview.widget.CardView>
-            
-            
+
+
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -67,14 +67,15 @@
             app:layout_constraintEnd_toEndOf="@+id/timelineLayout"
             app:layout_constraintStart_toStartOf="@+id/timelineLayout"
             app:layout_constraintTop_toTopOf="@id/todayText"
-            app:srcCompat="@drawable/ic_timeline_point"
-            app:tint="@color/blue_rainy_day"/>
+            app:srcCompat="@drawable/ic_timeline_today_point"
+            />
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerView"
+            android:id="@+id/missionRecyclerView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:orientation="vertical"
+            android:layout_marginTop="10dp"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

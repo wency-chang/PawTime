@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.wency.petmanager.data.MissionToday
 import com.wency.petmanager.databinding.SubItemTimelineMissionBinding
 
-class MissionAdapter(val mission: List<MissionToday>): RecyclerView.Adapter<MissionAdapter.MissionViewHolder>() {
+class MissionAdapter(private val mission: List<MissionToday>): RecyclerView.Adapter<MissionAdapter.MissionViewHolder>() {
     class MissionViewHolder(val binding: SubItemTimelineMissionBinding):RecyclerView.ViewHolder(binding.root){
         fun bind(mission: MissionToday){
             binding.missionToday = mission

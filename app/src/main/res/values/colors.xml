@@ -34,11 +34,12 @@
     <color name="pink_durty_rose">#D4C8BE</color>
     <color name="blue_warm">#6C8CBF</color>
     <color name="blue_soft">#758EB7</color>
+    <color name="white_2">#FAFAF9</color>
 
 
 
     <color name="timeline_color">@color/grey_medium</color>
-    <color name="home_background">@color/white_breeze</color>
+    <color name="home_background">@color/white</color>
     <color name="app_background">@color/brown_grey</color>
 
 </resources>
