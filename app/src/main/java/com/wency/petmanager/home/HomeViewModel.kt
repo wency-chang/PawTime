@@ -8,6 +8,22 @@ import java.util.*
 
 
 class HomeViewModel : ViewModel() {
+    var navigateDestination = MutableLiveData<Int?>(null)
+
+    val isCreateButtonVisible = MutableLiveData<Boolean>(false)
+
+    fun initButtonStatus(){
+        isCreateButtonVisible.value = false
+    }
+
+    fun buttonClick(){
+        isCreateButtonVisible.value?.let {
+            isCreateButtonVisible.value = !it == true
+        }
+    }
+    fun clickToSwitch(id: Int){
+        navigateDestination.value = id
+    }
 
     val mockPet = MutableLiveData<List<Pet?>>(
         listOf(

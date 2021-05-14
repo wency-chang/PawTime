@@ -24,10 +24,10 @@
             android:id="@+id/timelineLayout"
             android:layout_width="20dp"
             android:layout_height="0dp"
-            android:layout_marginStart="@dimen/timeline_horizontal_position"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
 
             <LinearLayout
                 android:id="@+id/timelineVerticalLine"
@@ -70,7 +70,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="10dp"
             android:layout_marginEnd="5dp"
             android:layout_marginBottom="3dp"
             android:orientation="vertical"
@@ -81,24 +81,24 @@
             app:layout_constraintTop_toBottomOf="@+id/diaryDateText"
             app:spanCount="2"
             tools:listitem="@layout/sub_item_timeline_pet_participant"
-            android:visibility="invisible"/>
+            android:visibility="gone"/>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/contentCardRecycler"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:maxWidth="250dp"
             android:clipToPadding="false"
-            android:layout_marginBottom="12dp"
             android:orientation="horizontal"
-            android:paddingStart="@dimen/timeline_card_position"
+            android:layout_marginTop="5dp"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/diaryDateText"
-            app:layout_constraintVertical_bias="0.0"
-            tools:listitem="@layout/sub_item_timeline_photo" />
+            app:layout_constraintTop_toBottomOf="@id/diaryDateText"
+            tools:listitem="@layout/sub_item_timeline_photo"
+            android:layout_marginBottom="10dp"
+            />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

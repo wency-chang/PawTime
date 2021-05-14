@@ -1,6 +1,222 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<layout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <data>
+        <variable
+            name="viewModel"
+            type="com.wency.petmanager.diary.DiaryCreateViewModel" />
+
+
+    </data>
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/home_background"
+        >
+
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/nestedScrollView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toTopOf="@+id/constraintLayout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+
+                <ImageView
+                    android:id="@+id/photoIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    app:layout_constraintStart_toStartOf="@+id/petIcon"
+                    app:layout_constraintTop_toBottomOf="@+id/petRecyclerView"
+                    app:srcCompat="@drawable/ic_baseline_collections_24" />
+
+                <EditText
+                    android:id="@+id/titleInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="55dp"
+                    android:layout_marginTop="30dp"
+                    android:layout_marginEnd="55dp"
+                    android:foregroundTint="@color/blue_rainy_day"
+                    android:hint="@{viewModel.today}"
+                    android:text=""
+                    android:textAlignment="center"
+                    android:textColor="@color/blue_billow"
+                    android:textColorHint="@color/blue_blanket"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageView
+                    android:id="@+id/tagIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    app:layout_constraintStart_toStartOf="@id/titleInput"
+                    app:layout_constraintTop_toBottomOf="@id/titleInput"
+                    app:srcCompat="@drawable/ic_baseline_local_offer_24" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/tagRecyclerView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    app:layoutManager="androidx.recyclerview.widget.StaggeredGridLayoutManager"
+                    app:layout_constraintEnd_toEndOf="@+id/titleInput"
+                    app:layout_constraintStart_toStartOf="@id/tagIcon"
+                    app:layout_constraintTop_toBottomOf="@id/tagIcon"
+                    app:spanCount="4" />
+
+                <ImageView
+                    android:id="@+id/petIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    app:layout_constraintStart_toStartOf="@id/tagIcon"
+                    app:layout_constraintTop_toBottomOf="@id/tagRecyclerView"
+                    app:srcCompat="@drawable/ic_baseline_pets_24" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/petRecyclerView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="-10dp"
+                    android:layout_marginTop="10dp"
+                    android:orientation="horizontal"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    app:layout_constraintEnd_toEndOf="@id/tagRecyclerView"
+                    app:layout_constraintStart_toStartOf="@id/petIcon"
+                    app:layout_constraintTop_toBottomOf="@id/petIcon"
+                    app:spanCount="5"
+                    petPhotoIconAdapter="@{viewModel.mockPet}"/>
+
+                <TextView
+                    android:id="@+id/addPetText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="30dp"
+                    android:text="Select Pet Participant"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="@id/petIcon"
+                    app:layout_constraintStart_toEndOf="@id/petIcon"
+                    app:layout_constraintTop_toTopOf="@id/petIcon" />
+
+                <TextView
+                    android:id="@+id/tagText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="30dp"
+                    android:text="Select Your Tag"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="@id/tagIcon"
+                    app:layout_constraintStart_toEndOf="@id/tagIcon"
+                    app:layout_constraintTop_toTopOf="@id/tagIcon" />
+
+                <TextView
+                    android:id="@+id/photoText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="30dp"
+                    android:text="Select Your Photo"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="@id/photoIcon"
+                    app:layout_constraintStart_toEndOf="@id/photoIcon"
+                    app:layout_constraintTop_toTopOf="@id/photoIcon" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/photoRecyclerView"
+                    android:layout_width="0dp"
+                    android:layout_height="180dp"
+                    android:layout_marginTop="10dp"
+                    android:orientation="horizontal"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    app:layout_constraintEnd_toEndOf="@+id/petRecyclerView"
+                    app:layout_constraintStart_toStartOf="@id/photoIcon"
+                    app:layout_constraintTop_toBottomOf="@id/photoIcon" />
+
+                <ImageView
+                    android:id="@+id/locationIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    app:layout_constraintStart_toStartOf="@+id/photoRecyclerView"
+                    app:layout_constraintTop_toBottomOf="@+id/photoRecyclerView"
+                    app:srcCompat="@drawable/ic_baseline_location_on_24" />
+
+                <ImageView
+                    android:id="@+id/memoIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    app:layout_constraintStart_toStartOf="@+id/photoRecyclerView"
+                    app:layout_constraintTop_toBottomOf="@+id/locationIcon"
+                    app:srcCompat="@drawable/ic_baseline_edit_note_24" />
+
+                <TextView
+                    android:id="@+id/memoText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="30dp"
+                    android:text="Memo"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="@id/memoIcon"
+                    app:layout_constraintStart_toEndOf="@id/memoIcon"
+                    app:layout_constraintTop_toTopOf="@id/memoIcon" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerView"
+                    android:layout_width="0dp"
+                    android:layout_height="100dp"
+                    android:layout_marginTop="10dp"
+                    android:orientation="horizontal"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    app:layout_constraintEnd_toEndOf="@+id/photoRecyclerView"
+                    app:layout_constraintStart_toStartOf="@+id/memoIcon"
+                    app:layout_constraintTop_toBottomOf="@+id/memoIcon" />
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        </androidx.core.widget.NestedScrollView>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraintLayout"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:background="@drawable/bg_confirm_button">
+
+            <Button
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="30dp"
+                android:layout_marginEnd="30dp"
+                android:text="DONE"
+                android:textColor="@color/white"
+                android:backgroundTint="@color/blue_sunday"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintCircleRadius="30dp"/>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

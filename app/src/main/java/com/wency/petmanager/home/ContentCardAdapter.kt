@@ -31,11 +31,9 @@ class ContentCardAdapter(private val eventToday: List<Event>, val viewModel: Hom
         when (holder){
             is PhotoCardViewHolder -> {
                 holder.bind(event)
-                Log.d("Debug","Photo")
             }
             is ScheduleCardViewHolder -> {
                 holder.bind(event)
-                Log.d("Debug","Schedule")
             }
         }
 

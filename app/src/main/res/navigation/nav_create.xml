@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto" android:id="@+id/nav_create"
+    app:startDestination="@id/diaryCreateFragment">
+
+    <fragment
+        android:id="@+id/diaryCreateFragment"
+        android:name="com.wency.petmanager.diary.DiaryCreateFragment"
+        android:label="DiaryCreateFragment" />
+    <fragment
+        android:id="@+id/scheduleCreateFragment"
+        android:name="com.wency.petmanager.schedule.ScheduleCreateFragment"
+        android:label="ScheduleCreateFragment" />
+    <fragment
+        android:id="@+id/missionCreateFragment"
+        android:name="com.wency.petmanager.mission.MissionCreateFragment"
+        android:label="MissionCreateFragment" />
+    <action
+        android:id="@+id/action_global_diaryCreateFragment"
+        app:destination="@id/diaryCreateFragment" />
+    <action
+        android:id="@+id/action_global_missionCreateFragment"
+        app:destination="@id/missionCreateFragment" />
+    <action
+        android:id="@+id/action_global_scheduleCreateFragment"
+        app:destination="@id/scheduleCreateFragment" />
+</navigation>

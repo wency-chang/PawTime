@@ -4,6 +4,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <data>
+        <import type="android.view.View"/>
         <variable
             name="viewModel"
             type="com.wency.petmanager.home.HomeViewModel" />
@@ -18,12 +19,13 @@
         <LinearLayout
             android:id="@+id/linearLayout"
             android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:background="@color/app_background"
+            android:layout_height="0dp"
+            android:background="@drawable/bg_gradient_home"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="@+id/petOptionRecycler"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:orientation="horizontal"/>
+            app:layout_constraintTop_toTopOf="parent" />
 
 
         <androidx.recyclerview.widget.RecyclerView
@@ -36,6 +38,7 @@
             android:paddingVertical="5dp"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintEnd_toEndOf="parent"
+            android:paddingStart="20dp"
             android:paddingEnd="100dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -58,15 +61,19 @@
             tools:listitem="@layout/item_home_timeline_event" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/floatingButtonExpend"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="20dp"
             android:layout_marginBottom="20dp"
+            android:backgroundTint="@color/blue_sunday"
+            android:contentDescription="TODO"
+            android:src="@drawable/ic_baseline_add_24"
+            app:backgroundTint="@color/blue_warm"
+            app:fabSize="mini"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:backgroundTint="@color/brown_clay"
-            android:src="@drawable/ic_baseline_add_24"
-            android:contentDescription="TODO" />
+            android:onClick="@{()-> viewModel.buttonClick()}"/>
 
         <com.google.android.material.progressindicator.CircularProgressIndicator
             android:layout_width="match_parent"
@@ -76,6 +83,49 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             android:visibility="gone"/>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/createScheduleEventButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:clickable="true"
+            android:visibility="@{viewModel.isCreateButtonVisible()? View.VISIBLE : View.GONE}"
+            app:backgroundTint="@color/blue_rainy_day"
+            app:fabSize="normal"
+            app:layout_constraintBottom_toTopOf="@+id/floatingButtonExpend"
+            app:layout_constraintEnd_toEndOf="@+id/floatingButtonExpend"
+            app:layout_constraintStart_toStartOf="@+id/floatingButtonExpend"
+            app:srcCompat="@drawable/ic_baseline_schedule_24"
+            android:onClick="@{()-> viewModel.clickToSwitch(1)}"/>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/createDiaryEventButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:clickable="true"
+            android:visibility="@{viewModel.isCreateButtonVisible()? View.VISIBLE : View.GONE}"
+            app:backgroundTint="@color/blue_rainy_day"
+            app:layout_constraintBottom_toTopOf="@+id/createScheduleEventButton"
+            app:layout_constraintEnd_toEndOf="@+id/createScheduleEventButton"
+            app:layout_constraintStart_toStartOf="@+id/createScheduleEventButton"
+            app:srcCompat="@drawable/ic_baseline_add_photo_alternate_24"
+            android:onClick="@{()-> viewModel.clickToSwitch(0)}"/>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/createMissionEventButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:clickable="true"
+            app:backgroundTint="@color/blue_rainy_day"
+            app:layout_constraintBottom_toTopOf="@+id/createDiaryEventButton"
+            app:layout_constraintEnd_toEndOf="@+id/createDiaryEventButton"
+            app:layout_constraintStart_toStartOf="@+id/createDiaryEventButton"
+            app:srcCompat="@drawable/ic_baseline_checklist_24"
+            android:visibility="@{viewModel.isCreateButtonVisible()? View.VISIBLE : View.GONE}"
+            android:onClick="@{()-> viewModel.clickToSwitch(2)}"/>
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
