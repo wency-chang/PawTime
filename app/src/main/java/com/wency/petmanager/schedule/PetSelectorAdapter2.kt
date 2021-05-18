@@ -8,8 +8,9 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.wency.petmanager.data.Pet
 import com.wency.petmanager.databinding.ItemPetSelectorBinding
+import com.wency.petmanager.schedule.ScheduleCreateViewModel
 
-class PetSelectorAdapter(val viewModel: DiaryCreateViewModel):ListAdapter<Pet, PetSelectorAdapter.PetSelectorViewHolder >(DiffCallback)  {
+class PetSelectorAdapter2(val viewModel: ScheduleCreateViewModel):ListAdapter<Pet, PetSelectorAdapter2.PetSelectorViewHolder >(DiffCallback)  {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PetSelectorViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)

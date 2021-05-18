@@ -9,9 +9,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.flexbox.FlexboxLayoutManager
 import com.wency.petmanager.databinding.ItemTagAddBinding
 import com.wency.petmanager.databinding.ItemTagViewBinding
+import com.wency.petmanager.schedule.ScheduleCreateViewModel
 
 
-class TagListAdapter(val viewModel: DiaryCreateViewModel): ListAdapter<String, RecyclerView.ViewHolder>(
+class TagListAdapter2(val viewModel: ScheduleCreateViewModel): ListAdapter<String, RecyclerView.ViewHolder>(
     DiffCallback
 ) {
 
@@ -64,7 +65,7 @@ class TagListAdapter(val viewModel: DiaryCreateViewModel): ListAdapter<String, R
     }
     class AddTagViewHolder(val binding: ItemTagAddBinding): RecyclerView.ViewHolder(binding.root) {
         fun bind(addString: String) {
-        binding.executePendingBindings()
+            binding.executePendingBindings()
         }
     }
 

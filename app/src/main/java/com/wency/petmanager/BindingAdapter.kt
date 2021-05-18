@@ -10,12 +10,11 @@ import androidx.databinding.BindingAdapter
 import androidx.databinding.BindingConversion
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.wency.petmanager.data.Diary
 import com.wency.petmanager.data.Pet
 import com.wency.petmanager.data.TimelineItem
 import com.wency.petmanager.diary.PetSelectorAdapter
-import com.wency.petmanager.home.ContentCardAdapter
-import com.wency.petmanager.home.PetParticipantAdapter
+import com.wency.petmanager.diary.TagListAdapter
+import com.wency.petmanager.diary.TagListAdapter2
 import com.wency.petmanager.home.PetHeaderAdapter
 import com.wency.petmanager.home.TimeLineMainAdapter
 import com.wency.petmanager.network.LoadApiStatus
@@ -89,6 +88,18 @@ fun petOptionBindRecyclerView(recyclerView: RecyclerView, data: List<Pet>?) {
 fun timelineBindRecyclerView(recyclerView: RecyclerView, data: List<TimelineItem>?) {
     val adapter = recyclerView.adapter as TimeLineMainAdapter
     adapter.submitList(data)
+}
+@BindingAdapter("tagSelectorAdapter")
+fun tagOptionBindRecyclerView(recyclerView: RecyclerView, data: List<String>?) {
+    Log.d("tagListDebug","binding adapter called")
+    data?.let {
+        recyclerView.adapter?.apply {
+            when(this){
+                is TagListAdapter -> submitList(it)
+                is TagListAdapter2 -> submitList(it)
+            }
+        }
+    }
 }
 
 

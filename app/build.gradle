@@ -84,5 +84,14 @@ dependencies {
 
     implementation "androidx.cardview:cardview:1.0.0"
 
+    implementation 'com.google.android.material:material:1.4.0-beta01'
+    implementation "androidx.viewpager2:viewpager2:1.0.0"
+
+    implementation 'com.github.1002326270xc:LayoutManager-FlowLayout:v1.6'
+
+
+    implementation 'com.beloo.widget:ChipsLayoutManager:0.3.7@aar'
+    implementation 'com.google.android:flexbox:2.0.0'
+
 
 }

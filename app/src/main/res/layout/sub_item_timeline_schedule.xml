@@ -4,9 +4,21 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+        <import type="android.view.View"/>
         <variable
             name="event"
             type="com.wency.petmanager.data.Event" />
+
+        <variable
+            name="expand"
+            type="Boolean" />
+
+        <variable
+            name="date"
+            type="String" />
+        <variable
+            name="needExpand"
+            type="Boolean" />
 
     </data>
 
@@ -18,10 +30,9 @@
 
         <androidx.cardview.widget.CardView
             android:id="@+id/item_schedule_cardView"
-            android:layout_width="140dp"
+            android:layout_width="160dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:layout_marginBottom="5dp"
+            android:layout_marginVertical="8dp"
             android:outlineAmbientShadowColor="@color/green_sea_salt"
             android:outlineSpotShadowColor="@color/app_background"
             app:cardCornerRadius="@dimen/timeline_card_radius"
@@ -30,22 +41,88 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/scheduleTime"
-                android:layout_gravity="top|center_horizontal"
-                android:layout_marginTop="10dp"
-                android:text="@{event.time}"/>
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="16dp">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/scheduleTitle"
-                android:layout_gravity="bottom|center_horizontal"
-                android:text="@{event.title}"
-                android:layout_marginTop="40dp"
-                android:layout_marginBottom="10dp"/>
+                <TextView
+                    android:id="@+id/scheduleTime"
+                    android:layout_width="40dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="top|center_horizontal"
+                    android:text="@{event.time}"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/scheduleTitle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|center_horizontal"
+                    android:layout_marginStart="16dp"
+                    android:text="@{event.title}"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/scheduleTime"
+                    app:layout_constraintTop_toTopOf="@+id/scheduleTime" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="14dp"
+                    android:layout_marginBottom="16dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:orientation="vertical"
+                    android:visibility="@{expand? View.VISIBLE: View.GONE}"
+                    app:layout_constraintEnd_toEndOf="@+id/scheduleTitle"
+                    app:layout_constraintStart_toStartOf="@+id/scheduleTime"
+                    app:layout_constraintTop_toBottomOf="@+id/scheduleTime">
+
+
+
+                    <TextView
+                        android:id="@+id/scheduleMemoText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+
+                        app:layout_constraintTop_toBottomOf="@+id/scheduleLocation" />
+                    <TextView
+                        android:id="@+id/scheduleLocation"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:id="@+id/participantHeaderRecycler"
+                        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                        android:orientation="vertical"
+                        app:spanCount="5"
+                        />
+
+
+                </LinearLayout>
+
+                <ImageView
+                    android:id="@+id/expendButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:visibility="@{needExpand? View.VISIBLE: View.GONE}"
+                    app:layout_constraintEnd_toEndOf="@+id/scheduleTitle"
+                    app:layout_constraintTop_toBottomOf="@+id/scheduleTitle"
+                    app:srcCompat="@drawable/ic_baseline_more_horiz_24_color" />
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
 
 
         </androidx.cardview.widget.CardView>

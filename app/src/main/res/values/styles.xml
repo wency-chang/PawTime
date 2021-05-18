@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="TagChipStyle" parent="Widget.MaterialComponents.Chip.Choice">
+        <item name="chipBackgroundColor">@color/bg_tag_chip_color</item>
+        <item name="android:textColor">@color/text_tag_chip_color</item>
+        <item name="android:textStyle">bold</item>
+        <item name="maxHeight">20dp</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
+
+    <style name="instruction_text">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textStyle">bold</item>
+        <item name="fontFamily">@font/acme</item>
+    </style>
+
+    <style name="dialog_text_button">
+        <item name="android:layout_height">30dp</item>
+        <item name="android:background">@drawable/bg_calendar_white</item>
+        <item name="android:textAlignment">center</item>
+        <item name="android:textSize">16dp</item>
+        <item name="android:gravity">center</item>
+    </style>
+</resources>

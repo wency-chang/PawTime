@@ -7,6 +7,8 @@
         <variable
             name="viewModel"
             type="com.wency.petmanager.diary.DiaryCreateViewModel" />
+        <import type="android.view.View"/>
+
 
 
     </data>
@@ -70,14 +72,44 @@
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/tagRecyclerView"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    app:layoutManager="androidx.recyclerview.widget.StaggeredGridLayoutManager"
-                    app:layout_constraintEnd_toEndOf="@+id/titleInput"
+                    app:layout_constraintWidth_max="250dp"
                     app:layout_constraintStart_toStartOf="@id/tagIcon"
                     app:layout_constraintTop_toBottomOf="@id/tagIcon"
-                    app:spanCount="4" />
+                    app:spanCount="4"
+                    tagSelectorAdapter="@{viewModel.tagList}"
+                    app:layoutManager="com.google.android.flexbox.FlexboxLayoutManager"
+                    app:flow_maxElementsWrap="4"
+                    />
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="@id/tagRecyclerView"
+                    app:layout_constraintStart_toEndOf="@id/tagRecyclerView"
+                    app:layout_constraintTop_toTopOf="@id/tagRecyclerView"
+                    android:layout_margin="8dp"
+                    android:src="@drawable/ic_baseline_more_horiz_24"
+                    android:background="@drawable/bg_pet_header_name"
+                    android:backgroundTint="@color/blue_sunday"
+                    android:onClick="@{() -> viewModel.switchExpendStatus()}"
+                    android:visibility="@{viewModel.needExpend? View.VISIBLE: View.GONE}" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginBottom="4dp"
+                    android:background="@drawable/bg_white_circle"
+                    android:backgroundTint="@color/blue_sunday"
+                    android:src="@drawable/ic_baseline_navigate_before_24"
+                    android:visibility="@{viewModel.isTagExpend? View.VISIBLE: View.GONE}"
+                    app:layout_constraintBottom_toBottomOf="@id/tagRecyclerView"
+                    android:onClick="@{() -> viewModel.switchExpendStatus()}"
+                    app:layout_constraintStart_toEndOf="@id/tagRecyclerView" />
 
                 <ImageView
                     android:id="@+id/petIcon"
@@ -90,28 +122,25 @@
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/petRecyclerView"
+                    petPhotoIconAdapter="@{viewModel.mockPet}"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="-10dp"
                     android:layout_marginTop="10dp"
                     android:orientation="horizontal"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                    app:layout_constraintEnd_toEndOf="@id/tagRecyclerView"
-                    app:layout_constraintStart_toStartOf="@id/petIcon"
+                    app:layout_constraintEnd_toEndOf="@+id/titleInput"
+                    app:layout_constraintStart_toStartOf="@+id/petIcon"
                     app:layout_constraintTop_toBottomOf="@id/petIcon"
-                    app:spanCount="5"
-                    petPhotoIconAdapter="@{viewModel.mockPet}"/>
+                    app:spanCount="5" />
 
                 <TextView
                     android:id="@+id/addPetText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
                     android:layout_marginStart="30dp"
                     android:text="Select Pet Participant"
-                    android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="@id/petIcon"
                     app:layout_constraintStart_toEndOf="@id/petIcon"
-                    app:layout_constraintTop_toTopOf="@id/petIcon" />
+                    app:layout_constraintTop_toTopOf="@id/petIcon"
+                    style="@style/instruction_text" />
 
                 <TextView
                     android:id="@+id/tagText"
@@ -119,7 +148,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="30dp"
                     android:text="Select Your Tag"
-                    android:textStyle="bold"
+                    style="@style/instruction_text"
                     app:layout_constraintBottom_toBottomOf="@id/tagIcon"
                     app:layout_constraintStart_toEndOf="@id/tagIcon"
                     app:layout_constraintTop_toTopOf="@id/tagIcon" />
@@ -130,7 +159,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="30dp"
                     android:text="Select Your Photo"
-                    android:textStyle="bold"
+                    style="@style/instruction_text"
                     app:layout_constraintBottom_toBottomOf="@id/photoIcon"
                     app:layout_constraintStart_toEndOf="@id/photoIcon"
                     app:layout_constraintTop_toTopOf="@id/photoIcon" />
@@ -138,7 +167,7 @@
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/photoRecyclerView"
                     android:layout_width="0dp"
-                    android:layout_height="180dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     android:orientation="horizontal"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
@@ -152,7 +181,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     app:layout_constraintStart_toStartOf="@+id/photoRecyclerView"
-                    app:layout_constraintTop_toBottomOf="@+id/photoRecyclerView"
+                    app:layout_constraintTop_toBottomOf="@+id/dateButton"
                     app:srcCompat="@drawable/ic_baseline_location_on_24" />
 
                 <ImageView
@@ -161,7 +190,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     app:layout_constraintStart_toStartOf="@+id/photoRecyclerView"
-                    app:layout_constraintTop_toBottomOf="@+id/locationIcon"
+                    app:layout_constraintTop_toBottomOf="@+id/addressButton"
                     app:srcCompat="@drawable/ic_baseline_edit_note_24" />
 
                 <TextView
@@ -170,13 +199,13 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="30dp"
                     android:text="Memo"
-                    android:textStyle="bold"
+                    style="@style/instruction_text"
                     app:layout_constraintBottom_toBottomOf="@id/memoIcon"
                     app:layout_constraintStart_toEndOf="@id/memoIcon"
                     app:layout_constraintTop_toTopOf="@id/memoIcon" />
 
                 <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/recyclerView"
+                    android:id="@+id/memoRecycler"
                     android:layout_width="0dp"
                     android:layout_height="100dp"
                     android:layout_marginTop="10dp"
@@ -185,6 +214,55 @@
                     app:layout_constraintEnd_toEndOf="@+id/photoRecyclerView"
                     app:layout_constraintStart_toStartOf="@+id/memoIcon"
                     app:layout_constraintTop_toBottomOf="@+id/memoIcon" />
+
+                <ImageView
+                    android:id="@+id/calendarDiaryIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    app:layout_constraintStart_toStartOf="@+id/photoRecyclerView"
+                    app:layout_constraintTop_toBottomOf="@+id/photoRecyclerView"
+                    app:srcCompat="@drawable/ic_baseline_date_range_24" />
+
+                <TextView
+                    android:id="@+id/selectDateText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Select Your Date"
+                    style="@style/instruction_text"
+                    app:layout_constraintBottom_toBottomOf="@+id/calendarDiaryIcon"
+                    app:layout_constraintStart_toStartOf="@+id/photoText"
+                    app:layout_constraintTop_toTopOf="@+id/calendarDiaryIcon" />
+
+                <TextView
+                    android:id="@+id/dateButton"
+                    android:layout_width="0dp"
+                    android:layout_marginTop="10dp"
+                    android:hint="2021.5.17"
+                    app:layout_constraintEnd_toEndOf="@+id/photoRecyclerView"
+                    app:layout_constraintStart_toStartOf="@+id/calendarDiaryIcon"
+                    app:layout_constraintTop_toBottomOf="@+id/calendarDiaryIcon"
+                    style="@style/dialog_text_button" />
+
+                <TextView
+                    android:id="@+id/addressButtonText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Select Address"
+                    style="@style/instruction_text"
+                    app:layout_constraintBottom_toBottomOf="@+id/locationIcon"
+                    app:layout_constraintStart_toStartOf="@+id/selectDateText"
+                    app:layout_constraintTop_toTopOf="@+id/locationIcon" />
+
+                <TextView
+                    android:id="@+id/addressButton"
+                    style="@style/dialog_text_button"
+                    android:layout_width="0dp"
+                    android:layout_marginTop="10dp"
+                    android:text="NONE"
+                    app:layout_constraintEnd_toEndOf="@+id/dateButton"
+                    app:layout_constraintStart_toStartOf="@+id/locationIcon"
+                    app:layout_constraintTop_toBottomOf="@+id/locationIcon" />
 
 
             </androidx.constraintlayout.widget.ConstraintLayout>

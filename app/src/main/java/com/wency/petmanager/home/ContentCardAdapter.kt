@@ -5,38 +5,23 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager2.widget.ViewPager2
 import com.wency.petmanager.data.Event
 import com.wency.petmanager.databinding.SubItemTimelinePhotoBinding
 import com.wency.petmanager.databinding.SubItemTimelineScheduleBinding
 
-class ContentCardAdapter(private val eventToday: List<Event>, val viewModel: HomeViewModel): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class ContentCardAdapter(private val eventToday: List<Event>, val viewModel: HomeViewModel): RecyclerView.Adapter<ContentCardAdapter.PhotoCardViewHolder>() {
 
 
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PhotoCardViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
-        return when(viewType){
-            ITEM_TYPE_PHOTO -> {
-                PhotoCardViewHolder(SubItemTimelinePhotoBinding.inflate(layoutInflater, parent, false))
-            }
-            ITEM_TYPE_SCHEDULE -> {
-                ScheduleCardViewHolder(SubItemTimelineScheduleBinding.inflate(layoutInflater, parent, false))
-            }
-            else -> throw ClassCastException("Unknown viewType $viewType")
-        }
+        return PhotoCardViewHolder(SubItemTimelinePhotoBinding.inflate(layoutInflater, parent, false))
     }
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: PhotoCardViewHolder, position: Int) {
         val event = eventToday[position]
-        when (holder){
-            is PhotoCardViewHolder -> {
-                holder.bind(event)
-            }
-            is ScheduleCardViewHolder -> {
-                holder.bind(event)
-            }
-        }
-
+        holder.bind(event)
     }
 
     class PhotoCardViewHolder(val binding: SubItemTimelinePhotoBinding): RecyclerView.ViewHolder(binding.root){
@@ -48,35 +33,8 @@ class ContentCardAdapter(private val eventToday: List<Event>, val viewModel: Hom
             }
         }
     }
-    class ScheduleCardViewHolder(val binding: SubItemTimelineScheduleBinding): RecyclerView.ViewHolder(binding.root){
-        fun bind(event: Event){
-            binding.event = event
-        }
-    }
 
     override fun getItemCount(): Int {
-        Log.d("Debug","eventToday ${eventToday}")
         return eventToday.size
-
     }
-
-    override fun getItemViewType(position: Int): Int {
-        val list = eventToday[position]
-        Log.d("Debug","${list.complete}")
-        return if (list.type == "diary"){
-            ITEM_TYPE_PHOTO
-        } else if (list.complete && !list.photoList.isNullOrEmpty()){
-
-            ITEM_TYPE_PHOTO
-        } else {
-            ITEM_TYPE_SCHEDULE
-        }
-    }
-
-    companion object {
-        private const val ITEM_TYPE_SCHEDULE = 0x00
-        private const val ITEM_TYPE_PHOTO = 0x01
-    }
-
-
 }

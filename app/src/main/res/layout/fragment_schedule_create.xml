@@ -1,15 +1,402 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
+        <variable
+            name="viewModel"
+            type="com.wency.petmanager.schedule.ScheduleCreateViewModel" />
+
+        <import type="android.view.View" />
+
+
     </data>
+
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/home_background">
 
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/scheduleCreateScrollView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toTopOf="@+id/constraintLayout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0">
+
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+
+                <ImageView
+                    android:id="@+id/photoIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    app:layout_constraintStart_toStartOf="@+id/petIcon"
+                    app:layout_constraintTop_toBottomOf="@+id/memoRecycler"
+                    app:srcCompat="@drawable/ic_baseline_collections_24" />
+
+                <EditText
+                    android:id="@+id/titleInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="55dp"
+                    android:layout_marginTop="30dp"
+                    android:layout_marginEnd="55dp"
+                    android:foregroundTint="@color/blue_rainy_day"
+                    android:hint="@{viewModel.today}"
+                    android:text=""
+                    android:textAlignment="center"
+                    android:textColor="@color/blue_billow"
+                    android:textColorHint="@color/blue_blanket"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageView
+                    android:id="@+id/tagIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    app:layout_constraintStart_toStartOf="@id/titleInput"
+                    app:layout_constraintTop_toBottomOf="@id/titleInput"
+                    app:srcCompat="@drawable/ic_baseline_local_offer_24" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/tagRecyclerView"
+                    tagSelectorAdapter="@{viewModel.tagList}"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:orientation="horizontal"
+                    app:flow_maxElementsWrap="4"
+                    app:layoutManager="com.google.android.flexbox.FlexboxLayoutManager"
+                    app:layout_constraintStart_toStartOf="@id/tagIcon"
+                    app:layout_constraintTop_toBottomOf="@id/tagIcon"
+                    app:layout_constraintWidth_max="250dp"
+                    app:spanCount="4" />
+
+                <ImageView
+                    android:id="@+id/imageView3"
+                    android:layout_width="40dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:background="@drawable/bg_pet_header_name"
+                    android:backgroundTint="@color/blue_sunday"
+                    android:onClick="@{() -> viewModel.switchExpendStatus()}"
+                    android:src="@drawable/ic_baseline_more_horiz_24"
+                    android:visibility="@{viewModel.needExpend? View.VISIBLE: View.GONE}"
+                    app:layout_constraintBottom_toBottomOf="@id/tagRecyclerView"
+                    app:layout_constraintStart_toEndOf="@id/tagRecyclerView"
+                    app:layout_constraintTop_toTopOf="@id/tagRecyclerView" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginBottom="6dp"
+                    android:background="@drawable/bg_white_circle"
+                    android:backgroundTint="@color/blue_sunday"
+                    android:onClick="@{() -> viewModel.switchExpendStatus()}"
+                    android:src="@drawable/ic_baseline_navigate_before_24"
+                    android:visibility="@{viewModel.isTagExpend? View.VISIBLE: View.GONE}"
+                    app:layout_constraintBottom_toBottomOf="@id/tagRecyclerView"
+                    app:layout_constraintStart_toEndOf="@id/tagRecyclerView" />
+
+                <ImageView
+                    android:id="@+id/petIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    app:layout_constraintStart_toStartOf="@+id/timeSelectButton"
+                    app:layout_constraintTop_toBottomOf="@+id/timeSelectButton"
+                    app:srcCompat="@drawable/ic_baseline_pets_24" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/petRecyclerView"
+                    petPhotoIconAdapter="@{viewModel.mockPet}"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:orientation="horizontal"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    app:layout_constraintEnd_toEndOf="@+id/titleInput"
+                    app:layout_constraintStart_toStartOf="@+id/petIcon"
+                    app:layout_constraintTop_toBottomOf="@id/petIcon"
+                    app:spanCount="5" />
+
+                <TextView
+                    android:id="@+id/addPetText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="30dp"
+                    android:text="Select Pet Participant"
+                    style="@style/instruction_text"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="@id/petIcon"
+                    app:layout_constraintStart_toEndOf="@id/petIcon"
+                    app:layout_constraintTop_toTopOf="@id/petIcon" />
+
+                <TextView
+                    android:id="@+id/tagText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="30dp"
+                    android:text="Select Your Tag"
+                    style="@style/instruction_text"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="@id/tagIcon"
+                    app:layout_constraintStart_toEndOf="@id/tagIcon"
+                    app:layout_constraintTop_toTopOf="@id/tagIcon" />
+
+                <TextView
+                    android:id="@+id/photoText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="30dp"
+                    android:text="Select Your Photo"
+                    style="@style/instruction_text"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="@id/photoIcon"
+                    app:layout_constraintStart_toEndOf="@id/photoIcon"
+                    app:layout_constraintTop_toTopOf="@id/photoIcon" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/photoRecyclerView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="20dp"
+                    android:orientation="horizontal"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="@+id/petRecyclerView"
+                    app:layout_constraintStart_toStartOf="@id/photoIcon"
+                    app:layout_constraintTop_toBottomOf="@+id/photoIcon" />
+
+                <ImageView
+                    android:id="@+id/locationIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    app:layout_constraintStart_toStartOf="@+id/notificationIcon"
+                    app:layout_constraintTop_toBottomOf="@+id/setNotification"
+                    app:srcCompat="@drawable/ic_baseline_location_on_24" />
+
+                <ImageView
+                    android:id="@+id/memoIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    app:layout_constraintStart_toStartOf="@+id/photoRecyclerView"
+                    app:layout_constraintTop_toBottomOf="@+id/addressDetail"
+                    app:srcCompat="@drawable/ic_baseline_edit_note_24" />
+
+                <TextView
+                    android:id="@+id/memoText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="30dp"
+                    android:text="Set Memo"
+                    style="@style/instruction_text"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="@id/memoIcon"
+                    app:layout_constraintStart_toEndOf="@id/memoIcon"
+                    app:layout_constraintTop_toTopOf="@id/memoIcon" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/memoRecycler"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:orientation="horizontal"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    app:layout_constraintEnd_toEndOf="@+id/addressDetail"
+                    app:layout_constraintStart_toStartOf="@+id/memoIcon"
+                    app:layout_constraintTop_toBottomOf="@+id/memoIcon" />
+
+                <ImageView
+                    android:id="@+id/participantPeopleIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    app:layout_constraintStart_toStartOf="@+id/petRecyclerView"
+                    app:layout_constraintTop_toBottomOf="@+id/petRecyclerView"
+                    app:srcCompat="@drawable/ic_baseline_person_24" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/participantPeopleRecycler"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="10dp"
+                    android:orientation="horizontal"
+                    app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                    app:layout_constraintEnd_toEndOf="@+id/titleInput"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="@+id/participantPeopleIcon"
+                    app:layout_constraintTop_toBottomOf="@+id/participantPeopleIcon" />
+
+                <ImageView
+                    android:id="@+id/notificationIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    app:layout_constraintStart_toStartOf="@+id/participantPeopleRecycler"
+                    app:layout_constraintTop_toBottomOf="@+id/participantPeopleRecycler"
+                    app:srcCompat="@drawable/ic_baseline_notifications_24" />
+
+                <TextView
+                    android:id="@+id/setNotification"
+                    style="@style/dialog_text_button"
+                    android:layout_width="0dp"
+                    android:layout_marginTop="10dp"
+                    android:text="NONE"
+                    app:layout_constraintEnd_toEndOf="@+id/petRecyclerView"
+                    app:layout_constraintStart_toStartOf="@+id/notificationIcon"
+                    app:layout_constraintTop_toBottomOf="@+id/notificationIcon" />
+
+                <ImageView
+                    android:id="@+id/calendarIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    app:layout_constraintStart_toStartOf="@+id/tagRecyclerView"
+                    app:layout_constraintTop_toBottomOf="@+id/tagRecyclerView"
+                    app:srcCompat="@drawable/ic_baseline_date_range_24" />
+
+                <TextView
+                    android:id="@+id/dateSelectButton"
+                    style="@style/dialog_text_button"
+                    android:layout_width="0dp"
+                    android:layout_marginTop="10dp"
+                    android:text="2021.5.17"
+                    android:textAlignment="center"
+                    app:layout_constraintEnd_toEndOf="@+id/titleInput"
+                    app:layout_constraintStart_toStartOf="@+id/calendarIcon"
+                    app:layout_constraintTop_toBottomOf="@+id/calendarIcon" />
+
+                <ImageView
+                    android:id="@+id/timeIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    app:layout_constraintStart_toStartOf="@+id/calendarIcon"
+                    app:layout_constraintTop_toBottomOf="@+id/dateSelectButton"
+                    app:srcCompat="@drawable/ic_baseline_access_time_24" />
+
+                <TextView
+                    android:id="@+id/timeSelectButton"
+                    style="@style/dialog_text_button"
+                    android:layout_width="0dp"
+                    android:layout_marginTop="10dp"
+                    android:text="00:00"
+                    android:textAlignment="center"
+                    app:layout_constraintEnd_toEndOf="@+id/dateSelectButton"
+                    app:layout_constraintStart_toStartOf="@+id/timeIcon"
+                    app:layout_constraintTop_toBottomOf="@+id/timeIcon" />
+
+                <TextView
+                    android:id="@+id/calendarText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Select Your Date"
+                    style="@style/instruction_text"
+                    app:layout_constraintBottom_toBottomOf="@+id/calendarIcon"
+                    app:layout_constraintStart_toStartOf="@+id/tagText"
+                    app:layout_constraintTop_toTopOf="@+id/calendarIcon" />
+
+                <TextView
+                    android:id="@+id/timeText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Select Your TIme"
+                    style="@style/instruction_text"
+                    app:layout_constraintBottom_toBottomOf="@+id/timeIcon"
+                    app:layout_constraintStart_toStartOf="@+id/calendarText"
+                    app:layout_constraintTop_toTopOf="@+id/timeIcon" />
+
+                <TextView
+                    android:id="@+id/selectPeopleText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Select Participant"
+                    style="@style/instruction_text"
+                    app:layout_constraintBottom_toBottomOf="@+id/participantPeopleIcon"
+                    app:layout_constraintStart_toStartOf="@+id/addPetText"
+                    app:layout_constraintTop_toTopOf="@+id/participantPeopleIcon" />
+
+                <TextView
+                    android:id="@+id/setNotificationText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Set Notification"
+                    style="@style/instruction_text"
+                    app:layout_constraintBottom_toBottomOf="@+id/notificationIcon"
+                    app:layout_constraintStart_toStartOf="@+id/selectPeopleText"
+                    app:layout_constraintTop_toTopOf="@+id/notificationIcon" />
+
+                <TextView
+                    android:id="@+id/addressText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Set Address"
+                    style="@style/instruction_text"
+                    app:layout_constraintBottom_toBottomOf="@+id/locationIcon"
+                    app:layout_constraintStart_toStartOf="@+id/setNotificationText"
+                    app:layout_constraintTop_toTopOf="@+id/locationIcon" />
+
+                <TextView
+                    android:id="@+id/addressDetail"
+                    style="@style/dialog_text_button"
+                    android:layout_width="0dp"
+                    android:layout_marginTop="10dp"
+                    android:text="NONE"
+                    app:layout_constraintEnd_toEndOf="@+id/setNotification"
+                    app:layout_constraintStart_toStartOf="@+id/locationIcon"
+                    app:layout_constraintTop_toBottomOf="@+id/locationIcon" />
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        </androidx.core.widget.NestedScrollView>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraintLayout"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:background="@drawable/bg_confirm_button"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <Button
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="30dp"
+                android:layout_marginEnd="30dp"
+                android:backgroundTint="@color/blue_sunday"
+                android:text="DONE"
+                android:textColor="@color/white"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintCircleRadius="30dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 </layout>

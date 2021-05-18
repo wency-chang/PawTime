@@ -50,7 +50,7 @@ class HomeViewModel : ViewModel() {
     )
     val mockData = MutableLiveData<List<TimelineItem>>(
         listOf(
-            TimelineItem.TimelineEvents(
+            TimelineItem.TimelineDiary(
                 DayEvent(
                     Date(3L), listOf(
                         Event(
@@ -62,7 +62,7 @@ class HomeViewModel : ViewModel() {
                         )
                     )
                 )
-            ), TimelineItem.TimelineEvents(
+            ), TimelineItem.TimelineDiary(
                 DayEvent(
                     Date(4L), listOf(
                         Event(
@@ -89,7 +89,7 @@ class HomeViewModel : ViewModel() {
                     )
                 )
             ),
-            TimelineItem.TimelineEvents(
+            TimelineItem.TimelineDiary(
                 DayEvent(
                     Date(5L), listOf(
                         Event(
@@ -141,7 +141,7 @@ class HomeViewModel : ViewModel() {
                     MissionToday("today's mission 2", "1235","https://img.onl/a3S7H0" )
                 ))
             ),
-            TimelineItem.TimelineEvents(
+            TimelineItem.TimelineSchedule(
                 DayEvent(
                     Date(7L), listOf(
                         Event(
