@@ -7,29 +7,30 @@
 
         <variable
             name="viewModel"
-            type="com.wency.petmanager.schedule.ScheduleCreateViewModel" />
+            type="com.wency.petmanager.create.events.ScheduleCreateViewModel" />
+        <variable
+            name="createViewModel"
+            type="com.wency.petmanager.create.CreateEventViewModel" />
 
         <import type="android.view.View" />
 
 
     </data>
 
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/home_background">
+        android:layout_margin="10dp"
+        >
 
         <androidx.core.widget.NestedScrollView
             android:id="@+id/scheduleCreateScrollView"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            app:layout_constraintBottom_toTopOf="@+id/constraintLayout"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.0">
+            app:layout_constraintTop_toTopOf="parent">
 
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -51,11 +52,11 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="55dp"
-                    android:layout_marginTop="30dp"
+                    android:layout_marginTop="16dp"
                     android:layout_marginEnd="55dp"
                     android:foregroundTint="@color/blue_rainy_day"
-                    android:hint="@{viewModel.today}"
-                    android:text=""
+                    android:hint="@{viewModel.pickDate}"
+                    android:text="@={viewModel.title}"
                     android:textAlignment="center"
                     android:textColor="@color/blue_billow"
                     android:textColorHint="@color/blue_blanket"
@@ -67,52 +68,26 @@
                     android:id="@+id/tagIcon"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="30dp"
                     android:layout_marginTop="16dp"
-                    app:layout_constraintStart_toStartOf="@id/titleInput"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/titleInput"
                     app:srcCompat="@drawable/ic_baseline_local_offer_24" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/tagRecyclerView"
                     tagSelectorAdapter="@{viewModel.tagList}"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     android:orientation="horizontal"
                     app:flow_maxElementsWrap="4"
                     app:layoutManager="com.google.android.flexbox.FlexboxLayoutManager"
-                    app:layout_constraintStart_toStartOf="@id/tagIcon"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tagIcon"
-                    app:layout_constraintWidth_max="250dp"
+                    app:layout_constraintWidth_max="300dp"
                     app:spanCount="4" />
-
-                <ImageView
-                    android:id="@+id/imageView3"
-                    android:layout_width="40dp"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="8dp"
-                    android:background="@drawable/bg_pet_header_name"
-                    android:backgroundTint="@color/blue_sunday"
-                    android:onClick="@{() -> viewModel.switchExpendStatus()}"
-                    android:src="@drawable/ic_baseline_more_horiz_24"
-                    android:visibility="@{viewModel.needExpend? View.VISIBLE: View.GONE}"
-                    app:layout_constraintBottom_toBottomOf="@id/tagRecyclerView"
-                    app:layout_constraintStart_toEndOf="@id/tagRecyclerView"
-                    app:layout_constraintTop_toTopOf="@id/tagRecyclerView" />
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="8dp"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginBottom="6dp"
-                    android:background="@drawable/bg_white_circle"
-                    android:backgroundTint="@color/blue_sunday"
-                    android:onClick="@{() -> viewModel.switchExpendStatus()}"
-                    android:src="@drawable/ic_baseline_navigate_before_24"
-                    android:visibility="@{viewModel.isTagExpend? View.VISIBLE: View.GONE}"
-                    app:layout_constraintBottom_toBottomOf="@id/tagRecyclerView"
-                    app:layout_constraintStart_toEndOf="@id/tagRecyclerView" />
 
                 <ImageView
                     android:id="@+id/petIcon"
@@ -125,24 +100,24 @@
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/petRecyclerView"
-                    petPhotoIconAdapter="@{viewModel.mockPet}"
+                    petSelectorAdapter="@{viewModel.petSelector}"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     android:orientation="horizontal"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                    app:layout_constraintEnd_toEndOf="@+id/titleInput"
+                    app:layout_constraintEnd_toEndOf="@+id/timeSelectButton"
                     app:layout_constraintStart_toStartOf="@+id/petIcon"
                     app:layout_constraintTop_toBottomOf="@id/petIcon"
                     app:spanCount="5" />
 
                 <TextView
                     android:id="@+id/addPetText"
+                    style="@style/instruction_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="30dp"
                     android:text="Select Pet Participant"
-                    style="@style/instruction_text"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="@id/petIcon"
                     app:layout_constraintStart_toEndOf="@id/petIcon"
@@ -150,11 +125,11 @@
 
                 <TextView
                     android:id="@+id/tagText"
+                    style="@style/instruction_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="30dp"
                     android:text="Select Your Tag"
-                    style="@style/instruction_text"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="@id/tagIcon"
                     app:layout_constraintStart_toEndOf="@id/tagIcon"
@@ -162,11 +137,11 @@
 
                 <TextView
                     android:id="@+id/photoText"
+                    style="@style/instruction_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="30dp"
                     android:text="Select Your Photo"
-                    style="@style/instruction_text"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="@id/photoIcon"
                     app:layout_constraintStart_toEndOf="@id/photoIcon"
@@ -183,7 +158,8 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="@+id/petRecyclerView"
                     app:layout_constraintStart_toStartOf="@id/photoIcon"
-                    app:layout_constraintTop_toBottomOf="@+id/photoIcon" />
+                    app:layout_constraintTop_toBottomOf="@+id/photoIcon"
+                    tagSelectorAdapter="@{viewModel.photoList}"/>
 
                 <ImageView
                     android:id="@+id/locationIcon"
@@ -205,11 +181,11 @@
 
                 <TextView
                     android:id="@+id/memoText"
+                    style="@style/instruction_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="30dp"
                     android:text="Set Memo"
-                    style="@style/instruction_text"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="@id/memoIcon"
                     app:layout_constraintStart_toEndOf="@id/memoIcon"
@@ -217,6 +193,7 @@
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/memoRecycler"
+                    tagSelectorAdapter="@{viewModel.memoList}"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
@@ -237,12 +214,14 @@
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/participantPeopleRecycler"
+                    userAdapter="@{createViewModel.userListLiveData}"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_marginTop="10dp"
+                    android:layout_marginEnd="10dp"
                     android:orientation="horizontal"
-                    app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-                    app:layout_constraintEnd_toEndOf="@+id/titleInput"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    app:layout_constraintEnd_toStartOf="@+id/imageView4"
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="@+id/participantPeopleIcon"
                     app:layout_constraintTop_toBottomOf="@+id/participantPeopleIcon" />
@@ -271,7 +250,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    app:layout_constraintStart_toStartOf="@+id/tagRecyclerView"
+                    app:layout_constraintStart_toStartOf="@+id/tagIcon"
                     app:layout_constraintTop_toBottomOf="@+id/tagRecyclerView"
                     app:srcCompat="@drawable/ic_baseline_date_range_24" />
 
@@ -280,9 +259,10 @@
                     style="@style/dialog_text_button"
                     android:layout_width="0dp"
                     android:layout_marginTop="10dp"
-                    android:text="2021.5.17"
+                    android:layout_marginEnd="20dp"
+                    android:text="@{viewModel.pickDate}"
                     android:textAlignment="center"
-                    app:layout_constraintEnd_toEndOf="@+id/titleInput"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="@+id/calendarIcon"
                     app:layout_constraintTop_toBottomOf="@+id/calendarIcon" />
 
@@ -300,58 +280,58 @@
                     style="@style/dialog_text_button"
                     android:layout_width="0dp"
                     android:layout_marginTop="10dp"
-                    android:text="00:00"
+                    android:text="@{viewModel.pickTime}"
                     android:textAlignment="center"
-                    app:layout_constraintEnd_toEndOf="@+id/dateSelectButton"
+                    app:layout_constraintEnd_toEndOf="@id/dateSelectButton"
                     app:layout_constraintStart_toStartOf="@+id/timeIcon"
                     app:layout_constraintTop_toBottomOf="@+id/timeIcon" />
 
                 <TextView
                     android:id="@+id/calendarText"
+                    style="@style/instruction_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Select Your Date"
-                    style="@style/instruction_text"
-                    app:layout_constraintBottom_toBottomOf="@+id/calendarIcon"
-                    app:layout_constraintStart_toStartOf="@+id/tagText"
-                    app:layout_constraintTop_toTopOf="@+id/calendarIcon" />
+                    app:layout_constraintBottom_toBottomOf="@id/calendarIcon"
+                    app:layout_constraintStart_toStartOf="@id/tagText"
+                    app:layout_constraintTop_toTopOf="@id/calendarIcon" />
 
                 <TextView
                     android:id="@+id/timeText"
+                    style="@style/instruction_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Select Your TIme"
-                    style="@style/instruction_text"
+                    android:text="Select Your Time"
                     app:layout_constraintBottom_toBottomOf="@+id/timeIcon"
                     app:layout_constraintStart_toStartOf="@+id/calendarText"
                     app:layout_constraintTop_toTopOf="@+id/timeIcon" />
 
                 <TextView
                     android:id="@+id/selectPeopleText"
+                    style="@style/instruction_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Select Participant"
-                    style="@style/instruction_text"
                     app:layout_constraintBottom_toBottomOf="@+id/participantPeopleIcon"
                     app:layout_constraintStart_toStartOf="@+id/addPetText"
                     app:layout_constraintTop_toTopOf="@+id/participantPeopleIcon" />
 
                 <TextView
                     android:id="@+id/setNotificationText"
+                    style="@style/instruction_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Set Notification"
-                    style="@style/instruction_text"
                     app:layout_constraintBottom_toBottomOf="@+id/notificationIcon"
                     app:layout_constraintStart_toStartOf="@+id/selectPeopleText"
                     app:layout_constraintTop_toTopOf="@+id/notificationIcon" />
 
                 <TextView
                     android:id="@+id/addressText"
+                    style="@style/instruction_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Set Address"
-                    style="@style/instruction_text"
                     app:layout_constraintBottom_toBottomOf="@+id/locationIcon"
                     app:layout_constraintStart_toStartOf="@+id/setNotificationText"
                     app:layout_constraintTop_toTopOf="@+id/locationIcon" />
@@ -361,40 +341,26 @@
                     style="@style/dialog_text_button"
                     android:layout_width="0dp"
                     android:layout_marginTop="10dp"
-                    android:text="NONE"
+                    android:text="@{viewModel.locationName}"
                     app:layout_constraintEnd_toEndOf="@+id/setNotification"
                     app:layout_constraintStart_toStartOf="@+id/locationIcon"
                     app:layout_constraintTop_toBottomOf="@+id/locationIcon" />
+
+                <ImageView
+                    android:id="@+id/imageView4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="@+id/participantPeopleRecycler"
+                    app:layout_constraintEnd_toEndOf="@+id/petRecyclerView"
+                    app:layout_constraintTop_toTopOf="@+id/participantPeopleRecycler"
+                    app:layout_constraintVertical_bias="0.0"
+                    app:srcCompat="@drawable/ic_baseline_circle_notifications_24" />
 
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
 
         </androidx.core.widget.NestedScrollView>
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/constraintLayout"
-            android:layout_width="match_parent"
-            android:layout_height="70dp"
-            android:background="@drawable/bg_confirm_button"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent">
-
-            <Button
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="30dp"
-                android:layout_marginEnd="30dp"
-                android:backgroundTint="@color/blue_sunday"
-                android:text="DONE"
-                android:textColor="@color/white"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintCircleRadius="30dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -14,7 +14,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="wrap_content"
-        android:layout_height="110dp">
+        android:layout_height="100dp">
 
         <androidx.cardview.widget.CardView
             android:layout_width="wrap_content"
@@ -24,7 +24,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:cardCornerRadius="10dp"
+            app:cardCornerRadius="15dp"
             android:layout_margin="5dp"
             android:backgroundTint="@{isSelected?@color/blue_sunday: @color/white}">
 
@@ -38,20 +38,20 @@
                     android:layout_width="wrap_content"
                     android:layout_height="55dp"
                     android:layout_margin="6dp"
+                    imageUrlCircle="@{pet.profilePhoto}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    imageUrlCircle="@{pet.photo}"
                     android:background="@drawable/bg_timeline_pet_header"
                     android:backgroundTint="@color/blue_warm"/>
 
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:maxEms="1"
                     android:text="@{pet.name}"
                     android:layout_margin="5dp"
                     android:textAlignment="center"
+                    android:maxLines="1"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"

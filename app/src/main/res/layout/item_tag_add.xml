@@ -8,20 +8,20 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_height="50dp">
 
         <ImageView
             android:layout_width="22dp"
             android:layout_height="22dp"
-            android:layout_marginVertical="12dp"
             android:layout_marginHorizontal="3dp"
+            android:layout_marginVertical="12dp"
+            android:background="@drawable/bg_pet_header_name"
+            android:backgroundTint="@color/blue_sunday"
+            android:src="@drawable/ic_baseline_add_24"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:src="@drawable/ic_baseline_add_24"
-            android:background="@drawable/bg_pet_header_name"
-            android:backgroundTint="@color/blue_sunday"/>
+            app:layout_constraintTop_toTopOf="parent" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

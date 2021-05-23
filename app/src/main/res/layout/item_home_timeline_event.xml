@@ -7,6 +7,12 @@
         <variable
             name="date"
             type="String" />
+        <variable
+            name="year"
+            type="String" />
+        <variable
+            name="dayOfWeek"
+            type="String" />
 
         <variable
             name="viewModel"
@@ -24,10 +30,10 @@
             android:id="@+id/timelineLayout"
             android:layout_width="20dp"
             android:layout_height="0dp"
+            android:layout_marginStart="80dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
+            app:layout_constraintTop_toTopOf="parent">
 
             <LinearLayout
                 android:id="@+id/timelineVerticalLine"
@@ -50,10 +56,11 @@
             android:layout_height="20dp"
             android:layout_marginTop="10dp"
             android:layout_marginEnd="@dimen/text_margin_to_timeline"
-            android:text="@{date}"
+            android:text="@{year}"
+            android:textSize="14dp"
             app:layout_constraintEnd_toStartOf="@+id/timelineLayout"
             app:layout_constraintTop_toTopOf="parent"
-            tools:text="2021.05.12" />
+            tools:text="2021" />
 
         <ImageView
             android:id="@+id/eventPoint"
@@ -85,17 +92,39 @@
 
         <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/contentCardPager"
-            android:layout_width="match_parent"
-            android:layout_height="180dp"
-            android:layout_marginHorizontal="50dp"
-            android:layout_marginTop="5dp"
+            android:layout_width="0dp"
+            android:layout_height="140dp"
+            android:layout_marginHorizontal="30dp"
+            android:layout_marginTop="40dp"
             android:layout_marginBottom="10dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/diaryDateText"
+            app:layout_constraintStart_toEndOf="@+id/timelineLayout"
+            app:layout_constraintTop_toTopOf="parent"
             tools:listitem="@layout/sub_item_timeline_photo" />
 
+        <TextView
+            android:id="@+id/dateTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text="@{date}"
+            android:textSize="14dp"
+            tools:text="5.24"
+            app:layout_constraintEnd_toEndOf="@+id/diaryDateText"
+            app:layout_constraintTop_toBottomOf="@+id/diaryDateText" />
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@{dayOfWeek}"
+            android:textStyle="bold"
+            android:textSize="15dp"
+            tools:text="Mon"
+            app:layout_constraintEnd_toEndOf="@id/dateTextView"
+            app:layout_constraintTop_toBottomOf="@id/dateTextView" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

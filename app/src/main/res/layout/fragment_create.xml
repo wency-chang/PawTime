@@ -6,26 +6,27 @@
     <data>
         <variable
             name="viewModel"
-            type="com.wency.petmanager.event.CreateEventViewModel" />
+            type="com.wency.petmanager.create.CreateEventViewModel" />
 
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@color/create_background">
 
-        <LinearLayout
-            android:id="@id/linearLayout"
-            android:layout_width="match_parent"
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_marginBottom="5dp"
-            android:background="@drawable/bg_gradient_home"
-            android:orientation="horizontal"
+            android:background="@color/blue_light"
+            android:layout_marginBottom="24dp"
             app:layout_constraintBottom_toBottomOf="@+id/cardView"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent">
 
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.cardview.widget.CardView
             android:id="@+id/cardView"
@@ -45,7 +46,43 @@
                 android:layout_gravity="center"
                 android:orientation="horizontal">
 
+                <LinearLayout
+                    android:id="@+id/clickAreaLayout"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:orientation="horizontal"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="95dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="3dp"
+                        android:onClick="@{()-> viewModel.clickToSwitch(viewModel.DIARY_CREATE_PAGE)}">
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="100dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="3dp"
+                        android:onClick="@{()-> viewModel.clickToSwitch(viewModel.SCHEDULE_CREATE_PAGE)}">
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="100dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="3dp"
+                        android:onClick="@{()-> viewModel.clickToSwitch(viewModel.MISSION_CREATE_PAGE)}">
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                </LinearLayout>
+
                 <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/constraintLayout"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_margin="16dp"
@@ -60,43 +97,52 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="15dp"
                         android:layout_marginEnd="10dp"
-                        android:text="Diary"
                         android:clickable="true"
+                        android:onClick="@{()-> viewModel.clickToSwitch(viewModel.DIARY_CREATE_PAGE)}"
+                        android:text="DIARY"
+                        android:textColor="@{viewModel.navigateDestination == viewModel.DIARY_CREATE_PAGE? @color/blue_light: @color/blue_billow}"
+                        android:textSize="14dp"
+                        android:textStyle="bold"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toStartOf="@+id/switchToSchedule"
                         app:layout_constraintHorizontal_bias="0.5"
                         app:layout_constraintHorizontal_chainStyle="spread_inside"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        android:onClick="@{()-> viewModel.clickToSwitch(0)}"/>
+                        app:layout_constraintTop_toTopOf="parent" />
 
 
                     <TextView
                         android:id="@+id/switchToSchedule"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Schedule"
                         android:clickable="true"
+                        android:onClick="@{()-> viewModel.clickToSwitch(viewModel.SCHEDULE_CREATE_PAGE)}"
+                        android:text="SCHEDULE"
+                        android:textColor="@{viewModel.navigateDestination == viewModel.SCHEDULE_CREATE_PAGE? @color/blue_light: @color/blue_billow}"
+                        android:textSize="14dp"
+                        android:textStyle="bold"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toStartOf="@+id/switchToMission"
                         app:layout_constraintHorizontal_bias="0.5"
                         app:layout_constraintStart_toEndOf="@+id/switchDiary"
-                        app:layout_constraintTop_toTopOf="parent"
-                        android:onClick="@{()-> viewModel.clickToSwitch(1)}"/>
+                        app:layout_constraintTop_toTopOf="parent" />
 
                     <TextView
                         android:id="@+id/switchToMission"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="15dp"
-                        android:text="Mission"
                         android:clickable="true"
+                        android:onClick="@{()-> viewModel.clickToSwitch(viewModel.MISSION_CREATE_PAGE)}"
+                        android:text="MISSION"
+                        android:textColor="@{viewModel.navigateDestination == viewModel.MISSION_CREATE_PAGE? @color/blue_light: @color/blue_billow}"
+                        android:textSize="14dp"
+                        android:textStyle="bold"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.5"
                         app:layout_constraintStart_toEndOf="@+id/switchToSchedule"
-                        app:layout_constraintTop_toTopOf="parent"
-                        android:onClick="@{()-> viewModel.clickToSwitch(2)}"/>
+                        app:layout_constraintTop_toTopOf="parent" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -106,17 +152,44 @@
 
         </androidx.cardview.widget.CardView>
 
-        <fragment
+        <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/navCreateNavigation"
             android:name="androidx.navigation.fragment.NavHostFragment"
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintBottom_toBottomOf="@+id/createDoneButton"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/cardView">
+
+        </androidx.viewpager2.widget.ViewPager2>
+
+        <Button
+            android:id="@+id/createDoneButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="50dp"
+            android:layout_marginEnd="50dp"
+            android:layout_marginBottom="20dp"
+            android:background="@drawable/bg_edit_button_grey"
+            android:onClick="@{()->viewModel.clickConfirmButton()}"
+            android:text="DONE &amp; SAVE"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/linearLayout"
-            app:navGraph="@navigation/nav_create"/>
+            app:layout_constraintStart_toStartOf="parent" />
 
+        <ProgressBar
+            android:id="@+id/createProgressBar"
+            style="@style/create_event_progress"
+            android:layout_width="0dp"
+            android:layout_height="3dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

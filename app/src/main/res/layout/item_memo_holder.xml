@@ -11,8 +11,9 @@
 
     <androidx.cardview.widget.CardView
         android:layout_width="120dp"
-        android:layout_height="160dp"
-        app:cardCornerRadius="10dp">
+        android:layout_height="140dp"
+        app:cardCornerRadius="10dp"
+        android:layout_margin="8dp">
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"

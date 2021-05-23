@@ -24,10 +24,10 @@
             android:id="@+id/timelineLayout"
             android:layout_width="20dp"
             android:layout_height="0dp"
+            android:layout_marginStart="80dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
+            app:layout_constraintTop_toTopOf="parent">
 
             <LinearLayout
                 android:id="@+id/timelineVerticalLine"
@@ -70,18 +70,17 @@
             android:id="@+id/contentCardRecycler"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:maxWidth="250dp"
-            android:clipToPadding="false"
-            android:orientation="vertical"
             android:layout_marginTop="5dp"
+            android:layout_marginBottom="10dp"
+            android:clipToPadding="false"
+            android:maxWidth="250dp"
+            android:orientation="vertical"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/diaryDateText"
             app:layout_constraintTop_toBottomOf="@id/diaryDateText"
-            tools:listitem="@layout/sub_item_timeline_schedule"
-            android:layout_marginBottom="10dp"
-            />
+            tools:listitem="@layout/sub_item_timeline_schedule" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

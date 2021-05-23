@@ -1,19 +1,24 @@
 package com.wency.petmanager.data
 
+import android.os.Parcelable
+import com.google.firebase.Timestamp
+import com.wency.petmanager.profile.Today
+import kotlinx.android.parcel.Parcelize
 import java.util.*
 
+@Parcelize
 data class Event(
-    val eventID: String,
-    val date: Date,
-    val type: String,
-    val petHeaderList: List<String>,
-    val userHeaderList: List<String>? = null,
-    val time: String? = null,
-    val title: String? = null,
-    val photoList: List<String>? = null,
-    val memoList: List<String>? = null,
-    val location: String? = null,
-    val complete: Boolean = false,
-    val tagList: List<String>? = null,
-    val notification: String? = null
-)
+    var eventID: String = "",
+    var date: Timestamp = Timestamp(Date()),
+    var type: String = "",
+    var petParticipantList: List<String> = mutableListOf(),
+    var userParticipantList: List<String>? = null,
+    var time: Timestamp? = null,
+    var title: String? = null,
+    var photoList: List<String> = mutableListOf(),
+    var memoList: List<String> = mutableListOf(),
+    var location: Location? = null,
+    var complete: Boolean = false,
+    var tagList: List<String> = mutableListOf(),
+    var notification: Timestamp? = null
+): Parcelable

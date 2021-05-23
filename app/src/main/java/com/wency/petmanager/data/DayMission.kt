@@ -4,5 +4,5 @@ import java.util.*
 
 data class DayMission(
     val date: Date,
-    val missionList: List<MissionToday>
+    val missionList: List<MissionToday>? = null
 )

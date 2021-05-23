@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_host"
-    app:startDestination="@id/homeFragment">
+    app:startDestination="@id/loadingFragment">
 
     <fragment
         android:id="@+id/homeFragment"
@@ -12,30 +12,38 @@
         <action
             android:id="@+id/action_homeFragment_to_createEventFragment"
             app:destination="@id/createEventFragment" />
+        <argument android:name="userInfo"
+            app:argType="com.wency.petmanager.data.UserInfo" />
+
     </fragment>
     <fragment
         android:id="@+id/diaryDetailFragment"
-        android:name="com.wency.petmanager.diary.DiaryDetailFragment"
-        android:label="DiaryDetailFragment" />
+        android:name="com.wency.petmanager.detail.DiaryDetailFragment"
+        android:label="DiaryDetailFragment" >
+        <argument
+            android:name="eventDetail"
+            app:argType="com.wency.petmanager.data.Event" />
+    </fragment>
     <fragment
         android:id="@+id/logInFragment"
         android:name="com.wency.petmanager.login.LogInFragment"
         android:label="LogInFragment" />
     <fragment
-        android:id="@+id/petProfile"
+        android:id="@+id/petProfileFragment"
         android:name="com.wency.petmanager.profile.PetProfileFragment"
-        android:label="PetProfile" />
-    <dialog
-        android:id="@+id/addFriendDialog"
-        android:name="com.wency.petmanager.friend.AddFriendDialog"
-        android:label="AddFriendDialog" />
+        android:label="PetProfile" >
+        <argument
+            android:name="petInfo"
+            app:argType="com.wency.petmanager.data.Pet" />
+    </fragment>
+
     <fragment
         android:id="@+id/diaryEditFragment"
         android:name="com.wency.petmanager.diary.DiaryEditFragment"
         android:label="DiaryEditFragment" />
     <fragment
         android:id="@+id/scheduleDetailFragment"
-        android:name="com.wency.petmanager.schedule.ScheduleDetailFragment"
+        android:name="com.wency.petmanager.detail.ScheduleDetailFragment"
         android:label="ScheduleDetailFragment" />
     <fragment
         android:id="@+id/scheduleEditFragment"
@@ -43,17 +51,54 @@
         android:label="ScheduleEditFragment" />
     <fragment
         android:id="@+id/createEventFragment"
-        android:name="com.wency.petmanager.event.CreateEventFragment"
+        android:name="com.wency.petmanager.create.CreateEventFragment"
         android:label="CreateEventFragment" >
         <argument
             android:name="createType"
             app:argType="integer"
             android:defaultValue="0" />
+        <argument
+            android:name="tagList"
+            app:argType="string[]"
+            app:nullable="true"
+            android:defaultValue="@null" />
+        <argument
+            android:name="petList"
+            app:argType="com.wency.petmanager.data.Pet[]" />
+        <argument
+            android:name="userInfo"
+            app:argType="com.wency.petmanager.data.UserInfo" />
     </fragment>
     <navigation android:id="@+id/navigation"
         app:startDestination="@id/nav_create">
         <include app:graph="@navigation/nav_create" />
     </navigation>
+    <action
+        android:id="@+id/action_global_to_home_fragment"
+        app:destination="@id/homeFragment" />
+    <fragment
+        android:id="@+id/petCreateFragment"
+        android:name="com.wency.petmanager.create.pet.PetCreateFragment"
+        android:label="PetCreateFragment" >
+        <argument
+            android:name="userInfo"
+            app:argType="com.wency.petmanager.data.UserInfo" />
+    </fragment>
+    <action
+        android:id="@+id/action_global_to_pet_create"
+        app:destination="@id/petCreateFragment" />
+
+    <action
+        android:id="@+id/action_global_to_diary_detail_fragment"
+        app:destination="@id/diaryDetailFragment" />
+
+    <action
+        android:id="@+id/action_global_to_pet_profile_fragment"
+        app:destination="@id/petProfileFragment" />
+    <fragment
+        android:id="@+id/loadingFragment"
+        android:name="com.wency.petmanager.home.LoadingFragment"
+        android:label="LoadingFragment" />
 
 
 </navigation>

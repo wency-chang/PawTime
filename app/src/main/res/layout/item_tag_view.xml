@@ -13,13 +13,13 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_height="50dp">
 
         <com.google.android.material.chip.Chip
+            android:id="@+id/chipView"
             style="@style/TagChipStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/chipView"
             android:layout_marginHorizontal="2dp"
             android:checkable="true"
             android:text="@{tag}"

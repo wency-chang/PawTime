@@ -1,7 +1,6 @@
 package com.wency.petmanager.home
 
 import android.annotation.SuppressLint
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -67,16 +66,16 @@ class TimeLineMainAdapter(val viewModel: HomeViewModel) :
         when (holder) {
             is TimeLinePhotoViewHolder -> {
 
-                holder.bind((item as TimelineItem.TimelineDiary).event, viewModel)
+                holder.bind((item as TimelineItem.TimelineEvent).event, viewModel)
 
 //                holder.recyclerPetHeader.apply {
 //                    setRecycledViewPool(viewPool)
 //                }
-                val compositePageTransformations = CompositePageTransformer()
-                compositePageTransformations.apply {
-                    addTransformer(MarginPageTransformer(20))
-                    addTransformer(ScaleInTransformer())
-                }
+//                val compositePageTransformations = CompositePageTransformer()
+//                compositePageTransformations.apply {
+//                    addTransformer(MarginPageTransformer(10))
+//                    addTransformer(ScaleInTransformer())
+//                }
 
 //                holder.pagerContent.apply {
 //                    offscreenPageLimit = 3
@@ -112,8 +111,9 @@ class TimeLineMainAdapter(val viewModel: HomeViewModel) :
     override fun getItemViewType(position: Int): Int {
         return when (getItem(position)) {
             is TimelineItem.Today -> ITEM_VIEW_TYPE_TODAY
-            is TimelineItem.TimelineDiary -> ITEM_VIEW_TYPE_PHOTO
+            is TimelineItem.TimelineEvent -> ITEM_VIEW_TYPE_PHOTO
             is TimelineItem.TimelineSchedule -> ITEM_VIEW_TYPE_SCHEDULE_CARD
+            else ->  ITEM_VIEW_TYPE_SCHEDULE_CARD
         }
     }
 
@@ -123,21 +123,23 @@ class TimeLineMainAdapter(val viewModel: HomeViewModel) :
         private val viewPager2 = binding.contentCardPager
         fun bind(events: DayEvent, viewModel: HomeViewModel) {
             val petParticipantPhoto = mutableListOf<String>()
+
+            val compositePageTransformations = CompositePageTransformer()
+            compositePageTransformations.apply {
+                addTransformer(MarginPageTransformer(2))
+                addTransformer(ScaleInTransformer())
+            }
+            viewPager2.setPageTransformer(compositePageTransformations)
             viewPager2.apply {
                 adapter = ContentCardAdapter(events.eventList, viewModel)
                 offscreenPageLimit = 1
                 val recyclerView = getChildAt(0) as RecyclerView
                 recyclerView.apply {
-                    setPadding(150, 0, 150, 0)
+                    setPadding(50, 0, 50, 0)
                     clipToPadding = false
                 }
             }
-            val compositePageTransformations = CompositePageTransformer()
-            compositePageTransformations.apply {
-                addTransformer(MarginPageTransformer(30))
-                addTransformer(ScaleInTransformer())
-            }
-            viewPager2.setPageTransformer(compositePageTransformations)
+
 
 
 //            for(item in events.eventList){
@@ -172,7 +174,7 @@ class TimeLineMainAdapter(val viewModel: HomeViewModel) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(mission: DayMission) {
             binding.today = timeFormat.format(Date())
-            binding.missionRecyclerView.adapter = MissionAdapter(mission.missionList)
+            binding.missionRecyclerView.adapter = mission.missionList?.let { MissionAdapter(it) }
             binding.executePendingBindings()
         }
     }
@@ -186,6 +188,9 @@ class TimeLineMainAdapter(val viewModel: HomeViewModel) :
             binding.executePendingBindings()
         }
     }
+//    class OnClickListenerToDetail (val clickListener: (event: Event)-> Unit){
+//        fun onClick(event: Event) = clickListener(event)
+//    }
 
 
     companion object DiffCallback : DiffUtil.ItemCallback<TimelineItem>() {
@@ -235,8 +240,8 @@ class TimeLineMainAdapter(val viewModel: HomeViewModel) :
 //                    view.scaleY = mMinScale
 //                }
             val r = 1 - abs(position)
-            view.scaleY = (0.85f + (r * 0.15f))
-            view.scaleX = (0.85f + (r * 0.15f))
+            view.scaleY = (0.9f + (r * 0.1f))
+            view.scaleX = (0.9f + (r * 0.1f))
         }
 
 

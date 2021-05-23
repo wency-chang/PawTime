@@ -2,7 +2,6 @@ package com.wency.petmanager
 
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import androidx.core.net.toUri
@@ -10,17 +9,18 @@ import androidx.databinding.BindingAdapter
 import androidx.databinding.BindingConversion
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
+import com.wency.petmanager.create.events.adapter.*
 import com.wency.petmanager.data.Pet
+import com.wency.petmanager.data.PetSelector
 import com.wency.petmanager.data.TimelineItem
-import com.wency.petmanager.diary.PetSelectorAdapter
-import com.wency.petmanager.diary.TagListAdapter
-import com.wency.petmanager.diary.TagListAdapter2
 import com.wency.petmanager.home.PetHeaderAdapter
 import com.wency.petmanager.home.TimeLineMainAdapter
+import com.wency.petmanager.data.UserInfo
 import com.wency.petmanager.network.LoadApiStatus
 
 @BindingAdapter("HomeAPIStatus")
-fun bindStatus (statusImageView: ImageView, status : LoadApiStatus?){
+fun bindStatus(statusImageView: ImageView, status: LoadApiStatus?){
     when (status){
         LoadApiStatus.LOADING -> {
             statusImageView.visibility = View.VISIBLE
@@ -49,6 +49,9 @@ fun bindImageCircle(imgView: ImageView, imgUrl: String?) {
         Glide.with(imgView.context)
             .load(imgUri)
             .circleCrop()
+            .apply(
+                RequestOptions()
+                    .placeholder(R.drawable.ic_paw_time__ui__06))
 //            .apply(
 //                RequestOptions()
 //                    .placeholder(R.drawable.image_placeholder)
@@ -63,9 +66,10 @@ fun bindImage(imgView: ImageView, imgUrl: String?) {
         val imgUri = it.toUri().buildUpon().build()
         Glide.with(imgView.context)
             .load(imgUri)
-//            .apply(
-//                RequestOptions()
-//                    .placeholder(R.drawable.ic_placeholder)
+            .centerCrop()
+            .apply(
+                RequestOptions()
+                    .placeholder(R.drawable.ic_paw_time__ui__06))
 //                    .error(R.drawable.ic_placeholder))
             .into(imgView)
     }
@@ -73,11 +77,24 @@ fun bindImage(imgView: ImageView, imgUrl: String?) {
 
 
 @BindingAdapter("petPhotoIconAdapter")
-fun petOptionBindRecyclerView(recyclerView: RecyclerView, data: List<Pet>?) {
+fun petHeaderBindRecyclerView(recyclerView: RecyclerView, data: List<Pet>?) {
     data?.let {
         recyclerView.adapter?.apply {
             when(this){
                 is PetHeaderAdapter -> submitList(it)
+
+            }
+        }
+    }
+}
+
+
+@BindingAdapter("petSelectorAdapter")
+fun petSelectorBindRecyclerView(recyclerView: RecyclerView, data: List<PetSelector>?) {
+    data?.let {
+        recyclerView.adapter?.apply {
+            when(this){
+
                 is PetSelectorAdapter -> submitList(it)
             }
         }
@@ -91,16 +108,30 @@ fun timelineBindRecyclerView(recyclerView: RecyclerView, data: List<TimelineItem
 }
 @BindingAdapter("tagSelectorAdapter")
 fun tagOptionBindRecyclerView(recyclerView: RecyclerView, data: List<String>?) {
-    Log.d("tagListDebug","binding adapter called")
     data?.let {
         recyclerView.adapter?.apply {
             when(this){
                 is TagListAdapter -> submitList(it)
-                is TagListAdapter2 -> submitList(it)
+                is MemoListAdapter -> submitList(it)
+                is PhotoListAdapter -> submitList(it)
             }
         }
     }
 }
+
+@BindingAdapter("userAdapter")
+fun userBindRecyclerView(recyclerView: RecyclerView, data: List<UserInfo>?) {
+    data?.let {
+        recyclerView.adapter?.apply {
+            when(this){
+                is UserListAdapter -> submitList(it)
+
+            }
+        }
+    }
+}
+
+
 
 
 

@@ -5,6 +5,8 @@
 
     <data>
 
+        <import type="android.view.View"/>
+
         <variable
             name="image"
             type="String" />
@@ -19,7 +21,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_margin="2dp"
-        app:cardCornerRadius="15dp"
+        app:cardCornerRadius="10dp"
         android:clipChildren="false"
         android:clipToPadding="false"
         >
@@ -37,17 +39,35 @@
                 android:scaleType="fitCenter"
                 android:background="@drawable/bg_timeline_event_image"
                 tools:src="@drawable/ic_launcher_foreground" />
-            <TextView
-                android:id="@+id/item_event_title"
-                android:layout_width="0dp"
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/titleLayout"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
-                android:text="@{title}"
-                android:layout_marginTop="16dp"
-                android:textSize="@dimen/timeline_title_text_size"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                android:visibility="@{title.empty? View.GONE: View.VISIBLE }"
+                >
+
+                <TextView
+                    android:id="@+id/item_event_title"
+                    android:layout_width="match_parent"
+                    android:maxLines="1"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="16dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="6dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="6dp"
+                    android:text="@{title}"
+                    android:textColor="@color/grey_white"
+                    android:textSize="@dimen/timeline_title_text_size"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>

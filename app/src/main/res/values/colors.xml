@@ -35,11 +35,18 @@
     <color name="blue_warm">#6C8CBF</color>
     <color name="blue_soft">#758EB7</color>
     <color name="white_2">#FAFAF9</color>
+    <color name="transparent">#00000000</color>
+    <color name="transparent_black">#33000000</color>
+    <color name="grey_medium2">#C9C9C9</color>
+    <color name="grey_white">#EFEFEF</color>
+    <color name="blue_light">#5AABC3</color>
+    <color name="blue_light2">#AECAD4</color>
 
 
 
     <color name="timeline_color">@color/blue_rainy_day</color>
-    <color name="home_background">#FAFBFB</color>
-    <color name="app_background">@color/blue_sunday</color>
+    <color name="home_background">@color/grey_white</color>
+    <color name="app_background">@color/blue_light</color>
+    <color name="create_background">@color/white_2</color>
 
 </resources>

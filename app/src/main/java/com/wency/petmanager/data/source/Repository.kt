@@ -1,10 +1,14 @@
 package com.wency.petmanager.data.source
 
+import android.net.Uri
 import com.wency.petmanager.data.*
+import java.net.URI
 
 interface Repository {
 
-    suspend fun getUserProfile(token: String): Result<User>
+    suspend fun getUserProfile(token: String): Result<UserInfo>
+
+    suspend fun getAllPetData(petList: List<String>): Result<List<Pet>>
 
     suspend fun getPetData(id: String): Result<Pet>
 
@@ -12,17 +16,33 @@ interface Repository {
 
     suspend fun createEvent (event: Event) : Result<String>
 
-    suspend fun createMission (mission: MissionGroup) : Result<Boolean>
+    suspend fun createNewMission (mission: MissionGroup) : Result<String>
+
+    suspend fun completeMission (petId: String, mission: MissionGroup) : Result<Boolean>
+
+    suspend fun createMission (petId: String, mission: MissionGroup) : Result<Boolean>
 
     suspend fun updateEvent (event: Event) : Result<Boolean>
+
+    suspend fun addNewPetIdToUser(petId: String, userID: String) : Result<Boolean>
+
+    suspend fun updateImage (uri: Uri, folder: String): Result<String>
 
     suspend fun deleteEvent (id: String) : Result<Boolean>
 
     suspend fun deleteMission (id: String) : Result<Boolean>
 
-    suspend fun updateMission (mission: MissionGroup) : Result<Boolean>
+    suspend fun getTodayMission (petId: String) : Result<List<String>>
+
+    suspend fun getMissionList (petId: String) : Result<List<MissionGroup>>
+
+    suspend fun getEventList (list: List<String>) : Result<List<EventList>>
+
+    suspend fun getTimelineList (list: List<String>) : Result<List<TimelineItem>>
 
     suspend fun addEventID (petID: String, eventID: String) : Result<Boolean>
+
+    suspend fun addNewTag(petID: String, tag: String) : Result<Boolean>
 
     suspend fun createPet (pet: Pet) : Result<String>
 

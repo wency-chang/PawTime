@@ -6,30 +6,36 @@
     <data>
         <variable
             name="viewModel"
-            type="com.wency.petmanager.diary.DiaryCreateViewModel" />
+            type="com.wency.petmanager.create.events.MissionCreateViewModel" />
         <import type="android.view.View"/>
+
+        <variable
+            name="createViewModel"
+            type="com.wency.petmanager.create.CreateEventViewModel" />
 
 
 
     </data>
 
 
+
+
+
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/home_background"
+        android:layout_margin="10dp"
         >
 
         <androidx.core.widget.NestedScrollView
             android:id="@+id/nestedScrollView"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            app:layout_constraintBottom_toTopOf="@+id/constraintLayout"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="1.0">
+            app:layout_constraintTop_toTopOf="parent">
 
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -42,10 +48,11 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="55dp"
-                    android:layout_marginTop="30dp"
+                    android:layout_marginTop="16dp"
                     android:layout_marginEnd="55dp"
                     android:foregroundTint="@color/blue_rainy_day"
                     android:hint="Missions"
+                    android:text="@={viewModel.title}"
                     android:textAlignment="center"
                     android:textColor="@color/blue_billow"
                     android:textColorHint="@color/blue_blanket"
@@ -57,31 +64,33 @@
                     android:id="@+id/petIcon"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="30dp"
                     android:layout_marginTop="10dp"
-                    app:layout_constraintStart_toStartOf="@+id/missionInput"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/missionInput"
                     app:srcCompat="@drawable/ic_baseline_pets_24" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/petRecyclerView"
-                    petPhotoIconAdapter="@{viewModel.mockPet}"
+                    petSelectorAdapter="@{viewModel.petSelector}"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
+                    android:layout_marginEnd="30dp"
                     android:orientation="horizontal"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                    app:layout_constraintEnd_toEndOf="@+id/missionInput"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="@+id/petIcon"
                     app:layout_constraintTop_toBottomOf="@id/petIcon"
                     app:spanCount="5" />
 
                 <TextView
                     android:id="@+id/addPetText"
+                    style="@style/instruction_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="30dp"
                     android:text="Select Pet Participant"
-                    style="@style/instruction_text"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="@id/petIcon"
                     app:layout_constraintStart_toEndOf="@id/petIcon"
@@ -92,17 +101,17 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    app:layout_constraintStart_toStartOf="@+id/reqularitySelectButton"
-                    app:layout_constraintTop_toBottomOf="@+id/reqularitySelectButton"
+                    app:layout_constraintStart_toStartOf="@+id/regularitySelectSpinner"
+                    app:layout_constraintTop_toBottomOf="@+id/regularitySelectSpinner"
                     app:srcCompat="@drawable/ic_baseline_edit_note_24" />
 
                 <TextView
                     android:id="@+id/memoText"
+                    style="@style/instruction_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="30dp"
                     android:text="Memo"
-                    style="@style/instruction_text"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="@id/memoIcon"
                     app:layout_constraintStart_toEndOf="@id/memoIcon"
@@ -110,14 +119,19 @@
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/memoRecycler"
+                    tagSelectorAdapter="@{viewModel.memoList}"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     android:layout_marginBottom="20dp"
+                    android:clipToPadding="false"
+                    android:foregroundGravity="center"
                     android:orientation="horizontal"
+                    app:flow_horizontalAlign="center"
+                    app:flow_verticalAlign="center"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="@+id/reqularitySelectButton"
+                    app:layout_constraintEnd_toEndOf="@+id/regularitySelectSpinner"
                     app:layout_constraintStart_toStartOf="@+id/memoIcon"
                     app:layout_constraintTop_toBottomOf="@+id/memoIcon" />
 
@@ -131,11 +145,11 @@
                     app:srcCompat="@drawable/ic_baseline_date_range_24" />
 
                 <TextView
-                    android:id="@+id/dateSelectButton"
+                    android:id="@+id/dateRangeSelectButton"
                     style="@style/dialog_text_button"
                     android:layout_width="0dp"
                     android:layout_marginTop="10dp"
-                    android:text="2021.5.17"
+                    android:text="@{viewModel.dateRange}"
                     android:textAlignment="center"
                     app:layout_constraintEnd_toEndOf="@+id/petRecyclerView"
                     app:layout_constraintStart_toStartOf="@+id/calendarIcon"
@@ -143,10 +157,10 @@
 
                 <TextView
                     android:id="@+id/periodSelect"
+                    style="@style/instruction_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Select Period"
-                    style="@style/instruction_text"
                     app:layout_constraintBottom_toBottomOf="@+id/calendarIcon"
                     app:layout_constraintStart_toStartOf="@+id/addPetText"
                     app:layout_constraintTop_toTopOf="@+id/calendarIcon" />
@@ -156,27 +170,30 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    app:layout_constraintStart_toStartOf="@+id/dateSelectButton"
-                    app:layout_constraintTop_toBottomOf="@+id/dateSelectButton"
+                    app:layout_constraintStart_toStartOf="@+id/dateRangeSelectButton"
+                    app:layout_constraintTop_toBottomOf="@+id/dateRangeSelectButton"
                     app:srcCompat="@drawable/ic_baseline_autorenew_24" />
 
                 <TextView
                     android:id="@+id/regularText"
+                    style="@style/instruction_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Set Regularity"
-                    style="@style/instruction_text"
                     app:layout_constraintBottom_toBottomOf="@+id/imageView"
                     app:layout_constraintStart_toStartOf="@+id/periodSelect"
                     app:layout_constraintTop_toTopOf="@+id/imageView" />
 
-                <TextView
-                    android:id="@+id/reqularitySelectButton"
+                <Spinner
+                    android:id="@+id/regularitySelectSpinner"
                     style="@style/dialog_text_button"
                     android:layout_width="0dp"
                     android:layout_marginTop="10dp"
-                    android:text="One Time Mission"
-                    app:layout_constraintEnd_toEndOf="@+id/dateSelectButton"
+                    android:gravity="center"
+                    android:prompt="@string/regularity"
+                    android:selectedItemPosition="@={viewModel.selectedRegularityPosition}"
+                    android:spinnerMode="dialog"
+                    app:layout_constraintEnd_toEndOf="@+id/dateRangeSelectButton"
                     app:layout_constraintStart_toStartOf="@+id/imageView"
                     app:layout_constraintTop_toBottomOf="@+id/imageView" />
 
@@ -186,31 +203,8 @@
 
         </androidx.core.widget.NestedScrollView>
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/constraintLayout"
-            android:layout_width="match_parent"
-            android:layout_height="70dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            android:background="@drawable/bg_confirm_button">
-
-            <Button
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="30dp"
-                android:layout_marginEnd="30dp"
-                android:text="DONE"
-                android:textColor="@color/white"
-                android:backgroundTint="@color/blue_sunday"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintCircleRadius="30dp"/>
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 
 </layout>

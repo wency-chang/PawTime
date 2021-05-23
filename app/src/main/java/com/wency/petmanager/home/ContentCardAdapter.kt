@@ -10,7 +10,7 @@ import com.wency.petmanager.data.Event
 import com.wency.petmanager.databinding.SubItemTimelinePhotoBinding
 import com.wency.petmanager.databinding.SubItemTimelineScheduleBinding
 
-class ContentCardAdapter(private val eventToday: List<Event>, val viewModel: HomeViewModel): RecyclerView.Adapter<ContentCardAdapter.PhotoCardViewHolder>() {
+class ContentCardAdapter(private val eventToday: MutableList<Event>, val viewModel: HomeViewModel): RecyclerView.Adapter<ContentCardAdapter.PhotoCardViewHolder>() {
 
 
 
@@ -22,6 +22,9 @@ class ContentCardAdapter(private val eventToday: List<Event>, val viewModel: Hom
     override fun onBindViewHolder(holder: PhotoCardViewHolder, position: Int) {
         val event = eventToday[position]
         holder.bind(event)
+        holder.itemView.setOnClickListener {
+            viewModel.navigateToDetail(event)
+        }
     }
 
     class PhotoCardViewHolder(val binding: SubItemTimelinePhotoBinding): RecyclerView.ViewHolder(binding.root){

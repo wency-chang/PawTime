@@ -1,6 +1,182 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<layout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <data>
+        <variable
+            name="viewModel"
+            type="com.wency.petmanager.profile.PetProfileViewModel" />
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white_2">
+
+        <ImageView
+            android:id="@+id/petCoverPicture"
+            android:layout_width="0dp"
+            android:layout_height="360dp"
+            android:scaleType="centerCrop"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:srcCompat="@tools:sample/backgrounds/scenic"
+            android:src="@drawable/ic_paw_time__ui__06"/>
+
+        <ImageView
+            android:id="@+id/petHeaderPicture"
+            imageUrlCircle="@{viewModel.petProfile.profilePhoto}"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:layout_marginTop="300dp"
+            android:background="@drawable/bg_circle_padding_medium"
+            android:backgroundTint="@color/blue_light2"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/petCoverPicture"
+            app:layout_constraintTop_toTopOf="@+id/petCoverPicture"
+            tools:srcCompat="@tools:sample/avatars" />
+
+        <TextView
+            android:id="@+id/petNameText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="@{viewModel.petProfile.name}"
+            android:textSize="32sp"
+            android:textStyle="bold"
+            android:textColor="@color/blue_light"
+            app:layout_constraintEnd_toEndOf="@+id/petHeaderPicture"
+            app:layout_constraintStart_toStartOf="@+id/petHeaderPicture"
+            app:layout_constraintTop_toBottomOf="@+id/petHeaderPicture" />
+
+        <TextView
+            android:id="@+id/petLocationText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="NEW TAIPEI CITY, TAIWAN"
+            app:layout_constraintEnd_toEndOf="@+id/petNameText"
+            app:layout_constraintStart_toStartOf="@+id/petNameText"
+            app:layout_constraintTop_toBottomOf="@+id/petNameText" />
+
+        <ImageView
+            android:id="@+id/profileLocationIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="4dp"
+            app:layout_constraintBottom_toBottomOf="@+id/petLocationText"
+            app:layout_constraintEnd_toStartOf="@+id/petLocationText"
+            app:layout_constraintTop_toTopOf="@+id/petLocationText"
+            app:srcCompat="@drawable/ic_outline_location_on_24" />
+
+        <TextView
+            android:id="@+id/petOldText"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="10"
+            android:textAlignment="center"
+            android:textSize="26dp"
+            android:textColor="@color/black"
+            app:layout_constraintEnd_toStartOf="@+id/petWeightText"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintHorizontal_chainStyle="spread"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/petLocationText" />
+
+        <TextView
+            android:id="@+id/petWeightText"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:text="13.5kg"
+            android:textAlignment="center"
+            android:textSize="26dp"
+            android:textColor="@color/black"
+            app:layout_constraintBottom_toBottomOf="@+id/petOldText"
+            app:layout_constraintEnd_toStartOf="@+id/petMissionText"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/petOldText"
+            app:layout_constraintTop_toTopOf="@+id/petOldText" />
+
+        <TextView
+            android:id="@+id/petMissionText"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:text="5"
+            android:textSize="26dp"
+            android:textColor="@color/black"
+            android:textAlignment="center"
+            app:layout_constraintBottom_toBottomOf="@+id/petWeightText"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/petWeightText"
+            app:layout_constraintTop_toTopOf="@+id/petWeightText" />
+
+        <TextView
+            android:id="@+id/years"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="YEARS"
+            app:layout_constraintEnd_toEndOf="@+id/petOldText"
+            app:layout_constraintStart_toStartOf="@+id/petOldText"
+            app:layout_constraintTop_toBottomOf="@+id/petOldText" />
+
+        <TextView
+            android:id="@+id/weight"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="WEIGHT"
+            app:layout_constraintEnd_toEndOf="@+id/petWeightText"
+            app:layout_constraintStart_toStartOf="@+id/petWeightText"
+            app:layout_constraintTop_toTopOf="@+id/years" />
+
+        <LinearLayout
+            android:layout_width="1dp"
+            android:layout_height="0dp"
+            android:background="@color/grey_white"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="@+id/linearLayout2"
+            app:layout_constraintEnd_toStartOf="@+id/petMissionText"
+            app:layout_constraintStart_toEndOf="@+id/petWeightText"
+            app:layout_constraintTop_toTopOf="@+id/petMissionText" />
+
+        <LinearLayout
+            android:id="@+id/linearLayout2"
+            android:layout_width="1dp"
+            android:layout_height="0dp"
+            android:background="@color/grey_white"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="@+id/years"
+            app:layout_constraintEnd_toStartOf="@+id/petWeightText"
+            app:layout_constraintStart_toEndOf="@+id/petOldText"
+            app:layout_constraintTop_toTopOf="@+id/petOldText" />
+
+        <TextView
+            android:id="@+id/missions"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="MISSIONS"
+            app:layout_constraintEnd_toEndOf="@+id/petMissionText"
+            app:layout_constraintStart_toStartOf="@+id/petMissionText"
+            app:layout_constraintTop_toTopOf="@+id/weight" />
+
+        <TextView
+            android:id="@+id/petProfileEditButton"
+            android:layout_width="140dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="40dp"
+            android:background="@drawable/bg_edit_button_grey"
+            android:gravity="center"
+            android:text="EDIT"
+            android:textAlignment="center"
+            android:textColor="@color/white"
+            android:textSize="20dp"
+            app:layout_constraintEnd_toEndOf="@+id/petNameText"
+            app:layout_constraintStart_toStartOf="@+id/petNameText"
+            app:layout_constraintTop_toBottomOf="@+id/weight" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

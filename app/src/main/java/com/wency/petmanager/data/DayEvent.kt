@@ -4,5 +4,6 @@ import java.util.*
 
 data class DayEvent(
     val date: Date,
-    val eventList: List<Event>
+    val type: String,
+    val eventList: MutableList<Event>
 )

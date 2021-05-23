@@ -5,15 +5,15 @@
 
     <fragment
         android:id="@+id/diaryCreateFragment"
-        android:name="com.wency.petmanager.diary.DiaryCreateFragment"
+        android:name="com.wency.petmanager.create.events.DiaryCreateFragment"
         android:label="DiaryCreateFragment" />
     <fragment
         android:id="@+id/scheduleCreateFragment"
-        android:name="com.wency.petmanager.schedule.ScheduleCreateFragment"
+        android:name="com.wency.petmanager.create.events.ScheduleCreateFragment"
         android:label="ScheduleCreateFragment" />
     <fragment
         android:id="@+id/missionCreateFragment"
-        android:name="com.wency.petmanager.mission.MissionCreateFragment"
+        android:name="com.wency.petmanager.create.events.MissionCreateFragment"
         android:label="MissionCreateFragment" />
     <action
         android:id="@+id/action_global_diaryCreateFragment"

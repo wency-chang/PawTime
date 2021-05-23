@@ -1,9 +1,8 @@
 package com.wency.petmanager.home
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.util.Log
+import android.view.*
 import android.view.animation.AnimationUtils
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -11,12 +10,17 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.wency.petmanager.MainViewModel
+import com.wency.petmanager.ManagerApplication
+import com.wency.petmanager.NavHostDirections
 import com.wency.petmanager.R
 import com.wency.petmanager.databinding.FragmentHomeBinding
+import com.wency.petmanager.ext.getVmFactory
+import kotlinx.android.synthetic.main.fragment_home.*
 
 class HomeFragment: Fragment() {
 
-    private val viewModel by viewModels<HomeViewModel>()
+
+    private val viewModel by viewModels<HomeViewModel>{ getVmFactory(HomeFragmentArgs.fromBundle(requireArguments()).userInfo)}
     private val mainViewModel by activityViewModels<MainViewModel>()
 
     lateinit var binding: FragmentHomeBinding
@@ -26,10 +30,12 @@ class HomeFragment: Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        Log.d("debug", "HomeFragment")
 
         binding = FragmentHomeBinding.inflate(inflater, container,false)
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
+
 
 
         return binding.root
@@ -41,7 +47,10 @@ class HomeFragment: Fragment() {
         viewModel.initButtonStatus()
 
 
-        binding.petOptionRecycler.adapter = PetHeaderAdapter()
+
+
+
+        binding.petOptionRecycler.adapter = PetHeaderAdapter(viewModel, this)
         binding.timelineRecycler.adapter = TimeLineMainAdapter(viewModel)
         viewModel.isCreateButtonVisible.observe(viewLifecycleOwner, Observer {
             if (it){
@@ -55,15 +64,94 @@ class HomeFragment: Fragment() {
                 binding.createMissionEventButton.startAnimation(closeAnim)
             }
         })
-
-        viewModel.navigateDestination.observe(viewLifecycleOwner, Observer {
-            it?.let {
-                this.findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToCreateEventFragment(it))
-                viewModel.navigateDestination.value = null
+        mainViewModel.userInfoProfile.observe(viewLifecycleOwner, Observer {
+            it.petList?.let {
+                viewModel.getPetData()
             }
         })
 
+        viewModel.navigateToCreateDestination.observe(viewLifecycleOwner, Observer {
+            it?.let {
+                if (it < 3){
+                    this.findNavController().navigate(
+                        HomeFragmentDirections
+                        .actionHomeFragmentToCreateEventFragment(
+                            it,
+                            viewModel.tagList.value?.toTypedArray(),
+                            viewModel.realPetList.toTypedArray(),
+                            viewModel.userInfoProfile!!
+                        )
+                    )
+
+                    viewModel.onNavigated()
+                } else if (it == HomeViewModel.PAGE_CREATE_PET){
+                    viewModel.userInfoProfile?.let {userInfo->
+                        findNavController().navigate(NavHostDirections.actionGlobalToPetCreate(userInfo))
+                    }
+                    viewModel.onNavigated()
+
+                }
+
+                else {
+
+                    viewModel.onNavigated()
+                }
+
+            }
+        })
+
+        viewModel.navigateToDetailDestination.observe(viewLifecycleOwner, Observer {
+            it?.let {
+                findNavController().navigate(NavHostDirections.actionGlobalToDiaryDetailFragment(it))
+                viewModel.onNavigated()
+            }
+
+        })
+
+        viewModel.petList.observe(viewLifecycleOwner, Observer {
+            it?.let {
+                if (it.size == viewModel.userInfoProfile.petList?.size?.plus(1)){
+                    viewModel.getEvents(it)
+                    viewModel.getTodayMission(it)
+                }
+
+            }
+        })
+
+        viewModel.evenForTimeline.observe(viewLifecycleOwner, Observer { eventForTimeline->
+            eventForTimeline?.let {
+                Log.d("debug", "event for timeline done start get timeline $eventForTimeline")
+                viewModel.createTimelineItem(it)
+            }
+        })
+
+        viewModel.navigateToDetailDestination.observe(viewLifecycleOwner, Observer {
+            it?.let {
+//                findNavController().navigate(NavHostDirections.)
+
+            }
+        })
     }
+
+    override fun onCreateContextMenu(
+        menu: ContextMenu,
+        v: View,
+        menuInfo: ContextMenu.ContextMenuInfo?
+    ) {
+        requireActivity().menuInflater.inflate(R.menu.item_navigate_selector, menu)
+    }
+
+    override fun onContextItemSelected(item: MenuItem): Boolean {
+        viewModel.navigateToPetProfileDestination.value?.let {
+            findNavController().navigate(NavHostDirections.actionGlobalToPetProfileFragment(
+                it
+            ))
+            viewModel.onNavigated()
+        }
+
+        return true
+    }
+
 
 
 }

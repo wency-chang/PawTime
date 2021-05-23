@@ -7,6 +7,11 @@
         <item name="maxHeight">20dp</item>
         <item name="android:textSize">12sp</item>
     </style>
+    
+    <style name="datePickDialog" parent="Theme.AppCompat.Light.Dialog">
+        <item name="colorAccent">@color/blue_light</item>
+    </style>
+        
 
 
     <style name="instruction_text">
@@ -22,5 +27,13 @@
         <item name="android:textAlignment">center</item>
         <item name="android:textSize">16dp</item>
         <item name="android:gravity">center</item>
+    </style>
+
+    <style name="AddContentDialog">
+        <item name="android:windowBackground">@color/transparent_black</item>
+    </style>
+
+    <style name="create_event_progress" parent="Widget.AppCompat.ProgressBar.Horizontal">
+        <item name="color">@color/blue_sunday</item>
     </style>
 </resources>

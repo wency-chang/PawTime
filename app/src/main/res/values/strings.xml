@@ -1,3 +1,16 @@
 <resources>
     <string name="app_name">PetManager</string>
+    <string name="regularity">Select Regularity</string>
+    <string name="error_message">Unknown Error</string>
+    <string-array name="regularity">
+        <item>One Time</item>
+        <item>Every Day</item>
+        <item>Every Two Days</item>
+        <item>Every Week</item>
+        <item>Every Two Weeks</item>
+        <item>Every Month</item>
+        <item>Every Two Months</item>
+        <item>Every Year</item>
+    </string-array>
+    <string name="API_KEY">AIzaSyAO06rZuucB71fOxSuwBvwpUHEnIov0lxQ</string>
 </resources>
