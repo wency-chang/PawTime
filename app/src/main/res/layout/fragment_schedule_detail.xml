@@ -4,6 +4,9 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <data>
+        <variable
+            name="viewModel"
+            type="com.wency.petmanager.detail.ScheduleDetailViewModel" />
 
     </data>
 
@@ -25,7 +28,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:maxWidth="260dp"
-                android:text="GO TO SEE DOCTOR"
+                android:text="@{viewModel.eventDetail.title}"
                 android:textColor="@color/white"
                 android:textSize="28dp"
                 android:textStyle="bold"
@@ -59,7 +62,6 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
-
                     <androidx.cardview.widget.CardView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -67,6 +69,7 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
+
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </ScrollView>
 

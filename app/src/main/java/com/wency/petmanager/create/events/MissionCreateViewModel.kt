@@ -89,8 +89,9 @@ class MissionCreateViewModel(val repository: Repository) : ViewModel() {
                 memoList.value?.let { memoList ->
                     dataToUpdate?.let {
                         if (memoList.size > 1) {
+                            memoList.removeAt(0)
                             it.memoList = memoList
-                            dataToUpdate.memoList.subList(1, memoList.size - 1)
+
                         }
                     }
                 }

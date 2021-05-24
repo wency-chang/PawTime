@@ -234,8 +234,28 @@ object RemoteDataSource: DataSource {
 
     }
 
-    override suspend fun getMissionList(petId: String): Result<List<MissionGroup>> {
-        TODO("Not yet implemented")
+    override suspend fun getMissionList(petId: String): Result<List<MissionGroup>> = suspendCoroutine {continuation->
+        val missionList = mutableListOf<MissionGroup>()
+        FirebaseFirestore.getInstance().collection(PATH_PETS)
+            .document(petId).collection(PATH_PET_MISSION_LIST)
+            .get()
+            .addOnCompleteListener {task->
+                if (task.isSuccessful) {
+                    task.result?.let { document->
+                        for (item in document){
+                            missionList.add(item.toObject(MissionGroup::class.java))
+                        }
+                        continuation.resume(Result.Success(missionList))
+                    }
+
+                } else {
+                    task.exception?.let {
+                        continuation.resume(Result.Error(it))
+                        return@addOnCompleteListener
+                    }
+                }
+
+            }
     }
 
     override suspend fun addNewTag(petID: String, tag: String): Result<Boolean> = suspendCoroutine{continuation->

@@ -49,6 +49,7 @@ class DiaryDetailFragment: Fragment() {
             }
         }
 
+
     }
 
 

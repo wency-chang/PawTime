@@ -28,7 +28,11 @@ interface DataSource {
 
     suspend fun getEventList (list: List<String>) : Result<List<EventList>>
 
+
+
     suspend fun getTimelineList (list: List<String>) : Result<List<TimelineItem>>
+
+
 
     suspend fun deleteEvent (id: String) : Result<Boolean>
 

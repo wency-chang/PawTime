@@ -6,16 +6,16 @@ import java.util.*
 
 data class MissionGroup(
     var missionId: String = "",
-    val title: String,
-    val startDate: Timestamp,
-    val endDate: Timestamp,
-    val datesTodo: List<Timestamp>,
+    val title: String = "",
+    var startDate: Timestamp = Timestamp(Date()),
+    var endDate: Timestamp = Timestamp(Date()),
+    var datesTodo: List<Timestamp> = listOf(startDate, endDate),
     var memoList: MutableList<String> = mutableListOf<String>(),
     var complete: Boolean = false,
     var completeUserId: String = "",
     var completeUserName: String = "",
     var completeUserPhoto: String = "",
-    var recordDate: Timestamp
+    var recordDate: Timestamp = Timestamp(Date())
 
 )
 

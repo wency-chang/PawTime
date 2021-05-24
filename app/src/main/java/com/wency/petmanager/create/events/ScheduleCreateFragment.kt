@@ -166,9 +166,14 @@ class ScheduleCreateFragment: Fragment(), AddMemoDialog.MemoDialogListener, AddN
                 if (it){
                     if (viewModel.photoList.value?.size!! > 1){
                         viewModel.getUrlPhotoList()
+
                     } else {
                         viewModel.createSchedule()
                     }
+                    Toast.makeText(requireContext(),"Start Update", Toast.LENGTH_SHORT).show()
+                    viewModel.startLoading()
+                    createEventViewModel.loadingStatus.value = true
+
 
                     viewModel.checkingStatus.value = null
                 } else {
@@ -188,6 +193,7 @@ class ScheduleCreateFragment: Fragment(), AddMemoDialog.MemoDialogListener, AddN
 
         viewModel.navigateBackToHome.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
             if (it){
+                createEventViewModel.loadingStatus.value = false
                 createEventViewModel.backHome()
             }
         })

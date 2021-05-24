@@ -8,6 +8,8 @@
             name="viewModel"
             type="com.wency.petmanager.create.CreateEventViewModel" />
 
+        <import type="android.view.View"/>
+
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -185,11 +187,13 @@
         <ProgressBar
             android:id="@+id/createProgressBar"
             style="@style/create_event_progress"
-            android:layout_width="0dp"
-            android:layout_height="3dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="@{viewModel.loadingStatus? View.VISIBLE : View.GONE }"
+            app:layout_constraintBottom_toBottomOf="@+id/navCreateNavigation"
+            app:layout_constraintEnd_toEndOf="@+id/createDoneButton"
+            app:layout_constraintStart_toStartOf="@+id/createDoneButton"
+            app:layout_constraintTop_toTopOf="@+id/createDoneButton" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

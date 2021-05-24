@@ -6,6 +6,7 @@
         <item name="android:textStyle">bold</item>
         <item name="maxHeight">20dp</item>
         <item name="android:textSize">12sp</item>
+
     </style>
     
     <style name="datePickDialog" parent="Theme.AppCompat.Light.Dialog">
@@ -33,7 +34,32 @@
         <item name="android:windowBackground">@color/transparent_black</item>
     </style>
 
-    <style name="create_event_progress" parent="Widget.AppCompat.ProgressBar.Horizontal">
+    <style name="create_event_progress" parent="Widget.AppCompat.ProgressBar">
         <item name="color">@color/blue_sunday</item>
+    </style>
+
+    <style name="petProfileInputTextStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">50dp</item>
+        <item name="android:layout_marginStart">10dp</item>
+        <item name="android:layout_marginTop">20dp</item>
+        <item name="android:layout_marginEnd">10dp</item>
+        <item name="android:textAlignment">center</item>
+        <item name="android:textSize">22dp</item>
+        <item name="android:textColor">@color/blue_billow</item>
+        <item name="android:background">@drawable/bg_edit_button_grey</item>
+        <item name="android:backgroundTint">@color/blue_light2</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <style name="petProfileInfoTextStyle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:layout_marginTop">5dp</item>
+        <item name="android:textSize">16dp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/grey_medium</item>
+
     </style>
 </resources>

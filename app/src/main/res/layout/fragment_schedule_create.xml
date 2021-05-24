@@ -149,17 +149,17 @@
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/photoRecyclerView"
+                    tagSelectorAdapter="@{viewModel.photoList}"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:layout_marginBottom="20dp"
+                    android:layout_marginBottom="60dp"
                     android:orientation="horizontal"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="@+id/petRecyclerView"
                     app:layout_constraintStart_toStartOf="@id/photoIcon"
-                    app:layout_constraintTop_toBottomOf="@+id/photoIcon"
-                    tagSelectorAdapter="@{viewModel.photoList}"/>
+                    app:layout_constraintTop_toBottomOf="@+id/photoIcon" />
 
                 <ImageView
                     android:id="@+id/locationIcon"

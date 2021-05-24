@@ -72,7 +72,7 @@ class DefaultRepository(private val remoteDataSource: DataSource
     }
 
     override suspend fun getMissionList(petId: String): Result<List<MissionGroup>> {
-        TODO("Not yet implemented")
+        return remoteDataSource.getMissionList(petId)
     }
 
 

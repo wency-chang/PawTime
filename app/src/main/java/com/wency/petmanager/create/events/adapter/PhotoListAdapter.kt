@@ -1,5 +1,6 @@
 package com.wency.petmanager.create.events.adapter
 
+import android.net.Uri
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -7,6 +8,8 @@ import androidx.core.net.toUri
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.wency.petmanager.ManagerApplication
 import com.wency.petmanager.create.events.MissionCreateViewModel
 import com.wency.petmanager.databinding.ItemAddContentHolderBinding
 import com.wency.petmanager.databinding.ItemMemoHolderBinding
@@ -48,8 +51,11 @@ class PhotoListAdapter(private val onClickListener: MemoListAdapter.OnClickListe
     class PhotoHolder(val binding: ItemPhotoHolderBinding): RecyclerView.ViewHolder(binding.root){
         val cancelButton = binding.photoSelectCancelButton
         fun bind(photoURI: String){
-            Log.d("Adapter","photo URI $photoURI")
-            binding.photoSelectorImage.setImageURI(photoURI.toUri())
+            Glide.with(ManagerApplication.instance)
+                .load(Uri.parse(photoURI))
+                .centerCrop()
+                .into(binding.photoSelectorImage)
+
             binding.executePendingBindings()
         }
 

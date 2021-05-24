@@ -14,6 +14,7 @@ import com.wency.petmanager.data.*
 import com.wency.petmanager.databinding.ItemHomeScheduleCardBinding
 import com.wency.petmanager.databinding.ItemHomeTimelineEventBinding
 import com.wency.petmanager.databinding.ItemTimelineTodayMissionBinding
+import com.wency.petmanager.profile.Today
 import kotlinx.android.synthetic.main.fragment_diary_create.view.*
 import kotlinx.android.synthetic.main.item_home_timeline_event.view.*
 import java.lang.Math.abs
@@ -126,18 +127,19 @@ class TimeLineMainAdapter(val viewModel: HomeViewModel) :
 
             val compositePageTransformations = CompositePageTransformer()
             compositePageTransformations.apply {
-                addTransformer(MarginPageTransformer(2))
+                addTransformer(MarginPageTransformer(10))
                 addTransformer(ScaleInTransformer())
             }
-            viewPager2.setPageTransformer(compositePageTransformations)
+
             viewPager2.apply {
-                adapter = ContentCardAdapter(events.eventList, viewModel)
                 offscreenPageLimit = 1
                 val recyclerView = getChildAt(0) as RecyclerView
                 recyclerView.apply {
-                    setPadding(50, 0, 50, 0)
+                    setPadding(100, 0, 200, 0)
                     clipToPadding = false
                 }
+                setPageTransformer(compositePageTransformations)
+                adapter = ContentCardAdapter(events.eventList, viewModel)
             }
 
 
@@ -165,7 +167,9 @@ class TimeLineMainAdapter(val viewModel: HomeViewModel) :
 //                getChildAt(0).overScrollMode = RecyclerView.OVER_SCROLL_NEVER
 
 //            }
-            binding.date = timeFormat.format(events.date)
+            binding.year = Today.yearOnlyFormat.format(events.date)
+            binding.date = Today.dateOnlyFormat.format(events.date)
+            binding.dayOfWeek = Today.dayOfWeekFormat.format(events.date)
             binding.executePendingBindings()
         }
     }
@@ -173,8 +177,11 @@ class TimeLineMainAdapter(val viewModel: HomeViewModel) :
     class TimelineTodayViewHolder(val binding: ItemTimelineTodayMissionBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(mission: DayMission) {
-            binding.today = timeFormat.format(Date())
+            binding.year = Today.yearOnlyFormat.format(Date())
+            binding.date = Today.dateOnlyFormat.format(Date())
+            binding.dayOfWeek = Today.dayOfWeekFormat.format(Date())
             binding.missionRecyclerView.adapter = mission.missionList?.let { MissionAdapter(it) }
+            binding.missionVisibility = mission.missionList?.isNotEmpty()
             binding.executePendingBindings()
         }
     }
@@ -183,7 +190,9 @@ class TimeLineMainAdapter(val viewModel: HomeViewModel) :
         RecyclerView.ViewHolder(binding.root) {
         val recyclerScheduleCard = binding.contentCardRecycler
         fun bind(events: DayEvent, viewModel: HomeViewModel) {
-            binding.date = DiffCallback.timeFormat.format(events.date)
+            binding.year = Today.yearOnlyFormat.format(events.date)
+            binding.date = Today.dateOnlyFormat.format(events.date)
+            binding.dayOfWeek = Today.dayOfWeekFormat.format(events.date)
             binding.contentCardRecycler.adapter = ScheduleCardAdapter(events.eventList, viewModel)
             binding.executePendingBindings()
         }
@@ -240,8 +249,8 @@ class TimeLineMainAdapter(val viewModel: HomeViewModel) :
 //                    view.scaleY = mMinScale
 //                }
             val r = 1 - abs(position)
-            view.scaleY = (0.9f + (r * 0.1f))
-            view.scaleX = (0.9f + (r * 0.1f))
+            view.scaleY = (0.8f + (r * 0.2f))
+            view.scaleX = (0.8f + (r * 0.2f))
         }
 
 

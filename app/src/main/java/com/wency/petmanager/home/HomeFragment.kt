@@ -46,10 +46,6 @@ class HomeFragment: Fragment() {
         val closeAnim = AnimationUtils.loadAnimation(this.context, R.anim.fab_to_bottom_animation)
         viewModel.initButtonStatus()
 
-
-
-
-
         binding.petOptionRecycler.adapter = PetHeaderAdapter(viewModel, this)
         binding.timelineRecycler.adapter = TimeLineMainAdapter(viewModel)
         viewModel.isCreateButtonVisible.observe(viewLifecycleOwner, Observer {
@@ -64,11 +60,11 @@ class HomeFragment: Fragment() {
                 binding.createMissionEventButton.startAnimation(closeAnim)
             }
         })
-        mainViewModel.userInfoProfile.observe(viewLifecycleOwner, Observer {
-            it.petList?.let {
-                viewModel.getPetData()
-            }
-        })
+//        mainViewModel.userInfoProfile.observe(viewLifecycleOwner, Observer {
+//            it.petList?.let {
+//                viewModel.getPetData()
+//            }
+//        })
 
         viewModel.navigateToCreateDestination.observe(viewLifecycleOwner, Observer {
             it?.let {
@@ -89,11 +85,9 @@ class HomeFragment: Fragment() {
                         findNavController().navigate(NavHostDirections.actionGlobalToPetCreate(userInfo))
                     }
                     viewModel.onNavigated()
-
                 }
 
                 else {
-
                     viewModel.onNavigated()
                 }
 
@@ -102,7 +96,12 @@ class HomeFragment: Fragment() {
 
         viewModel.navigateToDetailDestination.observe(viewLifecycleOwner, Observer {
             it?.let {
-                findNavController().navigate(NavHostDirections.actionGlobalToDiaryDetailFragment(it))
+                when (it.type){
+                    HomeViewModel.EVENT_TYPE_DIARY -> findNavController().navigate(NavHostDirections.actionGlobalToDiaryDetailFragment(it))
+                    HomeViewModel.EVENT_TYPE_SCHEDULE -> findNavController().navigate(NavHostDirections.actionGlobalToScheduleDetail(it))
+                }
+
+
                 viewModel.onNavigated()
             }
 
@@ -131,6 +130,17 @@ class HomeFragment: Fragment() {
 
             }
         })
+
+        binding.homeRefresher.setOnRefreshListener {
+            viewModel.refresh()
+
+        }
+        viewModel.refreshStatus.observe(viewLifecycleOwner, Observer {
+                binding.homeRefresher.isRefreshing = it
+
+        })
+
+
     }
 
     override fun onCreateContextMenu(

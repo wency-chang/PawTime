@@ -4,6 +4,10 @@ import androidx.lifecycle.ViewModel
 import com.wency.petmanager.data.Event
 import com.wency.petmanager.data.source.Repository
 
-class ScheduleDetailViewModel(repository: Repository, eventDetail: Event) : ViewModel() {
+class ScheduleDetailViewModel(val repository: Repository, val eventDetail: Event) : ViewModel() {
+
+
+
+
 
 }

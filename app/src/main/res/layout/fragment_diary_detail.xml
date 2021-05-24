@@ -10,36 +10,35 @@
 
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <androidx.constraintlayout.motion.widget.MotionLayout
+        android:id="@+id/constraintLayout5"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/grey_white">
+        android:background="@color/grey_white"
+        app:layoutDescription="@xml/fragment_diary_detail_xml_constraintlayout5_scene">
 
-        <androidx.recyclerview.widget.RecyclerView
+        <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/detailPhotoPager"
             android:layout_width="match_parent"
             android:layout_height="400dp"
             android:maxHeight="400dp"
             android:orientation="horizontal"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:layout_height="380dp">
 
-        </androidx.recyclerview.widget.RecyclerView>
+        </androidx.viewpager2.widget.ViewPager2>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/detailLayoutBottom"
             android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginTop="8dp"
+            android:layout_height="365dp"
             android:background="@drawable/bg_confirm_button"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/photoDotsRecycler">
+            app:layout_constraintStart_toStartOf="parent">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/detailLayoutMiddle"
@@ -154,9 +153,10 @@
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="16dp"
             android:clickable="true"
+            app:backgroundTint="@color/blue_light"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@+id/detailLayoutBottom"
             app:srcCompat="@drawable/ic_baseline_edit_24" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.motion.widget.MotionLayout>
 </layout>

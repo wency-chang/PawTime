@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MotionScene 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:motion="http://schemas.android.com/apk/res-auto">
+
+    <Transition
+        motion:constraintSetEnd="@+id/end"
+        motion:constraintSetStart="@id/start"
+        motion:duration="1000">
+       <KeyFrameSet>
+
+           <KeyAttribute
+               motion:motionTarget="@+id/detailEditButton"
+               motion:framePosition="0"
+               android:alpha="0" />
+           <KeyAttribute
+               motion:motionTarget="@+id/detailEditButton"
+               motion:framePosition="30"
+               android:alpha="0" />
+           <KeyAttribute
+               motion:motionTarget="@+id/detailEditButton"
+               motion:framePosition="30"
+               android:scaleX="0.1" />
+           <KeyAttribute
+               motion:motionTarget="@+id/detailEditButton"
+               motion:framePosition="30"
+               android:scaleY="0.1" />
+           <KeyAttribute
+               motion:motionTarget="@+id/detailEditButton"
+               motion:framePosition="50"
+               android:alpha="0.2" />
+
+           <KeyAttribute
+               motion:motionTarget="@+id/detailEditButton"
+               motion:framePosition="50"
+               android:scaleX="0.1" />
+           <KeyAttribute
+               motion:motionTarget="@+id/detailEditButton"
+               motion:framePosition="50"
+               android:scaleY="0.1" />
+           <KeyAttribute
+               motion:motionTarget="@+id/detailEditButton"
+               motion:framePosition="80"
+               android:scaleX="0.3" />
+           <KeyAttribute
+               motion:motionTarget="@+id/detailEditButton"
+               motion:framePosition="80"
+               android:scaleY="0.3" />
+       </KeyFrameSet>
+        <OnSwipe motion:touchAnchorId="@+id/detailLayoutBottom"
+            motion:touchAnchorSide="top"/>
+    </Transition>
+
+    <ConstraintSet android:id="@+id/start">
+        <Constraint
+            android:id="@+id/detailEditButton"
+            motion:layout_constraintEnd_toEndOf="@+id/detailLayoutBottom"
+            android:layout_width="1dp"
+            android:layout_height="1dp"
+            motion:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginBottom="16dp"
+            android:layout_marginEnd="16dp" />
+    </ConstraintSet>
+
+    <ConstraintSet android:id="@+id/end">
+
+        <Constraint
+            android:id="@+id/detailLayoutBottom"
+            motion:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="0dp"
+            android:layout_height="650dp"
+            motion:layout_constraintBottom_toBottomOf="parent"
+            motion:layout_constraintStart_toStartOf="parent" />
+    </ConstraintSet>
+</MotionScene>

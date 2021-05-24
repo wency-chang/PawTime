@@ -18,7 +18,7 @@
             android:layout_marginStart="6dp"
             android:layout_marginEnd="6dp"
             android:background="@drawable/bg_pet_header_name"
-            android:backgroundTint="@color/blue_sunday"
+            android:backgroundTint="@color/blue_light2"
             android:src="@drawable/ic_baseline_more_horiz_24"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

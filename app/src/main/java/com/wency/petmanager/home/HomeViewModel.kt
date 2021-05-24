@@ -20,6 +20,9 @@ class HomeViewModel(private val repository: Repository, val userInfoProfile: Use
         const val EVENT_TYPE_DIARY = "diary"
         const val EVENT_TYPE_SCHEDULE = "schedule"
         const val PAGE_CREATE_PET = 0x03
+        const val PAGE_DIARY_CREATE = 0x00
+        const val PAGE_SCHEDULE_CREATE = 0x01
+        const val PAGE_MISSION_CREATE = 0x02
     }
 
 
@@ -126,6 +129,7 @@ class HomeViewModel(private val repository: Repository, val userInfoProfile: Use
         }
     }
 
+
     fun clickForCreate(id: Int) {
         _navigateToCreateDestination.value = id
         Log.d("debug", "click")
@@ -202,7 +206,15 @@ class HomeViewModel(private val repository: Repository, val userInfoProfile: Use
 
     init {
         onStatusQuery = false
+        getPetData()
     }
+
+    fun refresh(){
+        _refreshStatus.value = true
+        getPetData()
+    }
+
+
 
 //    get event detail from pet's event id list
 
@@ -416,6 +428,8 @@ class HomeViewModel(private val repository: Repository, val userInfoProfile: Use
                 timelineCount += 1
 
             } while (count < eventList.size)
+
+            _refreshStatus.value = false
 
             _timeline.value = listTimelineItem
             _scrollToToday.value = todayLocation

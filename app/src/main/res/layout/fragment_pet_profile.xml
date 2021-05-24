@@ -15,11 +15,10 @@
         android:layout_height="match_parent"
         android:background="@color/white_2">
 
-        <ImageView
+        <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/petCoverPicture"
             android:layout_width="0dp"
             android:layout_height="360dp"
-            android:scaleType="centerCrop"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -57,7 +56,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="NEW TAIPEI CITY, TAIWAN"
+            android:text="@{viewModel.petProfile.livingLocation.locationName}"
             app:layout_constraintEnd_toEndOf="@+id/petNameText"
             app:layout_constraintStart_toStartOf="@+id/petNameText"
             app:layout_constraintTop_toBottomOf="@+id/petNameText" />
@@ -77,7 +76,7 @@
             android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:text="10"
+            android:text="@{viewModel.yearsOld}"
             android:textAlignment="center"
             android:textSize="26dp"
             android:textColor="@color/black"
@@ -91,7 +90,7 @@
             android:id="@+id/petWeightText"
             android:layout_width="100dp"
             android:layout_height="wrap_content"
-            android:text="13.5kg"
+            android:text="@{viewModel.weightShow}"
             android:textAlignment="center"
             android:textSize="26dp"
             android:textColor="@color/black"
@@ -105,7 +104,7 @@
             android:id="@+id/petMissionText"
             android:layout_width="100dp"
             android:layout_height="wrap_content"
-            android:text="5"
+            android:text="@{viewModel.missionListNumber}"
             android:textSize="26dp"
             android:textColor="@color/black"
             android:textAlignment="center"

@@ -5,9 +5,21 @@
 
     <data>
 
+        <import type="android.view.View"/>
+
         <variable
-            name="today"
+            name="date"
             type="String" />
+        <variable
+            name="year"
+            type="String" />
+        <variable
+            name="dayOfWeek"
+            type="String" />
+
+        <variable
+            name="missionVisibility"
+            type="Boolean" />
 
     </data>
 
@@ -50,16 +62,6 @@
             app:layout_constraintStart_toEndOf="@id/timelineLayout"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/missionDateText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/text_margin_to_timeline"
-            android:text="@{today}"
-            app:layout_constraintBottom_toBottomOf="@+id/timelineTodayPoint"
-            app:layout_constraintEnd_toStartOf="@+id/timelineLayout"
-            app:layout_constraintTop_toTopOf="@+id/timelineTodayPoint" />
-
         <ImageView
             android:id="@+id/timelineTodayPoint"
             android:layout_width="wrap_content"
@@ -75,14 +77,54 @@
             android:id="@+id/missionRecyclerView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="130dp"
             android:layout_marginTop="6dp"
             android:layout_marginBottom="15dp"
             android:orientation="vertical"
             android:visibility="visible"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/todayText"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/todayText"
             tools:listitem="@layout/sub_item_timeline_mission" />
+
+        <ImageView
+            android:id="@+id/missionIcon"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:background="@drawable/bg_icon_white_outline"
+            android:visibility="@{missionVisibility?View.VISIBLE:View.GONE}"
+            app:layout_constraintBottom_toBottomOf="@+id/missionRecyclerView"
+            app:layout_constraintEnd_toEndOf="@+id/timelineLayout"
+            app:layout_constraintStart_toStartOf="@+id/timelineLayout"
+            app:layout_constraintTop_toTopOf="@+id/missionRecyclerView"
+            app:srcCompat="@drawable/ic_paw_time__ui__07"
+
+            />
+
+        <TextView
+            android:id="@+id/timelineDateText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="20dp"
+            android:text="@{date}"
+            android:textSize="16dp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toStartOf="@+id/timelineTodayPoint"
+            app:layout_constraintTop_toTopOf="@+id/todayText"
+            tools:text="5.24" />
+
+        <TextView
+            android:id="@+id/timelineWeekOfDayText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@{dayOfWeek}"
+            android:textSize="16dp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="@+id/timelineDateText"
+            app:layout_constraintStart_toStartOf="@+id/timelineDateText"
+            app:layout_constraintTop_toBottomOf="@+id/timelineDateText"
+            tools:text="Mon" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

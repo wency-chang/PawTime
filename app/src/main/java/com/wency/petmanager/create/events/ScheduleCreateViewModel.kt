@@ -54,6 +54,10 @@ class ScheduleCreateViewModel(val repository: Repository) : ViewModel() {
 
     val title = MutableLiveData<String>("")
 
+    val _loadingStatus = MutableLiveData<Boolean>(false)
+    val loadingStatus : LiveData<Boolean>
+     get() = _loadingStatus
+
 
 
 
@@ -79,7 +83,7 @@ class ScheduleCreateViewModel(val repository: Repository) : ViewModel() {
 
 
     fun createTagList() {
-        Log.d("tag", "create List")
+
 
         originTagList?.let {
             if (originTagList.isNullOrEmpty()) {
@@ -143,7 +147,6 @@ class ScheduleCreateViewModel(val repository: Repository) : ViewModel() {
         pickDate.value?.let {
             checkingStatus.value = ( participantUser.isNotEmpty()
                     && participantPet.isNotEmpty())
-
         }
 
 
@@ -155,8 +158,6 @@ class ScheduleCreateViewModel(val repository: Repository) : ViewModel() {
             when (val result = repository.createEvent(data)){
                 is Result.Success -> {
                     updateEventIdToPet(result.data)
-
-
                 }
                 is Result.Fail -> {
                     Toast.makeText(ManagerApplication.instance, "${result.error}", Toast.LENGTH_SHORT).show()
@@ -177,6 +178,7 @@ class ScheduleCreateViewModel(val repository: Repository) : ViewModel() {
                     is Result.Success -> {
                         update.add(result.data)
                         if (update.size == participantPet.size){
+                            _loadingStatus.value = false
                             Toast.makeText(ManagerApplication.instance, "Update Schedule Success", Toast.LENGTH_SHORT).show()
                             _navigateBackToHome.value = true
                         }
@@ -193,10 +195,10 @@ class ScheduleCreateViewModel(val repository: Repository) : ViewModel() {
     fun getUrlPhotoList(){
         photoList.value?.let {
             if (it.size > 1){
+                val url = mutableListOf<String>()
                 coroutineScope.launch {
                     for (index in 1 until it.size){
                         val uri = it[index]
-                        val url = mutableListOf<String>()
 
                        when (val result = uri.let { repository.updateImage(Uri.parse(uri), "schedule_photo") }){
                             is Result.Success ->{
@@ -240,8 +242,9 @@ class ScheduleCreateViewModel(val repository: Repository) : ViewModel() {
 //            optional information
             memoList.value?.let {
                 if (it.size > 1) {
+                    it.removeAt(0)
                     dataToUpdate.memoList = it
-                    dataToUpdate.memoList.subList(1, it.size - 1)
+
                 }
             }
             location?.let {
@@ -301,8 +304,9 @@ class ScheduleCreateViewModel(val repository: Repository) : ViewModel() {
         }
     }
 
-
-
+    fun startLoading() {
+        _loadingStatus.value = true
+    }
 
 
 }

@@ -17,33 +17,22 @@
         >
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraintLayout3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="6dp"
+            android:layout_margin="8dp"
             android:background="@drawable/bg_mission_item"
-            android:maxWidth="260dp"
+            android:maxWidth="240dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <ImageView
-                android:id="@+id/missionPetHeader"
-                imageUrlCircle="@{missionToday.petPhoto}"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_marginStart="5dp"
-                android:background="@drawable/bg_white_circle"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:srcCompat="@tools:sample/backgrounds/scenic" />
-
             <TextView
                 android:id="@+id/missionContent"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
+                android:layout_marginStart="48dp"
                 android:layout_marginEnd="4dp"
                 android:maxWidth="150dp"
                 android:text="@{missionToday.title}"
@@ -53,8 +42,9 @@
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/checkBox"
-                app:layout_constraintStart_toEndOf="@+id/missionPetHeader"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="DEFAULT" />
 
             <CheckBox
                 android:id="@+id/checkBox"
@@ -73,6 +63,19 @@
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <ImageView
+            android:id="@+id/missionPetHeader"
+            imageUrlCircle="@{missionToday.petPhoto}"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/bg_white_circle"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:backgroundTint="@color/blue_light2"
+            tools:srcCompat="@tools:sample/backgrounds/scenic" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

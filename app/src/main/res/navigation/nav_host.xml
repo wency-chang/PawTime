@@ -44,7 +44,11 @@
     <fragment
         android:id="@+id/scheduleDetailFragment"
         android:name="com.wency.petmanager.detail.ScheduleDetailFragment"
-        android:label="ScheduleDetailFragment" />
+        android:label="ScheduleDetailFragment" >
+        <argument
+            android:name="eventDetail"
+            app:argType="com.wency.petmanager.data.Event" />
+    </fragment>
     <fragment
         android:id="@+id/scheduleEditFragment"
         android:name="com.wency.petmanager.schedule.ScheduleEditFragment"
@@ -80,6 +84,7 @@
         android:id="@+id/petCreateFragment"
         android:name="com.wency.petmanager.create.pet.PetCreateFragment"
         android:label="PetCreateFragment" >
+
         <argument
             android:name="userInfo"
             app:argType="com.wency.petmanager.data.UserInfo" />
@@ -95,10 +100,15 @@
     <action
         android:id="@+id/action_global_to_pet_profile_fragment"
         app:destination="@id/petProfileFragment" />
+
     <fragment
         android:id="@+id/loadingFragment"
         android:name="com.wency.petmanager.home.LoadingFragment"
         android:label="LoadingFragment" />
+
+    <action
+        android:id="@+id/action_global_to_schedule_detail"
+        app:destination="@id/scheduleDetailFragment" />
 
 
 </navigation>

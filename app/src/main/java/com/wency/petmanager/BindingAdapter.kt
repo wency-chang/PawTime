@@ -2,6 +2,7 @@ package com.wency.petmanager
 
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.net.Uri
 import android.view.View
 import android.widget.ImageView
 import androidx.core.net.toUri
@@ -11,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.wency.petmanager.create.events.adapter.*
+import com.wency.petmanager.create.pet.CategoryAdapter
 import com.wency.petmanager.data.Pet
 import com.wency.petmanager.data.PetSelector
 import com.wency.petmanager.data.TimelineItem
@@ -18,6 +20,7 @@ import com.wency.petmanager.home.PetHeaderAdapter
 import com.wency.petmanager.home.TimeLineMainAdapter
 import com.wency.petmanager.data.UserInfo
 import com.wency.petmanager.network.LoadApiStatus
+import com.wency.petmanager.profile.CoverPhotoAdapter
 
 @BindingAdapter("HomeAPIStatus")
 fun bindStatus(statusImageView: ImageView, status: LoadApiStatus?){
@@ -75,6 +78,25 @@ fun bindImage(imgView: ImageView, imgUrl: String?) {
     }
 }
 
+@BindingAdapter("imageUriCircle")
+fun bindImageCircle(imgView: ImageView, imgUri: Uri?) {
+    imgUri?.let {
+        val imgUri = imgUri.path
+        Glide.with(imgView.context)
+            .load(imgUri)
+            .circleCrop()
+            .apply(
+                RequestOptions()
+                    .placeholder(R.drawable.ic_paw_time__ui__06))
+//            .apply(
+//                RequestOptions()
+//                    .placeholder(R.drawable.image_placeholder)
+//                    .error(R.drawable.image_strikethrough))
+            .into(imgView)
+
+    }
+}
+
 
 @BindingAdapter("petPhotoIconAdapter")
 fun petHeaderBindRecyclerView(recyclerView: RecyclerView, data: List<Pet>?) {
@@ -114,6 +136,8 @@ fun tagOptionBindRecyclerView(recyclerView: RecyclerView, data: List<String>?) {
                 is TagListAdapter -> submitList(it)
                 is MemoListAdapter -> submitList(it)
                 is PhotoListAdapter -> submitList(it)
+                is CategoryAdapter -> submitList(it)
+                is CoverPhotoAdapter -> submitList(it)
             }
         }
     }

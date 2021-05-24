@@ -109,8 +109,6 @@ class DiaryCreateFragment: Fragment(), AddMemoDialog.MemoDialogListener, AddNewT
         } )
 
 
-
-
         binding.tagRecyclerView.layoutManager = manager
         binding.tagRecyclerView.adapter = tagAdapter
 
@@ -118,7 +116,6 @@ class DiaryCreateFragment: Fragment(), AddMemoDialog.MemoDialogListener, AddNewT
         val year = calendar.get(Calendar.YEAR)
         val month = calendar.get(Calendar.MONTH)
         val date = calendar.get(Calendar.DAY_OF_MONTH)
-
 
 
         binding.dateButton.setOnClickListener {
@@ -129,7 +126,6 @@ class DiaryCreateFragment: Fragment(), AddMemoDialog.MemoDialogListener, AddNewT
                 }, year, month, date)
             datePicker.datePicker.maxDate = Instant.now().toEpochMilli()
             datePicker.show()
-
         }
 
         binding.memoRecycler.adapter = MemoListAdapter(MemoListAdapter.OnClickListener{
@@ -137,6 +133,7 @@ class DiaryCreateFragment: Fragment(), AddMemoDialog.MemoDialogListener, AddNewT
             addMemoDialog.show(childFragmentManager, "add memo")
 
         })
+
         binding.photoRecyclerView.adapter = PhotoListAdapter(
             MemoListAdapter.OnClickListener{
                 getPhotoActivity.launch(getImage.pickImageIntent())
@@ -145,15 +142,16 @@ class DiaryCreateFragment: Fragment(), AddMemoDialog.MemoDialogListener, AddNewT
                 viewModel.cancelPhoto(it)
             }
         )
+
         viewModel.photoList.observe(viewLifecycleOwner, {
 
             (binding.photoRecyclerView.adapter as PhotoListAdapter).notifyDataSetChanged()
         })
+
         binding.addressButton.setOnClickListener {
             val intent = getLocation.createIntent(this.requireActivity())
             getLocationActivity.launch(intent)
         }
-
 
         createEventViewModel.tagListLiveData.observe(
             viewLifecycleOwner, androidx.lifecycle.Observer {
@@ -177,6 +175,10 @@ class DiaryCreateFragment: Fragment(), AddMemoDialog.MemoDialogListener, AddNewT
                 if (it){
                     viewModel.getUrlPhotoList()
                     viewModel.checkingStatus.value = null
+                    Toast.makeText(requireContext(),"Start update", Toast.LENGTH_SHORT).show()
+                    createEventViewModel.loadingStatus.value = true
+                    createEventViewModel.loadingStatus.value = createEventViewModel.loadingStatus.value
+
                 } else {
                     Toast.makeText(requireContext(),"Choose one photo", Toast.LENGTH_SHORT).show()
                     viewModel.checkingStatus.value = null
@@ -186,6 +188,8 @@ class DiaryCreateFragment: Fragment(), AddMemoDialog.MemoDialogListener, AddNewT
 
         viewModel.navigateBackToHome.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
             if (it){
+                createEventViewModel.loadingStatus.value = false
+                createEventViewModel.loadingStatus.value = createEventViewModel.loadingStatus.value
                 createEventViewModel.backHome()
             }
         })

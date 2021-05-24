@@ -151,11 +151,10 @@ class DiaryCreateViewModel(val repository: Repository) : ViewModel() {
 //        diary's rule: there is always a photo & at least one pet participant
         photoList.value?.let {
             checkingStatus.value = (it.size > 1 && participantPet.isNotEmpty())
-            getUrlPhotoList()
         }
     }
 
-    fun createDiary() {
+    private fun createDiary() {
         coroutineScope.async {
 //            update image to firebase
 
@@ -170,8 +169,8 @@ class DiaryCreateViewModel(val repository: Repository) : ViewModel() {
 //            optional information
             memoList.value?.let {
                 if (it.size > 1) {
+                    it.removeAt(0)
                     dataToUpdate.memoList = it
-                    dataToUpdate.memoList.subList(1, it.size - 1)
                 }
             }
             location?.let {

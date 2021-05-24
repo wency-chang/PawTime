@@ -7,6 +7,12 @@
         <variable
             name="date"
             type="String" />
+        <variable
+            name="year"
+            type="String" />
+        <variable
+            name="dayOfWeek"
+            type="String" />
 
         <variable
             name="viewModel"
@@ -47,31 +53,46 @@
         <TextView
             android:id="@+id/diaryDateText"
             android:layout_width="wrap_content"
-            android:layout_height="20dp"
-            android:layout_marginTop="10dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
             android:layout_marginEnd="@dimen/text_margin_to_timeline"
-            android:text="@{date}"
+            android:text="@{year}"
+            android:textSize="12dp"
             app:layout_constraintEnd_toStartOf="@+id/timelineLayout"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="2021.05.12" />
+            app:layout_constraintTop_toTopOf="@+id/timelineLayout"
+            tools:text="2021" />
 
-        <ImageView
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/eventPoint"
-            android:layout_width="wrap_content"
+            android:layout_width="@dimen/timeline_point_size"
             android:layout_height="@dimen/timeline_point_size"
-            android:src="@drawable/ic_timeline_point"
+            android:layout_marginTop="50dp"
+            android:background="@drawable/ic_timeline_point"
+            android:backgroundTint="@color/quantum_yellow"
             app:layout_constraintBottom_toBottomOf="@+id/diaryDateText"
             app:layout_constraintEnd_toEndOf="@+id/timelineLayout"
             app:layout_constraintStart_toStartOf="@+id/timelineLayout"
-            app:layout_constraintTop_toTopOf="@+id/diaryDateText" />
+            app:layout_constraintTop_toTopOf="@+id/contentCardRecycler" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/eventPoint2"
+            android:layout_width="@dimen/timeline_point_size"
+            android:layout_height="@dimen/timeline_point_size"
+            android:layout_marginTop="5dp"
+
+            android:background="@drawable/ic_timeline_point"
+            android:backgroundTint="@color/blue_light"
+            app:layout_constraintEnd_toEndOf="@id/eventPoint"
+            app:layout_constraintStart_toStartOf="@id/eventPoint"
+            app:layout_constraintTop_toTopOf="@id/eventPoint" />
 
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/contentCardRecycler"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:layout_marginBottom="10dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp"
             android:clipToPadding="false"
             android:maxWidth="250dp"
             android:orientation="vertical"
@@ -79,8 +100,33 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/diaryDateText"
-            app:layout_constraintTop_toBottomOf="@id/diaryDateText"
+            app:layout_constraintTop_toTopOf="parent"
             tools:listitem="@layout/sub_item_timeline_schedule" />
+
+        <TextView
+            android:id="@+id/dateTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="1dp"
+            android:text="@{date}"
+            android:textSize="18sp"
+            app:layout_constraintEnd_toEndOf="@+id/diaryDateText"
+            app:layout_constraintTop_toBottomOf="@+id/diaryDateText"
+            tools:text="5.24" />
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="3dp"
+            android:text="@{dayOfWeek}"
+            android:textSize="16dp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="@id/dateTextView"
+            app:layout_constraintTop_toBottomOf="@id/dateTextView"
+            tools:text="Mon" />
+
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

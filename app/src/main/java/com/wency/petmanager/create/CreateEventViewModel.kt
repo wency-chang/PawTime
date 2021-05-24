@@ -48,6 +48,8 @@ class CreateEventViewModel(
 
     var participantUserIdList = mutableListOf<String>()
 
+    val loadingStatus = MutableLiveData<Boolean>()
+
 
 
 
@@ -99,9 +101,10 @@ class CreateEventViewModel(
                 Log.d("update New Tag", "alternativePetList $alternativePetList")
 //                repository.addNewTag(pet.id, tag)
 
-                when(repository.addNewTag(pet.id, tag)) {
+                when(val result = repository.addNewTag(pet.id, tag)) {
                     is Result.Success -> {
-                        Log.d("add New Tag", "update Success")
+                        result.data
+                        Log.d("add New Tag", "update Success ${result.data}")
                     }
                     is Result.Error -> {
                         Log.d("add New Tag", "update Error")
