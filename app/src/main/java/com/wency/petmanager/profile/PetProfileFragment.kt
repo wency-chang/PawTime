@@ -39,10 +39,5 @@ class PetProfileFragment: Fragment() {
             binding.petCoverPicture.adapter = PhotoPagerAdapter(it)
         }
 
-        binding.petLocationText.text = viewModel.petProfile.livingLocation?.locationName
-
-
-        
-
     }
 }

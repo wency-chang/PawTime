@@ -49,7 +49,7 @@
                     android:textColor="@color/white"
                     android:textStyle="bold"
                     app:layout_constraintEnd_toEndOf="parent"
-                    android:background="@color/app_background"
+                    android:background="@color/blue_light2"
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintStart_toEndOf="@id/enterTagCancelButton"
                     app:layout_constraintTop_toBottomOf="@id/newTagText" />
@@ -61,7 +61,7 @@
                     android:text="Cancel"
                     android:textColor="@color/white"
                     android:textStyle="bold"
-                    android:background="@color/blue_sunday"
+                    android:background="@color/blue_light2"
                     app:layout_constraintEnd_toStartOf="@id/enterTagConfirmButton"
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintHorizontal_chainStyle="spread_inside"

@@ -4,9 +4,17 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <data>
+        <import type="android.view.View"/>
         <variable
             name="missionToday"
             type="com.wency.petmanager.data.MissionToday" />
+        <variable
+            name="editable"
+            type="Boolean" />
+        <variable
+            name="userPhoto"
+            type="String" />
+
 
     </data>
 
@@ -33,7 +41,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="48dp"
-                android:layout_marginEnd="4dp"
+                android:layout_marginEnd="8dp"
                 android:maxWidth="150dp"
                 android:text="@{missionToday.title}"
                 android:textColor="@color/white"
@@ -48,10 +56,13 @@
 
             <CheckBox
                 android:id="@+id/checkBox"
+                style="@style/missionCheckBox"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="10dp"
+                android:layout_marginEnd="8dp"
                 android:text=""
+                android:checked="@{missionToday.complete? true: false}"
+                android:visibility="@{missionToday.complete? View.INVISIBLE: View.VISIBLE }"
                 android:textColorHighlight="@color/blue_pillow"
                 android:textColorHint="#FFFFFF"
                 android:textColorLink="@color/blue_soft"
@@ -76,6 +87,28 @@
             app:layout_constraintTop_toTopOf="parent"
             android:backgroundTint="@color/blue_light2"
             tools:srcCompat="@tools:sample/backgrounds/scenic" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="4dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/constraintLayout3"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/completeUserImage"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:visibility="@{missionToday.complete? View.VISIBLE: View.GONE }"
+                imageUrlCircle="@{userPhoto}"
+                android:clickable="@{editable? true: false}"
+                tools:srcCompat="@tools:sample/avatars" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

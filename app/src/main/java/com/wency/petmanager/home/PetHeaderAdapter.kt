@@ -1,12 +1,10 @@
 package com.wency.petmanager.home
 
-import android.app.Application
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.wency.petmanager.ManagerApplication
 import com.wency.petmanager.data.Pet
 import com.wency.petmanager.databinding.ItemPetHeaderBinding
 
@@ -19,10 +17,11 @@ class PetHeaderAdapter(val viewModel: HomeViewModel, private val homeFragment: H
         return PetOptionViewHolder(ItemPetHeaderBinding.inflate(layoutInflater, parent, false))
     }
 
+
     override fun onBindViewHolder(holder: PetHeaderAdapter.PetOptionViewHolder, position: Int) {
             homeFragment.registerForContextMenu(holder.petHeader)
             holder.addPetButton.setOnClickListener {
-                viewModel.clickForCreate(HomeViewModel.PAGE_CREATE_PET)
+                viewModel.clickForCreate(HomeViewModel.PAGE_PET_CREATE)
             }
             holder.bind(getItem(position))
             holder.petHeader.setOnLongClickListener{
@@ -30,11 +29,21 @@ class PetHeaderAdapter(val viewModel: HomeViewModel, private val homeFragment: H
                 viewModel.navigateToPetProfile(getItem(position))
                 return@setOnLongClickListener true
             }
+            holder.petHeader.setOnClickListener {
+                viewModel.queryByPet(position, viewModel.petQueryPosition.value != position)
+                notifyDataSetChanged()
+            }
+            if (position == viewModel.petQueryPosition.value){
+                holder.bindBorder(true)
+            } else {
+                holder.bindBorder(false)
+            }
     }
 
     class PetOptionViewHolder(val binding: ItemPetHeaderBinding): RecyclerView.ViewHolder(binding.root){
         val addPetButton = binding.petAddImage
         val petHeader = binding.petOptionImage
+
 
 //        init {
 //            val fragment = HomeFragment()
@@ -51,6 +60,10 @@ class PetHeaderAdapter(val viewModel: HomeViewModel, private val homeFragment: H
         fun bind(pet: Pet?){
 
             binding.pet = pet
+            binding.executePendingBindings()
+        }
+        fun bindBorder(select: Boolean){
+            binding.select = select
             binding.executePendingBindings()
         }
     }

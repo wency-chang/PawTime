@@ -20,7 +20,6 @@ class ViewModelFactory constructor(
                 isAssignableFrom(MainViewModel::class.java) ->
                     MainViewModel(repository)
 
-
                 isAssignableFrom(DiaryCreateViewModel::class.java) ->
                     DiaryCreateViewModel(repository)
 

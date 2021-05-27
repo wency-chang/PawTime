@@ -62,4 +62,12 @@
         <item name="android:textColor">@color/grey_medium</item>
 
     </style>
+
+    <style name="missionCheckBox" parent="Widget.AppCompat.CompoundButton.CheckBox">
+        <item name="backgroundTint">@color/blue_light</item>
+        <item name="colorAccent">@color/blue_light</item>
+        <item name="colorButtonNormal">@color/blue_light2</item>
+        <item name="checkedIconTint">@color/blue_light</item>
+
+    </style>
 </resources>

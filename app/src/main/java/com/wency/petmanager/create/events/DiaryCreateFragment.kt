@@ -47,9 +47,11 @@ class DiaryCreateFragment: Fragment(), AddMemoDialog.MemoDialogListener, AddNewT
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
             getLocation.onActivityResult(it,CreateEventViewModel.CASE_PICK_LOCATION)?.let {
                 viewModel.locationName.value = it.name
-                viewModel.location?.locationName = it.name.toString()
-                viewModel.location?.locationAddress = it.address.toString()
-                viewModel.location?.locationLatlng = it.latLng
+                viewModel.location.locationName = it.name.toString()
+                viewModel.location.locationAddress = it.address.toString()
+                viewModel.location.locationLatlng = it.latLng!!
+                Log.d("Map","get location1 ${viewModel.location?.locationAddress}")
+                Log.d("Map","get location2 ${it.address}")
             }
         }
 

@@ -102,7 +102,7 @@ class CreateEventFragment : Fragment() {
         viewModel.backHome.observe(viewLifecycleOwner, Observer {
             if (it){
 //                findNavController().navigate(NavHostDirections.actionGlobalToHomeFragment(viewModel.userInfo))
-                mainViewModel.getUserProfile()
+                mainViewModel.getPetData()
                 viewModel.backHome()
             }
         })

@@ -1,6 +1,7 @@
 package com.wency.petmanager.data.source
 
 import android.net.Uri
+import androidx.lifecycle.MutableLiveData
 import com.wency.petmanager.data.*
 import java.net.URI
 
@@ -38,8 +39,8 @@ class DefaultRepository(private val remoteDataSource: DataSource
         return remoteDataSource.createNewMission(mission)
     }
 
-    override suspend fun completeMission(petId: String, mission: MissionGroup): Result<Boolean> {
-        return remoteDataSource.completeMission(petId, mission)
+    override suspend fun updateMission(petId: String, mission: MissionGroup): Result<Boolean> {
+        return remoteDataSource.updateMission(petId, mission)
     }
 
     override suspend fun createMission(petId: String, mission: MissionGroup): Result<Boolean> {
@@ -59,6 +60,11 @@ class DefaultRepository(private val remoteDataSource: DataSource
         return remoteDataSource.updateImage(uri, folder)
     }
 
+    override fun getTodayMissionLiveData(petList: List<Pet>): MutableLiveData<List<MissionGroup>> {
+        return remoteDataSource.getTodayMissionLiveData(petList)
+    }
+
+
     override suspend fun deleteEvent(id: String): Result<Boolean> {
         TODO("Not yet implemented")
     }
@@ -67,7 +73,7 @@ class DefaultRepository(private val remoteDataSource: DataSource
         TODO("Not yet implemented")
     }
 
-    override suspend fun getTodayMission(petID: String): Result<List<String>> {
+    override suspend fun getTodayMission(petID: String): Result<List<MissionGroup>> {
         return remoteDataSource.getTodayMission(petID)
     }
 

@@ -2,6 +2,7 @@ package com.wency.petmanager.data.source.local
 
 import android.content.Context
 import android.net.Uri
+import androidx.lifecycle.MutableLiveData
 import com.wency.petmanager.data.*
 import java.net.URI
 
@@ -31,7 +32,7 @@ class ManagerLocalDataSource(val context: Context) : com.wency.petmanager.data.s
         TODO("Not yet implemented")
     }
 
-    override suspend fun completeMission(petId: String, mission: MissionGroup): Result<Boolean> {
+    override suspend fun updateMission(petId: String, mission: MissionGroup): Result<Boolean> {
         TODO("Not yet implemented")
     }
 
@@ -51,6 +52,10 @@ class ManagerLocalDataSource(val context: Context) : com.wency.petmanager.data.s
         TODO("Not yet implemented")
     }
 
+    override fun getTodayMissionLiveData(petList: List<Pet>): MutableLiveData<List<MissionGroup>> {
+        TODO("Not yet implemented")
+    }
+
     override suspend fun getTimelineList(list: List<String>): Result<List<TimelineItem>> {
         TODO("Not yet implemented")
     }
@@ -63,7 +68,7 @@ class ManagerLocalDataSource(val context: Context) : com.wency.petmanager.data.s
         TODO("Not yet implemented")
     }
 
-    override suspend fun getTodayMission(petId: String): Result<List<String>> {
+    override suspend fun getTodayMission(petId: String): Result<List<MissionGroup>> {
         TODO("Not yet implemented")
     }
 

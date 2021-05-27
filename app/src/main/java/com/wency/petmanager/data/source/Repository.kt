@@ -1,6 +1,8 @@
 package com.wency.petmanager.data.source
 
 import android.net.Uri
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.wency.petmanager.data.*
 import java.net.URI
 
@@ -18,7 +20,7 @@ interface Repository {
 
     suspend fun createNewMission (mission: MissionGroup) : Result<String>
 
-    suspend fun completeMission (petId: String, mission: MissionGroup) : Result<Boolean>
+    suspend fun updateMission (petId: String, mission: MissionGroup) : Result<Boolean>
 
     suspend fun createMission (petId: String, mission: MissionGroup) : Result<Boolean>
 
@@ -28,11 +30,13 @@ interface Repository {
 
     suspend fun updateImage (uri: Uri, folder: String): Result<String>
 
+    fun getTodayMissionLiveData(petList: List<Pet>): MutableLiveData<List<MissionGroup>>
+
     suspend fun deleteEvent (id: String) : Result<Boolean>
 
     suspend fun deleteMission (id: String) : Result<Boolean>
 
-    suspend fun getTodayMission (petId: String) : Result<List<String>>
+    suspend fun getTodayMission (petId: String) : Result<List<MissionGroup>>
 
     suspend fun getMissionList (petId: String) : Result<List<MissionGroup>>
 

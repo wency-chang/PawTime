@@ -1,5 +1,6 @@
 package com.wency.petmanager.create.events
 
+import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -46,7 +47,9 @@ class MissionCreateViewModel(val repository: Repository) : ViewModel() {
         title.value?.let {
             checkingStatus.value = (it.isNotEmpty() && endDate != null && participantPet.isNotEmpty())
         }
-        checkingStatus.value = !title.value.isNullOrEmpty()
+        if (title.value.isNullOrEmpty()){
+            checkingStatus.value = null
+        }
     }
 
     companion object{
@@ -107,7 +110,9 @@ class MissionCreateViewModel(val repository: Repository) : ViewModel() {
     private fun updateMission(missionData: MissionGroup){
         val updateList = mutableListOf<Boolean>()
         coroutineScope.launch {
+            Log.d("pet participant", "participant pet $participantPet")
             for (pet in participantPet){
+                missionData.petId = pet
                 when (val result = repository.createMission(pet, missionData)){
                     is Result.Success -> {
                         updateList.add(result.data)
@@ -120,7 +125,6 @@ class MissionCreateViewModel(val repository: Repository) : ViewModel() {
 
             }
         }
-
     }
 
     private fun findDatesForMission(): List<Timestamp> {

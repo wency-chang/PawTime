@@ -33,7 +33,9 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/placeHolder" />
+                app:layout_constraintTop_toTopOf="@+id/placeHolder" >
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/timelineRecycler"
@@ -96,6 +98,22 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
 
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/todayFloatingActionButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:clickable="true"
+                android:background="@color/grey_transparent"
+                android:backgroundTint="@color/grey_transparent"
+                app:fabCustomSize="50dp"
+                app:layout_constraintBottom_toBottomOf="@+id/floatingButtonExpend"
+                app:layout_constraintStart_toStartOf="parent"
+                app:srcCompat="@drawable/ic_baseline_compress_24"
+                app:elevation="0dp"
+                app:borderWidth="0dp"
+                app:pressedTranslationZ="0dp"/>
+
             <com.google.android.material.progressindicator.CircularProgressIndicator
                 android:id="@+id/circularProgressIndicator"
                 android:layout_width="match_parent"
@@ -119,7 +137,8 @@
                 app:layout_constraintBottom_toTopOf="@+id/floatingButtonExpend"
                 app:layout_constraintEnd_toEndOf="@+id/floatingButtonExpend"
                 app:layout_constraintStart_toStartOf="@+id/floatingButtonExpend"
-                app:srcCompat="@drawable/ic_baseline_schedule_24" />
+                app:maxImageSize="32dp"
+                app:srcCompat="@drawable/ic_paw_time__ui__09" />
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/createDiaryEventButton"
@@ -133,7 +152,8 @@
                 app:layout_constraintBottom_toTopOf="@+id/createScheduleEventButton"
                 app:layout_constraintEnd_toEndOf="@+id/createScheduleEventButton"
                 app:layout_constraintStart_toStartOf="@+id/createScheduleEventButton"
-                app:srcCompat="@drawable/ic_baseline_add_photo_alternate_24" />
+                app:maxImageSize="32dp"
+                app:srcCompat="@drawable/ic_paw_time__ui__08" />
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/createMissionEventButton"
@@ -147,13 +167,14 @@
                 app:layout_constraintBottom_toTopOf="@+id/createDiaryEventButton"
                 app:layout_constraintEnd_toEndOf="@+id/createDiaryEventButton"
                 app:layout_constraintStart_toStartOf="@+id/createDiaryEventButton"
-                app:srcCompat="@drawable/ic_baseline_checklist_24" />
+                app:maxImageSize="32dp"
+                app:srcCompat="@drawable/ic_paw_time__ui__07" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/placeHolder"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="12dp"
                 app:layout_constraintBottom_toBottomOf="@+id/linearLayout"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/linearLayout"
@@ -166,7 +187,7 @@
                     android:background="@drawable/bg_add_circle_blue"
                     android:clickable="true"
                     android:focusable="true"
-                    android:onClick="@{()-> viewModel.clickForCreate(viewModel.PAGE_CREATE_PET)}"
+                    android:onClick="@{()-> viewModel.clickForCreate(viewModel.PAGE_PET_CREATE)}"
                     android:src="@drawable/ic_baseline_add_24"
                     android:visibility="@{viewModel.petList.size() == 0? View.VISIBLE: View.GONE}"
                     app:layout_constraintBottom_toBottomOf="parent"

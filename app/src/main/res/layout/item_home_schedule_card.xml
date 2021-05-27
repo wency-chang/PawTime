@@ -91,6 +91,7 @@
             android:id="@+id/contentCardRecycler"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/timeline_event_alignment"
             android:layout_marginTop="20dp"
             android:layout_marginBottom="20dp"
             android:clipToPadding="false"
@@ -98,8 +99,7 @@
             android:orientation="vertical"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/diaryDateText"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:listitem="@layout/sub_item_timeline_schedule" />
 

@@ -116,7 +116,7 @@ class DiaryCreateViewModel(val repository: Repository) : ViewModel() {
             it.removeAt(position)
         }
     }
-    var location : Location? = null
+    var location : Location = Location("","", null)
     val locationName = MutableLiveData("NONE")
 
     fun switchExtendStatus(){
@@ -173,8 +173,12 @@ class DiaryCreateViewModel(val repository: Repository) : ViewModel() {
                     dataToUpdate.memoList = it
                 }
             }
-            location?.let {
-                dataToUpdate.location = it
+            if (location.locationName.isNotBlank()) {
+                Log.d("Map","start record it ${location.locationName}")
+                dataToUpdate.locationAddress = location.locationAddress
+                dataToUpdate.locationName = location.locationName
+                dataToUpdate.locationLatLng = "${location.locationLatlng?.latitude},${location.locationLatlng?.longitude}"
+
             }
 
             if (chosenTagList.isNotEmpty()){

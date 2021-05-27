@@ -5,12 +5,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.wency.petmanager.data.Pet
+import com.wency.petmanager.databinding.ItemParticipantHeaderBinding
 import com.wency.petmanager.databinding.ItemPetHeaderBinding
 
 class PetHeaderAdapter(val petList: List<Pet>): RecyclerView.Adapter<PetHeaderAdapter.PetHeaderViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PetHeaderViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
-        return PetHeaderViewHolder(ItemPetHeaderBinding.inflate(
+        return PetHeaderViewHolder(ItemParticipantHeaderBinding.inflate(
             layoutInflater, parent, false
         ))
     }
@@ -19,10 +20,9 @@ class PetHeaderAdapter(val petList: List<Pet>): RecyclerView.Adapter<PetHeaderAd
         holder.bind(petList[position])
     }
 
-    class PetHeaderViewHolder(val binding: ItemPetHeaderBinding): RecyclerView.ViewHolder(binding.root){
+    class PetHeaderViewHolder(val binding: ItemParticipantHeaderBinding): RecyclerView.ViewHolder(binding.root){
         fun bind(pet: Pet){
             binding.pet = pet
-            binding.petOptionName.visibility = View.GONE
             binding.executePendingBindings()
         }
     }

@@ -8,6 +8,8 @@ import java.util.*
 object UserManager {
     const val KEY = "AIzaSyDwgBoFGWVuEJWggUc-FcUnzP-i_-PnBf8"
     val userID = "ch5GsAjaufeFCZtZe1AV"
+
+    val userDefaultPhoto = "https://pbs.twimg.com/profile_images/1128713017569316865/ITPoN3di_400x400.jpg"
 }
 object Today{
     private val today = Date()

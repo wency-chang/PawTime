@@ -96,6 +96,7 @@ class TimeLineMainAdapter(val viewModel: HomeViewModel) :
 
             is TimelineTodayViewHolder -> {
                 holder.bind((item as TimelineItem.Today).missionToday)
+                holder.missionAdapter.adapter = item.missionToday.missionList?.let { MissionAdapter(it, viewModel) }
 
             }
             is TimelineCardViewHolder -> {
@@ -176,11 +177,12 @@ class TimeLineMainAdapter(val viewModel: HomeViewModel) :
 
     class TimelineTodayViewHolder(val binding: ItemTimelineTodayMissionBinding) :
         RecyclerView.ViewHolder(binding.root) {
+        val missionAdapter = binding.missionRecyclerView
         fun bind(mission: DayMission) {
             binding.year = Today.yearOnlyFormat.format(Date())
             binding.date = Today.dateOnlyFormat.format(Date())
             binding.dayOfWeek = Today.dayOfWeekFormat.format(Date())
-            binding.missionRecyclerView.adapter = mission.missionList?.let { MissionAdapter(it) }
+//            binding.missionRecyclerView.adapter = mission.missionList?.let { MissionAdapter(it) }
             binding.missionVisibility = mission.missionList?.isNotEmpty()
             binding.executePendingBindings()
         }

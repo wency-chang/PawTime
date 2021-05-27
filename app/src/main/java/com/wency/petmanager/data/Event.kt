@@ -17,7 +17,9 @@ data class Event(
     var title: String? = null,
     var photoList: List<String> = mutableListOf(),
     var memoList: List<String> = mutableListOf(),
-    var location: Location? = null,
+    var locationName: String? = null,
+    var locationAddress: String? = null,
+    var locationLatLng: String? = null,
     var complete: Boolean = false,
     var tagList: List<String> = mutableListOf(),
     var notification: Timestamp? = null

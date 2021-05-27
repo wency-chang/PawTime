@@ -3,10 +3,13 @@ package com.wency.petmanager.data.source.remote
 import android.net.Uri
 import android.util.Log
 import android.webkit.MimeTypeMap
+import androidx.lifecycle.MutableLiveData
 import com.google.firebase.Timestamp
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.FirebaseFirestoreException
+import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.storage.FirebaseStorage
 import com.wency.petmanager.ManagerApplication
 import com.wency.petmanager.data.*
@@ -149,9 +152,8 @@ object RemoteDataSource: DataSource {
             }
     }
 
-    override suspend fun completeMission(petId: String, mission: MissionGroup): Result<Boolean> = suspendCoroutine {continuation->
-        val document = FirebaseFirestore.getInstance().collection(PATH_MISSION)
-            .document(petId).collection(PATH_PET_MISSION_LIST).document(mission.missionId)
+    override suspend fun updateMission(petId: String, mission: MissionGroup): Result<Boolean> = suspendCoroutine {continuation->
+        val document = FirebaseFirestore.getInstance().collection(PATH_PETS).document(petId).collection(PATH_PET_MISSION_LIST).document(mission.missionId)
         document.set(mission)
             .addOnCompleteListener { task->
                 if (task.isSuccessful){
@@ -207,8 +209,8 @@ object RemoteDataSource: DataSource {
 
     }
 
-    override suspend fun getTodayMission(petID: String): Result<List<String>> = suspendCoroutine {continuation->
-        val missionList = mutableListOf<String>()
+    override suspend fun getTodayMission(petID: String): Result<List<MissionGroup>> = suspendCoroutine {continuation->
+        val missionList = mutableListOf<MissionGroup>()
         val today = Timestamp(Today.dateNTimeFormat.parse("${Today.todayString} 08:00" ))
         FirebaseFirestore.getInstance().collection(PATH_PETS)
             .document(petID)
@@ -219,7 +221,7 @@ object RemoteDataSource: DataSource {
                 if (task.isSuccessful) {
                     task.result?.let { document->
                         for (item in document){
-                            missionList.add(item.data.get("title").toString())
+                            missionList.add(item.toObject(MissionGroup::class.java))
                         }
                         continuation.resume(Result.Success(missionList))
                     }
@@ -384,60 +386,48 @@ object RemoteDataSource: DataSource {
         TODO("Not yet implemented")
     }
     override suspend fun getEventList(list: List<String>): Result<List<EventList>> = suspendCoroutine { continuation->
-//        val eventList = mutableSetOf<EventList>()
-//        for (eventId in list) {
-//            FirebaseFirestore.getInstance()
-//                .collection(PATH_EVENT)
-//                .document(eventId)
-//                .get()
-//                .addOnCompleteListener { task->
-//                    if (task.isSuccessful) {
-//                        task.result?.let { document ->
-//                            document.toObject(::class.java)?.let {
-//                                continuation.resume(Result.Success(it))
-//                            }
-//                        }
-//                        continuation.resume(Result.Fail("no exist"))
-//                    } else {
-//                        task.exception?.let {
-//                            continuation.resume(Result.Error(it))
-//                            return@addOnCompleteListener
-//                        }
-//                        continuation.resume(Result.Fail("failed unknown reason"))
-//
-//
-//                    }
-//                }
-//        }
+    }
 
+    override fun getTodayMissionLiveData(petList: List<Pet>): MutableLiveData<List<MissionGroup>> {
+        val today = Timestamp(Today.dateNTimeFormat.parse("${Today.todayString} 08:00" ))
+        val liveData = MutableLiveData<List<MissionGroup>>()
+        val petMissionList = mutableMapOf<String, List<MissionGroup>>()
+        val firebasePet = FirebaseFirestore.getInstance().collection(PATH_PETS)
+
+        for (pet in petList){
+            firebasePet.document(pet.id).collection(PATH_PET_MISSION_LIST)
+                .whereArrayContains(MISSION_DATE, today)
+                .addSnapshotListener{ querySnapshot: QuerySnapshot?, firebaseFirestoreException: FirebaseFirestoreException? ->
+                    firebaseFirestoreException?.let {
+                        Log.d("todayLiveData","Error ${it.message}")
+                        return@addSnapshotListener
+                    }
+                    val list = mutableListOf<MissionGroup>()
+                    if (querySnapshot != null && !querySnapshot.isEmpty) {
+                        for (document in querySnapshot){
+                            val missionGroup = document.toObject(MissionGroup::class.java)
+                            list.add(missionGroup)
+                        }
+                        petMissionList.put(pet.id, list)
+                    }
+
+                    val totalList = mutableListOf<MissionGroup>()
+
+                    petMissionList.forEach { (key, value) ->
+                        totalList.addAll(value)
+                    }
+                    liveData.value = totalList
+                }
+
+        }
+//        liveData.value = liveDataList.toList()
+//        liveData.value = liveData.value
+//        Log.d("reposition mission4","return liveDataList ${liveData.value}")
+        return liveData
     }
 
     override suspend fun getAllPetData(petList: List<String>): Result<List<Pet>> = suspendCoroutine { continuation->
         val petDataList = mutableListOf<Pet>()
-
-//        for (petID in petList){
-//            FirebaseFirestore.getInstance()
-//                .collection(PATH_PETS)
-//                .document(petID)
-//                .get()
-//                .addOnCompleteListener { task->
-//                    if (task.isSuccessful){
-//                        task.result?.let { document->
-//                            document.toObject(Pet::class.java)?.let {
-//                                petDataList.add(it)
-//                            }
-//                        }
-//                        continuation.resume(Result.Fail("can't get pet"))
-//                    } else {
-//                        task.exception?.let {
-//                            continuation.resume(Result.Error(it))
-//                            return@addOnCompleteListener
-//                        }
-//                        continuation.resume(Result.Fail("failed unknown reason"))
-//                    }
-//                }
-//
-//        }
 
         continuation.resume(Result.Success(petDataList))
         return@suspendCoroutine

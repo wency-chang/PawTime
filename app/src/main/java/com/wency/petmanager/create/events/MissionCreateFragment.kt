@@ -10,9 +10,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.MaterialDatePicker
+import com.wency.petmanager.MainViewModel
 import com.wency.petmanager.ManagerApplication
 import com.wency.petmanager.R
 import com.wency.petmanager.databinding.FragmentMissionCreateBinding
@@ -27,6 +29,8 @@ class MissionCreateFragment: Fragment(), AddMemoDialog.MemoDialogListener {
     lateinit var binding: FragmentMissionCreateBinding
     private val viewModel by viewModels<MissionCreateViewModel>(){getVmFactory()}
     private val createEventViewModel by viewModels<CreateEventViewModel> (ownerProducer = { requireParentFragment()})
+    private val mainViewModel by activityViewModels<MainViewModel>()
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -105,7 +109,6 @@ class MissionCreateFragment: Fragment(), AddMemoDialog.MemoDialogListener {
 
         viewModel.checkingStatus.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
 
-            Log.d("status","$it")
             it?.let {
                 if (it){
                     viewModel.createMission()
@@ -122,7 +125,6 @@ class MissionCreateFragment: Fragment(), AddMemoDialog.MemoDialogListener {
                 createEventViewModel.backHome()
             }
         })
-
     }
 
     override fun getMemo(memo: String) {

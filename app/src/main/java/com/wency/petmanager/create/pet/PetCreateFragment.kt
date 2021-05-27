@@ -110,7 +110,11 @@ class PetCreateFragment: Fragment() {
 
         viewModel.backHome.observe(viewLifecycleOwner, Observer {
             if (it){
-                findNavController().navigate(NavHostDirections.actionGlobalToHomeFragment(viewModel.userInfoProfile))
+//                findNavController().navigate(NavHostDirections.actionGlobalToHomeFragment(
+//                    viewModel.userInfoProfile,
+//                    mainViewModel.userPetList.value?.toTypedArray(),
+//                    mainViewModel.eventDetailList.value?.toTypedArray()
+//                ))
                 mainViewModel.getUserProfile()
                 viewModel.backHome()
             }

@@ -164,10 +164,14 @@ class PetCreateViewModel(val repository: Repository, val userInfoProfile: UserIn
 //                }
 //            }
                 hospitalPlace?.let {
-                    dataForUpdate.hospital = it
+                    dataForUpdate.hospitalLocationAddress = it.locationAddress
+                    dataForUpdate.hospitalLocationLatLng = "${it.locationLatlng?.latitude},${it.locationLatlng?.longitude}"
+                    dataForUpdate.hospitalLocationName = it.locationName
                 }
                 livingPlace?.let {
-                    dataForUpdate.livingLocation = it
+                    dataForUpdate.livingLocationAddress = it.locationAddress
+                    dataForUpdate.livingLocationName = it.locationName
+                    dataForUpdate.livingLocationLatLng = "${it.locationLatlng?.latitude},${it.locationLatlng?.longitude}"
                 }
                 birthDay.value?.let {
                     dataForUpdate.birth = Timestamp(Today.dateFormat.parse(it))
@@ -178,10 +182,6 @@ class PetCreateViewModel(val repository: Repository, val userInfoProfile: UserIn
                 petCoverLink.value?.let {
                     dataForUpdate.coverPhotos = it
                 }
-
-
-
-
 
                 updateToFirebase(dataForUpdate)
 

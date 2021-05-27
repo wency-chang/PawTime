@@ -26,12 +26,61 @@ class MainActivity : AppCompatActivity() {
         Places.initialize(this.applicationContext, UserManager.KEY)
 //        get profile
         viewModel.userInfoProfile.observe(this, Observer {
-            it?.let {
-                findNavController(R.id.navHostNavigation).navigate(NavHostDirections.actionGlobalToHomeFragment(it))
-                viewModel.profile = it
-                Log.d("debug","get user profile")
+
+            if (it.petList.isNullOrEmpty()){
+                findNavController(R.id.navHostNavigation)
+                    .navigate(NavHostDirections.actionGlobalToHomeFragment
+                        (it, null, null)
+                    )
+            }
+            else {
+                viewModel.getPetData()
             }
         })
+
+        viewModel.userPetList.observe(this, Observer {
+            it?.let {
+                viewModel.getEventIdList()
+                viewModel.findFriendList()
+                viewModel.getTodayMissionLiveData(it)
+//                viewModel.missionListToday.observe(this, Observer {
+//                    Log.d("missionListToday", "MainActivity $it")
+//                })
+            }
+
+        })
+
+
+        viewModel.eventIdList.observe(this, Observer {
+            if (it.isNullOrEmpty()){
+                viewModel.userInfoProfile.value?.let { userProfile->
+                    viewModel.userPetList.value?.let { petList->
+                        findNavController(R.id.navHostNavigation)
+                            .navigate(NavHostDirections.actionGlobalToHomeFragment(
+                            userProfile, petList.toTypedArray(), null)
+                        )
+                    }
+                }
+            } else {
+                viewModel.getEventDetailList()
+            }
+
+        })
+
+        viewModel.eventDetailList.observe(this, Observer {
+            if (it.size > 0){
+                viewModel.userInfoProfile.value?.let { userProfile->
+                    viewModel.userPetList.value?.let { petList->
+                        findNavController(R.id.navHostNavigation)
+                            .navigate(NavHostDirections.actionGlobalToHomeFragment(
+                                userProfile, petList.toTypedArray(), it.toTypedArray())
+                            )
+                    }
+                }
+            }
+
+        })
+
 
 
 

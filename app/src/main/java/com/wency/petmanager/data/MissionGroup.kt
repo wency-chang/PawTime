@@ -15,15 +15,20 @@ data class MissionGroup(
     var completeUserId: String = "",
     var completeUserName: String = "",
     var completeUserPhoto: String = "",
-    var recordDate: Timestamp = Timestamp(Date())
-
+    var recordDate: Timestamp = Timestamp(Date()),
+    var petId: String = ""
 )
 
 data class MissionToday(
+    var missionId: String,
     val title: String,
     val petID: String,
     val petPhoto: String,
-    val complete: Boolean = false
+    val complete: Boolean = false,
+    var completeUserId: String,
+    var completeUserName: String,
+    var completeUserPhoto: String,
+    var recordDate: Timestamp = Timestamp(Date())
 )
 
 

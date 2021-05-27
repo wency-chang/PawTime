@@ -25,6 +25,8 @@
             name="needExpand"
             type="Boolean" />
 
+
+
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -35,9 +37,10 @@
 
         <androidx.cardview.widget.CardView
             android:id="@+id/item_schedule_cardView"
-            android:layout_width="180dp"
+            android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:layout_marginVertical="8dp"
+            android:layout_marginHorizontal="8dp"
             android:outlineAmbientShadowColor="@color/green_sea_salt"
             android:outlineSpotShadowColor="@color/app_background"
             app:cardCornerRadius="@dimen/timeline_card_radius"
@@ -54,10 +57,12 @@
 
                 <TextView
                     android:id="@+id/scheduleTime"
-                    android:layout_width="40dp"
+                    android:layout_width="42dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="top|center_horizontal"
                     android:text="@{time}"
+                    android:textSize="16dp"
+                    android:textStyle="bold"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
@@ -68,6 +73,7 @@
                     android:layout_gravity="bottom|center_horizontal"
                     android:layout_marginStart="16dp"
                     android:text="@{event.title}"
+                    android:textSize="16dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/scheduleTime"
                     app:layout_constraintTop_toTopOf="@+id/scheduleTime" />
@@ -75,8 +81,7 @@
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:layout_marginTop="14dp"
-                    android:layout_marginBottom="16dp"
+                    android:layout_marginTop="12dp"
                     android:orientation="vertical"
                     android:visibility="@{expand? View.VISIBLE: View.GONE}"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -86,31 +91,60 @@
 
 
                     <TextView
-                        android:id="@+id/scheduleMemoText"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-
-                        app:layout_constraintTop_toBottomOf="@+id/scheduleLocation" />
-
-                    <TextView
                         android:id="@+id/scheduleLocation"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
+                        android:drawableLeft="@drawable/ic_outline_location_on_24"
+                        android:gravity="start|center"
+                        android:paddingStart="2dp"
+                        android:text="@{event.locationName}"
+                        android:textAlignment="center"
+                        android:visibility="@{event.locationName.length()==0?View.GONE: View.VISIBLE}"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        app:layout_constraintTop_toTopOf="parent"
+
+                        tools:text="XINDIAN" />
 
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/participantHeaderRecycler"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
+                        android:layout_gravity="end"
+                        android:layout_marginTop="5dp"
+                        android:layoutDirection="rtl"
                         android:orientation="vertical"
                         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-                        app:spanCount="5" />
+                        app:spanCount="5">
+
+                    </androidx.recyclerview.widget.RecyclerView>
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/participantPetHeaderRecycler"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="end"
+                        android:layout_marginTop="3dp"
+                        android:layoutDirection="rtl"
+                        android:orientation="vertical"
+                        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                        app:spanCount="5">
+
+                    </androidx.recyclerview.widget.RecyclerView>
+
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/scheduleMemoRecycler"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:orientation="vertical"
+                        android:visibility="@{event.memoList.size()==0?View.GONE: View.VISIBLE}"
+                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/scheduleLocation" />
 
 
                 </LinearLayout>

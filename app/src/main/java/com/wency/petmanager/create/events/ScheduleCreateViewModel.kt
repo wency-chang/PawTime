@@ -248,7 +248,9 @@ class ScheduleCreateViewModel(val repository: Repository) : ViewModel() {
                 }
             }
             location?.let {
-                dataToUpdate.location = it
+                dataToUpdate.locationAddress = it.locationAddress
+                dataToUpdate.locationName = it.locationName
+                dataToUpdate.locationLatLng = it.locationLatlng.toString()
             }
 
             if (chosenTagList.isNotEmpty()){

@@ -1,6 +1,7 @@
 package com.wency.petmanager.data.source
 
 import android.net.Uri
+import androidx.lifecycle.MutableLiveData
 import com.wency.petmanager.data.*
 import java.net.URI
 
@@ -18,7 +19,7 @@ interface DataSource {
 
     suspend fun createNewMission (mission: MissionGroup) : Result<String>
 
-    suspend fun completeMission (petId: String, mission: MissionGroup) : Result<Boolean>
+    suspend fun updateMission (petId: String, mission: MissionGroup) : Result<Boolean>
 
     suspend fun createMission (petId: String, mission: MissionGroup) : Result<Boolean>
 
@@ -28,17 +29,15 @@ interface DataSource {
 
     suspend fun getEventList (list: List<String>) : Result<List<EventList>>
 
-
+    fun getTodayMissionLiveData(petList: List<Pet>): MutableLiveData<List<MissionGroup>>
 
     suspend fun getTimelineList (list: List<String>) : Result<List<TimelineItem>>
-
-
 
     suspend fun deleteEvent (id: String) : Result<Boolean>
 
     suspend fun deleteMission (id: String) : Result<Boolean>
 
-    suspend fun getTodayMission (petId: String) : Result<List<String>>
+    suspend fun getTodayMission (petId: String) : Result<List<MissionGroup>>
 
     suspend fun getMissionList (petId: String) : Result<List<MissionGroup>>
 
