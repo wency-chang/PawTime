@@ -6,6 +6,7 @@ import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.google.android.gms.maps.model.LatLng
 import com.google.android.libraries.places.api.model.Place
 import com.google.firebase.Timestamp
 import com.wency.petmanager.ManagerApplication
@@ -34,8 +35,8 @@ class PetCreateViewModel(val repository: Repository, val userInfoProfile: UserIn
     val hospitalName = MutableLiveData<String>()
     val livingPlaceName = MutableLiveData<String>()
 
-    val hospitalPlace: Location? = null
-    val livingPlace: Location? = null
+    val hospitalPlace: Location = Location("","", LatLng(0.0,0.0))
+    val livingPlace: Location = Location("","", LatLng(0.0,0.0))
 
     val _statusLoading = MutableLiveData<Boolean>(false)
     val statusLoading : LiveData<Boolean>
@@ -163,15 +164,15 @@ class PetCreateViewModel(val repository: Repository, val userInfoProfile: UserIn
 //
 //                }
 //            }
-                hospitalPlace?.let {
-                    dataForUpdate.hospitalLocationAddress = it.locationAddress
-                    dataForUpdate.hospitalLocationLatLng = "${it.locationLatlng?.latitude},${it.locationLatlng?.longitude}"
-                    dataForUpdate.hospitalLocationName = it.locationName
+                if (hospitalPlace.locationName.isNotEmpty()){
+                    dataForUpdate.hospitalLocationAddress = hospitalPlace.locationAddress
+                    dataForUpdate.hospitalLocationLatLng = "${hospitalPlace.locationLatlng?.latitude},${hospitalPlace.locationLatlng?.longitude}"
+                    dataForUpdate.hospitalLocationName = hospitalPlace.locationName
                 }
-                livingPlace?.let {
-                    dataForUpdate.livingLocationAddress = it.locationAddress
-                    dataForUpdate.livingLocationName = it.locationName
-                    dataForUpdate.livingLocationLatLng = "${it.locationLatlng?.latitude},${it.locationLatlng?.longitude}"
+                if (livingPlace.locationName.isNotEmpty()){
+                    dataForUpdate.livingLocationAddress = livingPlace.locationAddress
+                    dataForUpdate.livingLocationName = livingPlace.locationName
+                    dataForUpdate.livingLocationLatLng = "${livingPlace.locationLatlng?.latitude},${livingPlace.locationLatlng?.longitude}"
                 }
                 birthDay.value?.let {
                     dataForUpdate.birth = Timestamp(Today.dateFormat.parse(it))

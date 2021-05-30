@@ -4,6 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+        <variable
+            name="viewModel"
+            type="com.wency.petmanager.MainViewModel" />
 
     </data>
 
@@ -11,7 +14,7 @@
         android:id="@+id/drawer_profile"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/white_breeze">
+        android:background="@color/white">
 
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -59,6 +62,54 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
 
+
         </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <com.google.android.material.navigation.NavigationView
+            android:id="@+id/drawerNavView"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="start"
+            android:fitsSystemWindows="true"
+            app:itemTextColor="@color/blue_light"
+            app:menu="@menu/drawer_user_profile"
+            android:background="@color/white"
+            style="@style/MaterialAlertDialog.MaterialComponents.Title.Icon.CenterStacked"
+            >
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_gravity="bottom"
+                android:gravity="center"
+                android:orientation="horizontal">
+                <Button
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:id="@+id/drawerMemoryButton"
+                    android:background="@color/transparent"
+                    android:gravity="center"
+                    android:drawableStart="@drawable/ic_baseline_favorite_24"
+                    android:paddingStart="3dp"
+                    android:drawablePadding="2dp"
+                    android:text="MEMORY"
+                    android:textAlignment="inherit"
+                    android:textColor="@color/blue_light2"/>
+                <Button
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:id="@+id/drawerLogoutButton"
+                    android:background="@color/transparent"
+                    android:gravity="center"
+                    android:drawableStart="@drawable/ic_baseline_logout_24"
+                    android:paddingStart="3dp"
+                    android:drawablePadding="2dp"
+                    android:text="LOGOUT"
+                    android:textAlignment="inherit"
+                    android:textColor="@color/blue_light2"/>
+            </LinearLayout>
+
+        </com.google.android.material.navigation.NavigationView>
     </androidx.drawerlayout.widget.DrawerLayout>
 </layout>

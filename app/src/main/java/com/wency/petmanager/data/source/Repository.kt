@@ -52,7 +52,21 @@ interface Repository {
 
     suspend fun updatePetInfo (id: String, pet: Pet) : Result<Boolean>
 
-    suspend fun addFriends (friendID: String, userID: String) : Result<Boolean>
+    suspend fun addFriends (friendID: String, userInfo: UserInfo) : Result<Boolean>
 
     suspend fun addOwner (petID: String, ownerID: String) : Result<Boolean>
+
+    suspend fun checkInviteList (searchId: String, ownerId: String) : Result<Boolean>
+
+    suspend fun acceptFriend (userId: String, friendId: String) : Result<Boolean>
+
+    suspend fun sendFriendInvite (userInfo: UserInfo, friendId: String) : Result<Boolean>
+
+    fun getFriendListLiveData(userId: String) : MutableLiveData<List<String>>
+
+    fun getInviteListLiveData (userId: String) : MutableLiveData<MutableList<UserInfo>>
+
+    suspend fun rejectInvite(userId: String, friendId: String) : Result<Boolean>
+
+    suspend fun searchUserByMail(userMail: String) : Result<UserInfo?>
 }

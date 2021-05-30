@@ -2,11 +2,10 @@ package com.wency.petmanager.factory
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.wency.petmanager.MainViewModel
 import com.wency.petmanager.create.pet.PetCreateViewModel
 import com.wency.petmanager.data.UserInfo
 import com.wency.petmanager.data.source.Repository
-import com.wency.petmanager.home.HomeViewModel
+import com.wency.petmanager.dialog.FindFriendViewModel
 
 @Suppress("UNCHECKED_CAST")
 class UserViewModelFactory(

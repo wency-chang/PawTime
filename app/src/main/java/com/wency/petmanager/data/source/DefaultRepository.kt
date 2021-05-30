@@ -98,12 +98,40 @@ class DefaultRepository(private val remoteDataSource: DataSource
         TODO("Not yet implemented")
     }
 
-    override suspend fun addFriends(friendID: String, userID: String): Result<Boolean> {
+    override suspend fun addFriends(friendID: String, userInfo: UserInfo): Result<Boolean> {
         TODO("Not yet implemented")
     }
 
     override suspend fun addOwner(petID: String, ownerID: String): Result<Boolean> {
         TODO("Not yet implemented")
+    }
+
+    override suspend fun checkInviteList(searchId: String, ownerId: String): Result<Boolean> {
+        return remoteDataSource.checkInviteList(searchId, ownerId)
+    }
+
+    override suspend fun acceptFriend(userId: String, friendId: String): Result<Boolean> {
+        return remoteDataSource.acceptFriend(userId, friendId)
+    }
+
+    override suspend fun sendFriendInvite(userInfo: UserInfo, friendId: String): Result<Boolean> {
+        return remoteDataSource.sendFriendInvite(userInfo, friendId)
+    }
+
+    override fun getFriendListLiveData(userId: String): MutableLiveData<List<String>> {
+        return remoteDataSource.getFriendListLiveData(userId)
+    }
+
+    override fun getInviteListLiveData(userId: String): MutableLiveData<MutableList<UserInfo>> {
+        return remoteDataSource.getInviteListLiveData(userId)
+    }
+
+    override suspend fun rejectInvite(userId: String, friendId: String): Result<Boolean> {
+        return remoteDataSource.rejectInvite(userId, friendId)
+    }
+
+    override suspend fun searchUserByMail(userMail: String): Result<UserInfo?> {
+        return remoteDataSource.searchUserByMail(userMail)
     }
 
 

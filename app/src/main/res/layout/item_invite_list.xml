@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="user"
+            type="com.wency.petmanager.data.UserInfo" />
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="350dp"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/invitePhoto"
+            imageUrlCircle="@{user.userPhoto}"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="12dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:srcCompat="@tools:sample/avatars" />
+
+        <TextView
+            android:id="@+id/inviteName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="10dp"
+            android:text="@{user.name}"
+            app:layout_constraintBottom_toBottomOf="@+id/invitePhoto"
+            app:layout_constraintEnd_toStartOf="@+id/inviteRejectButton"
+            app:layout_constraintStart_toEndOf="@+id/invitePhoto"
+            app:layout_constraintTop_toTopOf="@+id/invitePhoto" />
+
+        <Button
+            android:id="@+id/inviteConfirmButton"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:layout_marginEnd="20dp"
+            android:background="@drawable/bg_white_circle"
+            android:backgroundTint="@color/blue_light"
+            android:drawableStart="@drawable/ic_baseline_check_24"
+            android:gravity="center"
+            android:paddingStart="12dp"
+            android:shadowColor="@color/transparent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/inviteRejectButton"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:layout_marginEnd="4dp"
+            android:background="@drawable/bg_white_circle"
+            android:backgroundTint="@color/blue_light3"
+            android:drawableStart="@drawable/ic_baseline_close_24"
+            android:paddingStart="12dp"
+            android:shadowColor="@color/transparent"
+            app:layout_constraintBottom_toBottomOf="@+id/inviteConfirmButton"
+            app:layout_constraintEnd_toStartOf="@+id/inviteConfirmButton"
+            app:layout_constraintTop_toTopOf="@+id/inviteConfirmButton" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

@@ -4,9 +4,9 @@
     <solid android:color="@color/grey_white"/>
     <stroke android:color="@color/blue_light"
         android:width="2dp"/>
-    <padding android:bottom="3dp"
-        android:top="3dp"
-        android:right="3dp"
-        android:left="3dp"/>
+    <padding android:bottom="4dp"
+        android:top="4dp"
+        android:right="4dp"
+        android:left="4dp"/>
 
 </shape>

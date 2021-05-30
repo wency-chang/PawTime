@@ -52,11 +52,29 @@ class MainViewModel(private val firebaseRepository: Repository) : ViewModel() {
     val eventDetailList : LiveData<MutableList<Event>>
         get() = _eventDetailList
 
+//    friends include all owners and friend list
     var friendList = mutableListOf<UserInfo>()
 
     var _missionListToday = MutableLiveData<List<MissionGroup>>()
     val missionListToday: LiveData<List<MissionGroup>>
         get() = _missionListToday
+
+
+    var friendListLiveData = MutableLiveData<List<String>>()
+
+    val _friendUserList = MutableLiveData<MutableList<UserInfo>>()
+    val friendUserList : LiveData<MutableList<UserInfo>>
+        get() = _friendUserList
+
+    var inviteListLiveData = MutableLiveData<MutableList<UserInfo>>()
+
+    var friendNumber = MutableLiveData("0")
+    var petNumber = MutableLiveData("0")
+
+    val _tagListLiveData = MutableLiveData<MutableList<String>>()
+    val tagListLiveData : LiveData<MutableList<String>>
+        get() = _tagListLiveData
+
 
 
     fun getTodayMissionLiveData(petList: MutableList<Pet>) {
@@ -241,6 +259,48 @@ class MainViewModel(private val firebaseRepository: Repository) : ViewModel() {
                 }
             }
         }
+    }
+
+    fun getFriendListLiveData(){
+        userInfoProfile.value?.let { user->
+            inviteListLiveData = firebaseRepository.getInviteListLiveData(user.userId)
+            friendListLiveData = firebaseRepository.getFriendListLiveData(user.userId)
+        }
+    }
+
+    fun getFriendData(){
+        coroutineScope.launch {
+            friendListLiveData.value?.let { friendList->
+                val list = mutableListOf<UserInfo>()
+                for (friendId in friendList){
+                    when (val result = firebaseRepository.getUserProfile(friendId)){
+                        is Result.Success -> {
+                            list.add(result.data)
+                            if (list.size == friendList.size){
+                                _friendUserList.value = list
+                            }
+                        }
+                    }
+                }
+
+            }
+        }
+    }
+
+    fun getTagList(){
+        val tagList = tagListLiveData.value
+        userPetList.value?.let { petList->
+            petList.forEach { pet->
+                tagList?.addAll(pet.tagList)
+            }
+
+        }
+        eventDetailList.value?.let { eventList->
+            eventList.forEach { event->
+                tagList?.addAll(event.tagList)
+            }
+        }
+        _tagListLiveData.value = tagList?.toMutableList()
     }
 
 

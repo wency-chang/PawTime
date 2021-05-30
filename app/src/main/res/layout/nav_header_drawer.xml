@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+        <import type="android.view.View"/>
+        <import type="android.text.TextUtils"/>
+        <variable
+            name="viewModel"
+            type="com.wency.petmanager.MainViewModel"/>
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/layoutColored"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:background="@color/blue_light3"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/drawerPhoto"
+                imageUrlCircle="@{viewModel.userInfoProfile.userPhoto}"
+                android:layout_width="90dp"
+                android:layout_height="90dp"
+                android:layout_marginTop="50dp"
+                android:background="@drawable/bg_drawe_header_circle"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:srcCompat="@tools:sample/avatars" />
+
+            <TextView
+                android:id="@+id/drawerName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="22dp"
+                android:text="@{viewModel.userInfoProfile.name}"
+                android:textColor="@color/white"
+                android:textSize="20dp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="@+id/drawerPhoto"
+                app:layout_constraintStart_toStartOf="@+id/drawerPhoto"
+                app:layout_constraintTop_toBottomOf="@+id/drawerPhoto"
+                tools:text="This is Name" />
+
+            <TextView
+                android:id="@+id/drawerMail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="10dp"
+                android:text="@{viewModel.userInfoProfile.email}"
+                android:textColor="@color/grey_white"
+                android:textSize="14dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/drawerPhoto"
+                app:layout_constraintStart_toStartOf="@+id/drawerPhoto"
+                app:layout_constraintTop_toBottomOf="@+id/drawerName"
+                tools:text="OOXX@gamil.com" />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        <TextView
+            android:id="@+id/drawerPetText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="60dp"
+            android:layout_marginTop="16dp"
+            android:text="PETS"
+            android:textColor="@color/grey_cotton"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/layoutColored" />
+
+        <TextView
+            android:id="@+id/drawerFriendText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="60dp"
+            android:text="FRIENDS"
+            android:textColor="@color/grey_cotton"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/drawerPetText" />
+
+        <TextView
+            android:id="@+id/drawerPetNumber"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="16dp"
+            android:text="@{viewModel.petNumber}"
+            android:textColor="@color/blue_light"
+            android:textSize="24dp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/drawerPetText"
+            app:layout_constraintStart_toStartOf="@+id/drawerPetText"
+            app:layout_constraintTop_toBottomOf="@+id/drawerPetText"
+            tools:text="3" />
+
+        <TextView
+            android:id="@+id/friendNumber"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{viewModel.friendNumber}"
+            android:textColor="@color/blue_light"
+            android:textSize="24dp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="@+id/drawerFriendText"
+            app:layout_constraintStart_toStartOf="@+id/drawerFriendText"
+            app:layout_constraintTop_toTopOf="@+id/drawerPetNumber"
+            tools:text="5" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

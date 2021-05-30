@@ -56,7 +56,7 @@
             <LinearLayout
                 android:id="@+id/linearLayout"
                 android:layout_width="match_parent"
-                android:layout_height="100dp"
+                android:layout_height="102dp"
                 android:background="@drawable/ic_paw_time__ui__17"
                 android:orientation="horizontal"
                 app:layout_constraintEnd_toEndOf="parent"

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="@dimen/pager_dot_size"
+    android:layout_width="@dimen/pager_dot_size">
+
+    <item android:state_selected="true"
+        android:drawable="@drawable/item_dot_tab_selected"/>
+    <item android:drawable="@drawable/item_dot_tab_unselected"/>
+
+</selector>

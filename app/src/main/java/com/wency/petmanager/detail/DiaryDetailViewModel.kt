@@ -9,6 +9,7 @@ import com.wency.petmanager.data.Event
 import com.wency.petmanager.data.Pet
 import com.wency.petmanager.data.Result
 import com.wency.petmanager.data.source.Repository
+import com.wency.petmanager.profile.Today
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -24,11 +25,38 @@ class DiaryDetailViewModel(val repository: Repository, val eventDetail: Event) :
 
     var latLngToMap: LatLng? = null
 
+    val editable = MutableLiveData<Boolean>(false)
+
+    private val _tagListLiveData = MutableLiveData<MutableList<String>>()
+    val tagListLiveData : LiveData<MutableList<String>>
+        get() = _tagListLiveData
+
+    private val _memoListLiveData = MutableLiveData<MutableList<String>>()
+    val memoListLiveData : LiveData<MutableList<String>>
+        get() = _memoListLiveData
+
+    private val _dateLiveData = MutableLiveData<String>()
+    val dateLiveData : LiveData<String>
+        get() = _dateLiveData
+
+
+
+
+
 
     init {
         getAllPetData()
+        getDateLiveData()
         getLatLng()
+        if (!eventDetail.tagList.isNullOrEmpty()){
+            getTagLiveData()
+        }
+        if (!eventDetail.memoList.isNullOrEmpty()){
+            getMemoLiveData()
+            Log.d("memo","get memo live data : ${memoListLiveData.value}")
+        }
     }
+
 
     private fun getAllPetData() {
 
@@ -56,15 +84,24 @@ class DiaryDetailViewModel(val repository: Repository, val eventDetail: Event) :
     private fun getLatLng() {
         if (!eventDetail.locationAddress.isNullOrEmpty()) {
             val latLng = eventDetail.locationLatLng?.split(",")
-            Log.d("Map","${eventDetail.locationLatLng}")
-            Log.d("Map","$latLng")
             latLng?.let {
                 it[0].toDouble()
                 latLngToMap = LatLng(latLng[0].toDouble(), it[1].toDouble())
             }
-            Log.d("Map", "$latLngToMap")
         }
     }
+
+    private fun getTagLiveData(){
+        _tagListLiveData.value = eventDetail.tagList.toMutableList()
+    }
+    private fun getMemoLiveData(){
+        _memoListLiveData.value = eventDetail.memoList.toMutableList()
+    }
+
+    private fun getDateLiveData(){
+        _dateLiveData.value = Today.dateFormat.format(eventDetail.date.toDate())
+    }
+
 
 
 }

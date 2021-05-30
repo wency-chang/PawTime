@@ -5,7 +5,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.wency.petmanager.data.Pet
-import com.wency.petmanager.data.PetSelector
 import com.wency.petmanager.data.Result
 import com.wency.petmanager.data.UserInfo
 import com.wency.petmanager.data.source.Repository
@@ -17,15 +16,11 @@ import kotlinx.coroutines.launch
 
 class CreateEventViewModel(
     val repository: Repository,
-    val userInfo: UserInfo,
-    val tagList: Array<String>?,
-    val petList: Array<Pet>
+    val myPetList: Array<Pet>,
+    val selectedList: Array<String>
 ) : ViewModel() {
 
     val navigateDestination = MutableLiveData<Int>(0)
-
-    var alternativePetList = petList.toMutableList()
-
 
     val tagListLiveData = MutableLiveData<MutableList<String>>(mutableListOf())
 
@@ -42,13 +37,22 @@ class CreateEventViewModel(
     val backHome: LiveData<Boolean>
         get() = _backHome
 
-    val userListLiveData = MutableLiveData<MutableList<UserInfo>>(mutableListOf(userInfo))
+    val selectUserOptionList = MutableLiveData<MutableList<String>>()
 
-    val alternativeFriendList = MutableLiveData<MutableList<UserInfo>>(mutableListOf())
-
-    var participantUserIdList = mutableListOf<String>()
+    var participantUserIdList = MutableLiveData<MutableList<String>>(selectedList.toMutableList())
 
     val loadingStatus = MutableLiveData<Boolean>()
+
+    val _navigateToChooseFriend = MutableLiveData<Boolean>(false)
+
+    val navigateToChooseFriend : LiveData<Boolean>
+        get()= _navigateToChooseFriend
+
+    var currentSelectedList = mutableListOf<String>()
+
+
+
+
 
 
 
@@ -56,16 +60,18 @@ class CreateEventViewModel(
 
 
     init {
-        Log.d("create view model","init")
-        tagList?.let {
-            Log.d("create view model","tagList is not null $it")
-            tagListLiveData.value = tagList.toMutableList()
-//            tagListLiveData.value!!.add(NEED_ADD_HOLDER)
-        }
-
-        petListLiveData.value = petList.toMutableList()
+        petListLiveData.value = myPetList.toMutableList()
 //        petListLiveData.value = petList.toMutableList()
-        getUserList()
+        getUserSelectOption()
+    }
+
+    private fun getUserSelectOption() {
+        val list = mutableSetOf<String>()
+        list.addAll(selectedList)
+        myPetList.forEach {
+            list.addAll(it.users)
+        }
+        selectUserOptionList.value = list.toMutableList()
     }
 
     fun clickToSwitch(id: Int) {
@@ -86,7 +92,7 @@ class CreateEventViewModel(
 
 //    update tag still need to be fixed
 
-    fun updateNewTag(tag: String) {
+    fun updateNewTag(tag: String, petList: List<Pet>) {
 
         tagListLiveData.value.let {
             it?.add(tag)
@@ -95,12 +101,8 @@ class CreateEventViewModel(
 
         coroutineScope.launch {
 
-            for(pet in alternativePetList) {
-
-                Log.d("update New Tag", "new tag update to pet $pet $tag")
-                Log.d("update New Tag", "alternativePetList $alternativePetList")
+            for(pet in petList) {
 //                repository.addNewTag(pet.id, tag)
-
                 when(val result = repository.addNewTag(pet.id, tag)) {
                     is Result.Success -> {
                         result.data
@@ -117,13 +119,8 @@ class CreateEventViewModel(
                         Log.d("add New Tag", "Unknown")
                     }
                 }
-
             }
-
         }
-
-
-
     }
 
     fun clickConfirmButton(){
@@ -136,125 +133,16 @@ class CreateEventViewModel(
         }
     }
 
-    private fun getUserList(){
-        val userIdList = mutableSetOf<String>(userInfo.userId)
-        for (pet in petList){
-            for (user in pet.users){
-                userIdList.add(user)
-            }
-        }
-        userInfo.friendList?.let { userIdList.addAll(it) }
-        participantUserIdList = userIdList.toMutableList()
-
-        getFriendList(participantUserIdList)
-
-        getAllProfile(participantUserIdList)
-
-
-
-//        for (userId in userIdList){
-//            getUserProfile(userId)?.let { userListLiveData.value?.add(it) }
-//        }
-//
-//        getFriendList(userIdList.toList())
-    }
-
-    private fun getAllProfile(userIdList: MutableList<String>) {
-        coroutineScope.launch {
-            val userList = mutableListOf<UserInfo>()
-            for (user in userIdList){
-                when (val result = repository.getUserProfile(user)){
-                    is Result.Success -> {
-                        userList.add(result.data)
-                        if (userList.size == userIdList.size){
-                            userListLiveData.value = userList
-                        }
-                    }
-                    is Result.Error -> {
-                        Log.d("get All profile","error ${result.exception}")
-
-                    }
-                    is Result.Fail -> {
-                        Log.d("get All profile", "failed ${result.error}")
-
-                    }
-
-                }
-
-            }
-
-        }
-
-
-    }
-
-    private fun getFriendId() : MutableList<String> {
-        TODO("Not yet implemented")
+    fun navigatedToChooseFriend(){
+        _navigateToChooseFriend.value = false
+        currentSelectedList = mutableListOf()
     }
 
 
-    private fun getFriendList(showUserId: List<String>){
-        val friendList = mutableSetOf<String>()
-        userInfo.friendList?.let { friendList.addAll(it)}
-        friendList.removeAll(showUserId)
-        getAlternativeFriendProfile(friendList.toMutableList())
+    fun navigateToChooseFriend(currentSelectedList: MutableList<String>){
+        this@CreateEventViewModel.currentSelectedList = currentSelectedList
+        _navigateToChooseFriend.value = true
     }
-
-    fun getAlternativeFriendProfile(alternativeId: MutableList<String>){
-        coroutineScope.launch {
-            val friendList = mutableListOf<UserInfo>()
-            for (id in alternativeId){
-                when (val result = repository.getUserProfile(id)){
-                    is Result.Success ->{
-                        friendList.add(result.data)
-                        if (friendList.size == alternativeId.size){
-                            alternativeFriendList.value = friendList
-                        }
-                    }
-                    is Result.Fail -> {
-                        Log.d("get profile failed", "${result.error}")
-                    }
-
-                    is Result.Error -> {
-                        Log.d("get profile Error", "${result.exception}")
-                    }
-                }
-            }
-
-        }
-
-    }
-
-    private fun getUserProfile(userId: String) : UserInfo?{
-        var userInfo: UserInfo? = UserInfo()
-            coroutineScope.launch {
-                val result = repository.getUserProfile(userId)
-                userInfo = when(result){
-                    is Result.Success -> {
-                        result.data
-                    }
-                    is Result.Error -> {
-
-                        Log.d("debug", "MainViewModel get User Profile Error${result.exception}")
-                        null
-                    }
-                    is Result.Fail -> {
-
-                        Log.d("debug", "MainViewModel get User Profile Error${result.error}")
-                        null
-                    }
-                    else -> {
-                        null
-                    }
-
-                }
-            }
-        return userInfo
-    }
-
-
-
-
 
 
 }

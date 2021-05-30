@@ -41,9 +41,9 @@ class ScheduleCreateFragment: Fragment(), AddMemoDialog.MemoDialogListener, AddN
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
             getLocation.onActivityResult(it,CreateEventViewModel.CASE_PICK_LOCATION)?.let {
                 viewModel.locationName.value = it.name
-                viewModel.location?.locationName = it.name.toString()
-                viewModel.location?.locationAddress = it.address.toString()
-                viewModel.location?.locationLatlng = it.latLng
+                viewModel.location.locationName = it.name.toString()
+                viewModel.location.locationAddress = it.address.toString()
+                viewModel.location.locationLatlng = it.latLng
             }
         }
 
@@ -57,10 +57,29 @@ class ScheduleCreateFragment: Fragment(), AddMemoDialog.MemoDialogListener, AddN
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
         binding.createViewModel = createEventViewModel
-        createEventViewModel.petListLiveData.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
-            viewModel.updatePetSelector(it)
+
+
+        viewModel.myPet = createEventViewModel.myPetList.toList()
+        viewModel.updatePetSelector(viewModel.myPet.toMutableList())
+
+        createEventViewModel.selectUserOptionList.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+            viewModel.getUserOption(it)
+            viewModel.getPetOption()
         })
 
+        createEventViewModel.participantUserIdList.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+            it?.let {
+                viewModel.selectedUser.value = it
+            }
+        })
+
+        viewModel.selectedUser.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+            viewModel.getPetOption()
+        })
+
+        viewModel.petOptions.value?.let { petOption->
+            viewModel.updatePetSelector(petOption)
+        }
         return binding.root
     }
 
@@ -185,11 +204,17 @@ class ScheduleCreateFragment: Fragment(), AddMemoDialog.MemoDialogListener, AddN
 
         binding.petRecyclerView.adapter = PetSelectorAdapter(PetSelectorAdapter.OnClickListener{ petId: String, status: Boolean ->
             viewModel.selectedPet(petId, status)
+        })
 
-        })
         binding.participantPeopleRecycler.adapter = UserListAdapter(UserListAdapter.OnClickListener{ userId: String, status: Boolean ->
-            viewModel.selectedUser(userId, status)
-        })
+            if (userId == "TYPE_ADDER"){
+                createEventViewModel.navigateToChooseFriend(viewModel.participantUser.toMutableList())
+            }else {
+                viewModel.selectedUser(userId, status)
+            }
+
+
+        }, viewModel)
 
         viewModel.navigateBackToHome.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
             if (it){
@@ -205,7 +230,9 @@ class ScheduleCreateFragment: Fragment(), AddMemoDialog.MemoDialogListener, AddN
         }
     }
     override fun getTag(tag: String) {
-        createEventViewModel.updateNewTag(tag)
+        createEventViewModel.myPetList?.let {
+            createEventViewModel.updateNewTag(tag, it.toList())
+        }
         binding.tagRecyclerView.adapter?.notifyDataSetChanged()
     }
 

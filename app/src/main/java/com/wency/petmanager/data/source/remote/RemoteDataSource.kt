@@ -6,10 +6,7 @@ import android.webkit.MimeTypeMap
 import androidx.lifecycle.MutableLiveData
 import com.google.firebase.Timestamp
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.firestore.FieldValue
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.FirebaseFirestoreException
-import com.google.firebase.firestore.QuerySnapshot
+import com.google.firebase.firestore.*
 import com.google.firebase.storage.FirebaseStorage
 import com.wency.petmanager.ManagerApplication
 import com.wency.petmanager.data.*
@@ -19,7 +16,7 @@ import java.util.*
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
-object RemoteDataSource: DataSource {
+object RemoteDataSource : DataSource {
 
     private const val PATH_USERS = "users"
     private const val PATH_PETS = "pets"
@@ -35,52 +32,56 @@ object RemoteDataSource: DataSource {
     private const val MISSION_COMPLETE_USER_ID = "completeUserId"
     private const val MISSION_COMPLETE_USER_NAME = "completeUserName"
     private const val MISSION_COMPLETE_USER_PHOTO = "completeUserPhoto"
+    private const val USER_INVITE_LIST = "invitationList"
+    private const val USER_ID_FIELD = "userId"
+    private const val USER_FRIEND_LIST_FIELD = "friendList"
+    private const val PET_USER_LIST = "users"
+    private const val USER_MAIL_FIELD = "email"
 
 
-    override suspend fun getUserProfile(token: String): Result<UserInfo> = suspendCoroutine{ continuation->
-        FirebaseFirestore.getInstance()
-            .collection(PATH_USERS)
-            .document(token)
-            .get()
-            .addOnCompleteListener { task->
-                if (task.isSuccessful){
-                    task.result?.let { document ->
-                        Log.d("debug","onCompleted ${document.data}")
-                        document.toObject(UserInfo::class.java)?.let {
-                            continuation.resume(Result.Success(it))
+    override suspend fun getUserProfile(token: String): Result<UserInfo> =
+        suspendCoroutine { continuation ->
+            FirebaseFirestore.getInstance()
+                .collection(PATH_USERS)
+                .document(token)
+                .get()
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        task.result?.let { document ->
+                            Log.d("debug", "onCompleted ${document.data}")
+                            document.toObject(UserInfo::class.java)?.let {
+                                continuation.resume(Result.Success(it))
+                            }
                         }
+                    } else {
+                        task.exception?.let {
+                            continuation.resume(Result.Error(it))
+                            return@addOnCompleteListener
+                        }
+                        continuation.resume(Result.Fail("failed unknown reason"))
                     }
                 }
-                else {
-                    task.exception?.let {
-                        continuation.resume(Result.Error(it))
-                        return@addOnCompleteListener
-                    }
-                    continuation.resume(Result.Fail("failed unknown reason"))
-                }
-            }
-    }
+        }
 
 
-
-    override suspend fun getPetData(id: String): Result<Pet> = suspendCoroutine{ continuation->
-        Log.d("remote data source","get Pet Data $id ")
+    override suspend fun getPetData(id: String): Result<Pet> = suspendCoroutine { continuation ->
+        Log.d("remote data source", "get Pet Data $id ")
 
         FirebaseFirestore.getInstance()
             .collection(PATH_PETS)
             .document(id)
             .get()
-            .addOnCompleteListener { task->
-                if (task.isSuccessful){
-                    task.result?.let { document->
-                        Log.d("remote data source","get Pet Data document  ${document.data} ")
-                            document.toObject(Pet::class.java)?.let {
-                                Log.d("remote data source","get Pet Data to Object $it ")
-                                continuation.resume(Result.Success(it))
-                            }
-                        val pet = document.toObject(Pet::class.java)
-                        Log.d("remote data source","get Pet Data to Object $pet ")
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    task.result?.let { document ->
+
+                        document.toObject(Pet::class.java)?.let {
+
+                            continuation.resume(Result.Success(it))
                         }
+                        val pet = document.toObject(Pet::class.java)
+
+                    }
                 } else {
                     task.exception?.let {
                         continuation.resume(Result.Error(it))
@@ -93,14 +94,14 @@ object RemoteDataSource: DataSource {
     }
 
 
-    override suspend fun getEvents(id: String): Result<Event> = suspendCoroutine { continuation->
+    override suspend fun getEvents(id: String): Result<Event> = suspendCoroutine { continuation ->
         FirebaseFirestore.getInstance()
             .collection(PATH_EVENT)
             .document(id)
             .get()
-            .addOnCompleteListener { task->
-                if (task.isSuccessful){
-                    task.result?.let { document->
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    task.result?.let { document ->
                         document.toObject(Event::class.java)?.let {
                             continuation.resume(Result.Success(it))
                         }
@@ -116,87 +117,92 @@ object RemoteDataSource: DataSource {
             }
     }
 
-    override suspend fun createEvent(event: Event): Result<String> = suspendCoroutine { continuation->
-        val eventCollection = FirebaseFirestore.getInstance().collection(PATH_EVENT)
-        val document = eventCollection.document()
-        event.eventID = document.id
-        document
-            .set(event)
-            .addOnCompleteListener {task->
-                if (task.isSuccessful) {
-                    Log.d("updateEventSuccess","${task.result}")
-                    continuation.resume(Result.Success(document.id))
-                } else {
-                    task.exception?.let {
-                        continuation.resume(Result.Error(it))
-                        return@addOnCompleteListener
-                    }
-                    continuation.resume(Result.Fail("failed unknown reason"))
-                }
-            }
-    }
-
-    override suspend fun createNewMission(mission: MissionGroup): Result<String> = suspendCoroutine{ continuation->
-        val document = FirebaseFirestore.getInstance().collection(PATH_MISSION).document()
-        mission.missionId = document.id
-        document.set(mission)
-            .addOnCompleteListener {task->
-                if (task.isSuccessful){
-                    continuation.resume(Result.Success(document.id))
-                } else {
-                    task.exception?.let {
-                        continuation.resume(Result.Error(it))
+    override suspend fun createEvent(event: Event): Result<String> =
+        suspendCoroutine { continuation ->
+            val eventCollection = FirebaseFirestore.getInstance().collection(PATH_EVENT)
+            val document = eventCollection.document()
+            event.eventID = document.id
+            document
+                .set(event)
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        Log.d("updateEventSuccess", "${task.result}")
+                        continuation.resume(Result.Success(document.id))
+                    } else {
+                        task.exception?.let {
+                            continuation.resume(Result.Error(it))
+                            return@addOnCompleteListener
+                        }
+                        continuation.resume(Result.Fail("failed unknown reason"))
                     }
                 }
+        }
 
-            }
-    }
-
-    override suspend fun updateMission(petId: String, mission: MissionGroup): Result<Boolean> = suspendCoroutine {continuation->
-        val document = FirebaseFirestore.getInstance().collection(PATH_PETS).document(petId).collection(PATH_PET_MISSION_LIST).document(mission.missionId)
-        document.set(mission)
-            .addOnCompleteListener { task->
-                if (task.isSuccessful){
-                    continuation.resume(Result.Success(true))
-                } else {
-                    task.exception?.let {
-                        continuation.resume(Result.Error(it))
+    override suspend fun createNewMission(mission: MissionGroup): Result<String> =
+        suspendCoroutine { continuation ->
+            val document = FirebaseFirestore.getInstance().collection(PATH_MISSION).document()
+            mission.missionId = document.id
+            document.set(mission)
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        continuation.resume(Result.Success(document.id))
+                    } else {
+                        task.exception?.let {
+                            continuation.resume(Result.Error(it))
+                        }
                     }
+
+                }
+        }
+
+    override suspend fun updateMission(petId: String, mission: MissionGroup): Result<Boolean> =
+        suspendCoroutine { continuation ->
+            val document = FirebaseFirestore.getInstance().collection(PATH_PETS).document(petId)
+                .collection(PATH_PET_MISSION_LIST).document(mission.missionId)
+            document.set(mission)
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        continuation.resume(Result.Success(true))
+                    } else {
+                        task.exception?.let {
+                            continuation.resume(Result.Error(it))
+                        }
+                    }
+
                 }
 
-            }
 
+        }
 
-    }
-
-    override suspend fun addEventID(petID: String, eventID: String): Result<Boolean> = suspendCoroutine { continuation->
-        FirebaseFirestore.getInstance().collection(PATH_PETS)
-            .document(petID)
-            .update(PATH_PET_EVENT_LIST, FieldValue.arrayUnion(eventID))
-            .addOnCompleteListener { task->
-                if (task.isSuccessful) {
-                    Log.d("updateEventSuccess","${task.result}")
-                    continuation.resume(Result.Success(true))
-                } else {
-                    task.exception?.let {
-                        continuation.resume(Result.Error(it))
-                        return@addOnCompleteListener
+    override suspend fun addEventID(petID: String, eventID: String): Result<Boolean> =
+        suspendCoroutine { continuation ->
+            FirebaseFirestore.getInstance().collection(PATH_PETS)
+                .document(petID)
+                .update(PATH_PET_EVENT_LIST, FieldValue.arrayUnion(eventID))
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        Log.d("updateEventSuccess", "${task.result}")
+                        continuation.resume(Result.Success(true))
+                    } else {
+                        task.exception?.let {
+                            continuation.resume(Result.Error(it))
+                            return@addOnCompleteListener
+                        }
+                        continuation.resume(Result.Fail("failed unknown reason"))
                     }
-                    continuation.resume(Result.Fail("failed unknown reason"))
                 }
-            }
-    }
+        }
 
-    override suspend fun createPet(pet: Pet): Result<String> = suspendCoroutine { continuation->
+    override suspend fun createPet(pet: Pet): Result<String> = suspendCoroutine { continuation ->
         val eventCollection = FirebaseFirestore.getInstance().collection(PATH_PETS)
         val document = eventCollection.document()
         pet.id = document.id
 
         document
             .set(pet)
-            .addOnCompleteListener {task->
+            .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    Log.d("updateEventSuccess","${task.result}")
+                    Log.d("updateEventSuccess", "${task.result}")
                     continuation.resume(Result.Success(document.id))
                 } else {
                     task.exception?.let {
@@ -209,152 +215,355 @@ object RemoteDataSource: DataSource {
 
     }
 
-    override suspend fun getTodayMission(petID: String): Result<List<MissionGroup>> = suspendCoroutine {continuation->
-        val missionList = mutableListOf<MissionGroup>()
-        val today = Timestamp(Today.dateNTimeFormat.parse("${Today.todayString} 08:00" ))
-        FirebaseFirestore.getInstance().collection(PATH_PETS)
-            .document(petID)
-            .collection(PATH_PET_MISSION_LIST)
-            .whereArrayContains(MISSION_DATE, today)
-            .get()
-            .addOnCompleteListener { task->
-                if (task.isSuccessful) {
-                    task.result?.let { document->
-                        for (item in document){
-                            missionList.add(item.toObject(MissionGroup::class.java))
+    override suspend fun getTodayMission(petID: String): Result<List<MissionGroup>> =
+        suspendCoroutine { continuation ->
+            val missionList = mutableListOf<MissionGroup>()
+            val today = Timestamp(Today.dateNTimeFormat.parse("${Today.todayString} 08:00"))
+            FirebaseFirestore.getInstance().collection(PATH_PETS)
+                .document(petID)
+                .collection(PATH_PET_MISSION_LIST)
+                .whereArrayContains(MISSION_DATE, today)
+                .get()
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        task.result?.let { document ->
+                            for (item in document) {
+                                missionList.add(item.toObject(MissionGroup::class.java))
+                            }
+                            continuation.resume(Result.Success(missionList))
                         }
-                        continuation.resume(Result.Success(missionList))
-                    }
 
-                } else {
-                    task.exception?.let {
-                        continuation.resume(Result.Error(it))
-                        return@addOnCompleteListener
-                    }
-                }
-            }
-
-    }
-
-    override suspend fun getMissionList(petId: String): Result<List<MissionGroup>> = suspendCoroutine {continuation->
-        val missionList = mutableListOf<MissionGroup>()
-        FirebaseFirestore.getInstance().collection(PATH_PETS)
-            .document(petId).collection(PATH_PET_MISSION_LIST)
-            .get()
-            .addOnCompleteListener {task->
-                if (task.isSuccessful) {
-                    task.result?.let { document->
-                        for (item in document){
-                            missionList.add(item.toObject(MissionGroup::class.java))
+                    } else {
+                        task.exception?.let {
+                            continuation.resume(Result.Error(it))
+                            return@addOnCompleteListener
                         }
-                        continuation.resume(Result.Success(missionList))
-                    }
-
-                } else {
-                    task.exception?.let {
-                        continuation.resume(Result.Error(it))
-                        return@addOnCompleteListener
                     }
                 }
 
-            }
+        }
+
+    override suspend fun getMissionList(petId: String): Result<List<MissionGroup>> =
+        suspendCoroutine { continuation ->
+            val missionList = mutableListOf<MissionGroup>()
+            FirebaseFirestore.getInstance().collection(PATH_PETS)
+                .document(petId).collection(PATH_PET_MISSION_LIST)
+                .get()
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        task.result?.let { document ->
+                            for (item in document) {
+                                missionList.add(item.toObject(MissionGroup::class.java))
+                            }
+                            continuation.resume(Result.Success(missionList))
+                        }
+
+                    } else {
+                        task.exception?.let {
+                            continuation.resume(Result.Error(it))
+                            return@addOnCompleteListener
+                        }
+                    }
+
+                }
+        }
+
+    override suspend fun addNewTag(petID: String, tag: String): Result<Boolean> =
+        suspendCoroutine { continuation ->
+
+            FirebaseFirestore.getInstance().collection(PATH_PETS)
+                .document(petID)
+                .update(PET_TAG_LIST, FieldValue.arrayUnion(tag))
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        task.result?.let { document ->
+                            continuation.resume(Result.Success(true))
+                        }
+
+                    } else {
+                        task.exception?.let {
+                            continuation.resume(Result.Error(it))
+                            return@addOnCompleteListener
+                        }
+                        continuation.resume(Result.Fail("failed unknown reason"))
+                    }
+                }
+        }
+
+    override suspend fun addNewPetIdToUser(petId: String, userID: String): Result<Boolean> =
+        suspendCoroutine { continuation ->
+            FirebaseFirestore.getInstance().collection(PATH_USERS)
+                .document(userID)
+                .update(USER_PET_LIST, FieldValue.arrayUnion(petId))
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        continuation.resume(Result.Success(true))
+                    } else {
+                        task.exception?.let {
+                            continuation.resume(Result.Error(it))
+                            return@addOnCompleteListener
+                        }
+                        continuation.resume(Result.Fail("failed unknown reason"))
+                    }
+
+
+                }
+        }
+
+    override suspend fun addOwner(petID: String, ownerID: String): Result<Boolean> =
+        suspendCoroutine {continuation->
+            val fireStore = FirebaseFirestore.getInstance()
+            fireStore
+                .collection(PATH_USERS)
+                .document(ownerID)
+                .update(USER_PET_LIST, FieldValue.arrayUnion(petID))
+                .addOnCompleteListener {
+                    if (it.isSuccessful){
+                        fireStore.collection(PATH_PETS)
+                            .document(petID)
+                            .update(PET_USER_LIST, FieldValue.arrayUnion(ownerID))
+                            .addOnCompleteListener {
+                                if (it.isSuccessful){
+                                    continuation.resume(Result.Success(true))
+                                }
+                            }
+                    }
+                }
+        }
+
+    override suspend fun checkInviteList(searchId: String, ownerId: String): Result<Boolean> =
+        suspendCoroutine { continuation ->
+            FirebaseFirestore.getInstance().collection(PATH_USERS).document(ownerId).collection(
+                USER_INVITE_LIST
+            ).whereEqualTo(USER_ID_FIELD, searchId)
+                .get()
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        if (task.result.isEmpty) {
+                            continuation.resume(Result.Success(false))
+                        } else {
+                            continuation.resume(Result.Success(true))
+                        }
+                    } else {
+                        task.exception?.let {
+                            continuation.resume(Result.Error(it))
+                            return@addOnCompleteListener
+                        }
+                        continuation.resume(Result.Fail("failed unknown reason"))
+                    }
+                }
+        }
+
+    override suspend fun acceptFriend(userId: String, friendId: String): Result<Boolean> =
+        suspendCoroutine { continuation ->
+            val firestore = FirebaseFirestore.getInstance().collection(PATH_USERS)
+            val userDocument = firestore.document(userId)
+            val userInviteList = userDocument.collection((USER_INVITE_LIST))
+            val friendDocument = firestore.document(friendId)
+
+            userDocument.update(USER_FRIEND_LIST_FIELD, FieldValue.arrayUnion(friendId))
+                .addOnCompleteListener {
+                    if (it.isSuccessful) {
+                        userInviteList
+                            .whereEqualTo(USER_ID_FIELD, friendId)
+                            .get()
+                            .continueWith { task ->
+                                if (task.isSuccessful) {
+                                    for (document in task.result) {
+                                        deleteDocument(userInviteList, document)
+                                    }
+                                    friendDocument.update(USER_FRIEND_LIST_FIELD, FieldValue.arrayUnion(userId))
+                                        .addOnCompleteListener {
+                                            if (it.isSuccessful) {
+                                                continuation.resume(Result.Success(true))
+                                            } else {
+                                                it.exception?.let {
+                                                    continuation.resume(
+                                                        Result.Error(
+                                                            it
+                                                        )
+                                                    )
+                                                    return@addOnCompleteListener
+                                                }
+                                                continuation.resume(com.wency.petmanager.data.Result.Fail("failed unknown reason"))
+                                            }
+                                        }
+                                }
+                            }
+
+                    }
+
+                }
+        }
+
+
+    private fun deleteDocument(ref: CollectionReference, document: QueryDocumentSnapshot) {
+        ref.document(document.id).delete()
     }
 
-    override suspend fun addNewTag(petID: String, tag: String): Result<Boolean> = suspendCoroutine{continuation->
+    override suspend fun sendFriendInvite(userInfo: UserInfo, friendId: String): Result<Boolean> =
+        suspendCoroutine { continuation ->
+            Log.d("send invite","repository sendFriendInvite")
+            FirebaseFirestore.getInstance()
+                .collection(PATH_USERS)
+                .document(friendId)
+                .collection(USER_INVITE_LIST)
+                .add(userInfo)
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        continuation.resume(Result.Success(true))
+                    } else {
+                        task.exception?.let {
+                            continuation.resume(Result.Error(it))
+                            return@addOnCompleteListener
+                        }
+                        continuation.resume(Result.Fail("failed unknown reason"))
+                    }
+                }
+        }
 
-        FirebaseFirestore.getInstance().collection(PATH_PETS)
-            .document(petID)
-            .update(PET_TAG_LIST, FieldValue.arrayUnion(tag))
-            .addOnCompleteListener { task->
-                if (task.isSuccessful) {
-                    task.result?.let { document->
+    override fun getFriendListLiveData(userId: String): MutableLiveData<List<String>> {
+        val liveData = MutableLiveData<List<String>>()
+        FirebaseFirestore.getInstance()
+            .collection(PATH_USERS)
+            .document(userId)
+            .addSnapshotListener { value, error ->
+                var list = listOf<String>()
+                value?.let {
+                    val userInfo = it.toObject(UserInfo::class.java)
+                    userInfo?.friendList?.let {
+                        list = it
+                    }
+
+                }
+                liveData.value = list
+            }
+
+        return liveData
+    }
+
+    override fun getInviteListLiveData(userId: String): MutableLiveData<MutableList<UserInfo>> {
+        val liveData = MutableLiveData<MutableList<UserInfo>>()
+        FirebaseFirestore.getInstance()
+            .collection(PATH_USERS)
+            .document(userId)
+            .collection(USER_INVITE_LIST)
+            .addSnapshotListener{ querySnapshot: QuerySnapshot?, exception: FirebaseFirestoreException? ->
+                exception?.let {
+                    Log.w("FIRESTORE","get inviteList LiveData failed $it")
+                    return@addSnapshotListener
+                }
+
+                val list = mutableListOf<UserInfo>()
+                querySnapshot?.let { snapShot->
+                    for (document in snapShot.documents){
+                        val inviteUserInfo = document.toObject(UserInfo::class.java)
+                        inviteUserInfo?.let {
+                            list.add(it)
+                        }
+                    }
+                }
+                liveData.value = list
+
+            }
+
+        return liveData
+    }
+
+    override suspend fun rejectInvite(userId: String, friendId: String): Result<Boolean> = suspendCoroutine  {continuation->
+        val reference = FirebaseFirestore.getInstance()
+            .collection(PATH_USERS)
+            .document(userId)
+            .collection(USER_INVITE_LIST)
+        reference
+            .whereEqualTo(USER_ID_FIELD, friendId)
+            .get()
+            .continueWith { task->
+                if (task.isSuccessful){
+                    task?.let {
+                        for (document in it.result){
+                            deleteDocument(reference, document)
+                        }
                         continuation.resume(Result.Success(true))
                     }
 
-                } else {
-                    task.exception?.let {
-                        continuation.resume(Result.Error(it))
-                        return@addOnCompleteListener
-                    }
-                    continuation.resume(Result.Fail("failed unknown reason"))
                 }
             }
     }
 
-    override suspend fun addNewPetIdToUser(petId: String, userID: String): Result<Boolean> = suspendCoroutine {continuation->
-        FirebaseFirestore.getInstance().collection(PATH_USERS)
-            .document(userID)
-            .update(USER_PET_LIST, FieldValue.arrayUnion(petId))
+    override suspend fun searchUserByMail(userMail: String): Result<UserInfo?> = suspendCoroutine {continuation->
+        FirebaseFirestore.getInstance()
+            .collection(PATH_USERS)
+            .whereEqualTo(USER_MAIL_FIELD, userMail)
+            .limit(1)
+            .get()
             .addOnCompleteListener { task->
                 if (task.isSuccessful){
-                    continuation.resume(Result.Success(true))
-                } else {
-                    task.exception?.let {
-                        continuation.resume(Result.Error(it))
-                        return@addOnCompleteListener
+                    Log.d("getByMail","remote result: ${task.result.documents}")
+                    if (task.result.isEmpty){
+                        Log.d("getByMail","remote result empty")
+                        continuation.resume(Result.Success(null))
+                    } else {
+                        Log.d("getByMail","remote result not empty")
+                        continuation.resume(
+                            Result.Success (
+                            task.result.documents[0].toObject(UserInfo::class.java)
+                            )
+                        )
                     }
-                    continuation.resume(Result.Fail("failed unknown reason"))
                 }
-
-
             }
     }
 
-    override suspend fun addOwner(petID: String, ownerID: String): Result<Boolean> {
-        TODO("Not yet implemented")
-    }
 
-
-
-
-
-    override suspend fun createMission(petId: String, mission: MissionGroup): Result<Boolean> = suspendCoroutine {continuation->
-        val document = FirebaseFirestore.getInstance().collection(PATH_PETS)
-            .document(petId)
-            .collection(PATH_PET_MISSION_LIST)
-            .document()
-        mission.missionId = document.id
-        document
-            .set(mission)
-            .addOnCompleteListener {task->
-                if (task.isSuccessful) {
-                    Log.d("updateEventSuccess","${task.result}")
-                    continuation.resume(Result.Success(true))
-                } else {
-                    task.exception?.let {
-                        continuation.resume(Result.Error(it))
-                        return@addOnCompleteListener
+    override suspend fun createMission(petId: String, mission: MissionGroup): Result<Boolean> =
+        suspendCoroutine { continuation ->
+            val document = FirebaseFirestore.getInstance().collection(PATH_PETS)
+                .document(petId)
+                .collection(PATH_PET_MISSION_LIST)
+                .document()
+            mission.missionId = document.id
+            document
+                .set(mission)
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        continuation.resume(Result.Success(true))
+                    } else {
+                        task.exception?.let {
+                            continuation.resume(Result.Error(it))
+                            return@addOnCompleteListener
+                        }
                     }
-                }
 
-            }
-    }
+                }
+        }
 
     override suspend fun updateEvent(event: Event): Result<Boolean> {
         TODO("Not yet implemented")
     }
 
-    override suspend fun updateImage(uri: Uri, folder: String): Result<String> = suspendCoroutine { continuation->
-        val storageReference = FirebaseStorage.getInstance(FIRESTORAGE_PATH)
-        val databaseReference = FirebaseDatabase.getInstance(FIRESTORAGE_PATH)
-        val fileReference = storageReference.reference.child(
-            "$folder/${System.currentTimeMillis()}.${getFileExtension(uri)}"
-        )
-        fileReference.putFile(uri)
-            .continueWithTask{task->
-                if (!task.isSuccessful) {
-                    task.exception?.let {
-                        throw it
+    override suspend fun updateImage(uri: Uri, folder: String): Result<String> =
+        suspendCoroutine { continuation ->
+            val storageReference = FirebaseStorage.getInstance(FIRESTORAGE_PATH)
+            val databaseReference = FirebaseDatabase.getInstance(FIRESTORAGE_PATH)
+            val fileReference = storageReference.reference.child(
+                "$folder/${System.currentTimeMillis()}.${getFileExtension(uri)}"
+            )
+            fileReference.putFile(uri)
+                .continueWithTask { task ->
+                    if (!task.isSuccessful) {
+                        task.exception?.let {
+                            throw it
+                        }
+                    }
+                    fileReference.downloadUrl
+                }
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        continuation.resume(Result.Success(task.result.toString()))
                     }
                 }
-                fileReference.downloadUrl
-            }
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful){
-                    continuation.resume(Result.Success(task.result.toString()))
-                }
-            }
-    }
+        }
 
     private fun getFileExtension(uri: Uri): String? {
 
@@ -373,38 +582,59 @@ object RemoteDataSource: DataSource {
     }
 
 
-
-
-
-
-
     override suspend fun updatePetInfo(id: String, pet: Pet): Result<Boolean> {
         TODO("Not yet implemented")
     }
 
-    override suspend fun addFriends(friendID: String, userID: String): Result<Boolean> {
-        TODO("Not yet implemented")
-    }
-    override suspend fun getEventList(list: List<String>): Result<List<EventList>> = suspendCoroutine { continuation->
-    }
+
+
+//    oops
+
+    override suspend fun addFriends(friendID: String, userInfo: UserInfo): Result<Boolean> =
+        suspendCoroutine { continuation ->
+            FirebaseFirestore.getInstance().collection(PATH_USERS).document(friendID).collection(
+                USER_INVITE_LIST
+            )
+                .document()
+                .set(userInfo)
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        continuation.resume(Result.Success(true))
+                    } else {
+                        task.exception?.let {
+                            continuation.resume(Result.Error(it))
+                            return@addOnCompleteListener
+                        }
+                        continuation.resume(Result.Fail("failed unknown reason"))
+                    }
+                }
+        }
+
+
+    override suspend fun getEventList(list: List<String>): Result<List<EventList>> =
+        suspendCoroutine { continuation ->
+
+
+        }
+
 
     override fun getTodayMissionLiveData(petList: List<Pet>): MutableLiveData<List<MissionGroup>> {
-        val today = Timestamp(Today.dateNTimeFormat.parse("${Today.todayString} 08:00" ))
+        val today = Timestamp(Today.dateNTimeFormat.parse("${Today.todayString} 08:00"))
         val liveData = MutableLiveData<List<MissionGroup>>()
         val petMissionList = mutableMapOf<String, List<MissionGroup>>()
         val firebasePet = FirebaseFirestore.getInstance().collection(PATH_PETS)
 
-        for (pet in petList){
+        for (pet in petList) {
             firebasePet.document(pet.id).collection(PATH_PET_MISSION_LIST)
                 .whereArrayContains(MISSION_DATE, today)
-                .addSnapshotListener{ querySnapshot: QuerySnapshot?, firebaseFirestoreException: FirebaseFirestoreException? ->
+                .addSnapshotListener { querySnapshot: QuerySnapshot?, firebaseFirestoreException: FirebaseFirestoreException? ->
                     firebaseFirestoreException?.let {
-                        Log.d("todayLiveData","Error ${it.message}")
+                        Log.d("todayLiveData", "Error ${it.message}")
                         return@addSnapshotListener
                     }
                     val list = mutableListOf<MissionGroup>()
                     if (querySnapshot != null && !querySnapshot.isEmpty) {
-                        for (document in querySnapshot){
+                        for (document in querySnapshot) {
                             val missionGroup = document.toObject(MissionGroup::class.java)
                             list.add(missionGroup)
                         }
@@ -426,16 +656,17 @@ object RemoteDataSource: DataSource {
         return liveData
     }
 
-    override suspend fun getAllPetData(petList: List<String>): Result<List<Pet>> = suspendCoroutine { continuation->
-        val petDataList = mutableListOf<Pet>()
+    override suspend fun getAllPetData(petList: List<String>): Result<List<Pet>> =
+        suspendCoroutine { continuation ->
+            val petDataList = mutableListOf<Pet>()
 
-        continuation.resume(Result.Success(petDataList))
-        return@suspendCoroutine
-    }
+            continuation.resume(Result.Success(petDataList))
+            return@suspendCoroutine
+        }
+
     override suspend fun getTimelineList(list: List<String>): Result<List<TimelineItem>> {
         TODO("Not yet implemented")
     }
-
 
 
 }

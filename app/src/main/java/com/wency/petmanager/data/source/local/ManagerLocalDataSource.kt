@@ -96,11 +96,39 @@ class ManagerLocalDataSource(val context: Context) : com.wency.petmanager.data.s
         TODO("Not yet implemented")
     }
 
-    override suspend fun addFriends(friendID: String, userID: String): Result<Boolean> {
+    override suspend fun addFriends(friendID: String, userInfo: UserInfo): Result<Boolean> {
         TODO("Not yet implemented")
     }
 
     override suspend fun addOwner(petID: String, ownerID: String): Result<Boolean> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun checkInviteList(searchId: String, ownerId: String): Result<Boolean> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun acceptFriend(userId: String, friendId: String): Result<Boolean> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun sendFriendInvite(userInfo: UserInfo, friendId: String): Result<Boolean> {
+        TODO("Not yet implemented")
+    }
+
+    override fun getFriendListLiveData(userId: String): MutableLiveData<List<String>> {
+        TODO("Not yet implemented")
+    }
+
+    override fun getInviteListLiveData(userId: String): MutableLiveData<MutableList<UserInfo>> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun rejectInvite(userId: String, friendId: String): Result<Boolean> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun searchUserByMail(userMail: String): Result<UserInfo?> {
         TODO("Not yet implemented")
     }
 

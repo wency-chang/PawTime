@@ -44,7 +44,7 @@ class ScheduleCreateViewModel(val repository: Repository) : ViewModel() {
 
     private var participantPet = mutableSetOf<String>()
 
-    private var participantUser = mutableSetOf<String>()
+    var participantUser = mutableSetOf<String>()
 
     private var chosenTagList = mutableSetOf<String>()
 
@@ -59,16 +59,26 @@ class ScheduleCreateViewModel(val repository: Repository) : ViewModel() {
      get() = _loadingStatus
 
 
+    var myPet = listOf<Pet>()
+
+    val petOptions = MutableLiveData<MutableList<Pet>>()
+
+    val userOptionListLiveData = MutableLiveData<MutableList<UserInfo>>()
+
+    val selectedUser = MutableLiveData<MutableList<String>>()
+
+
 
 
 
     init {
         createTagList()
+        updatePetSelector(petOptions.value)
     }
     @SuppressLint("SimpleDateFormat")
     val timeFormat = SimpleDateFormat("hh:mm")
 
-    var location : Location? = null
+    var location : Location = Location("","", null)
 
     val locationName = MutableLiveData("NONE")
 
@@ -127,19 +137,6 @@ class ScheduleCreateViewModel(val repository: Repository) : ViewModel() {
     fun switchExtendStatus(){
         isTagExtend.value = isTagExtend.value != true
         createTagList()
-    }
-
-    private fun updateImage(uri: Uri, folder: String): String{
-        var url: String = ""
-        coroutineScope.launch {
-            url = when (val result = uri.let { repository.updateImage(it, folder) }){
-                is Result.Success ->{
-                    result.data
-                }
-                else -> {"update image Failed"}
-            }
-        }
-        return url
     }
 
     fun checkCompleteStatus() {
@@ -222,15 +219,7 @@ class ScheduleCreateViewModel(val repository: Repository) : ViewModel() {
     }
 
     fun createSchedule() {
-//        title.value?.let {
-//            if (it.isEmpty()){
-//                title.value = today
-//            }
-//        }
 
-//
-
-//            arrange data
             val dataToUpdate = Event(
                 date = Timestamp(Today.dateFormat.parse(pickDate.value)),
                 time = Timestamp(timeFormat.parse(pickTime.value)),
@@ -247,10 +236,12 @@ class ScheduleCreateViewModel(val repository: Repository) : ViewModel() {
 
                 }
             }
+        Log.d("Map","start record it ${location}")
             location?.let {
+                Log.d("Map","start record it ${it.locationName}")
                 dataToUpdate.locationAddress = it.locationAddress
                 dataToUpdate.locationName = it.locationName
-                dataToUpdate.locationLatLng = it.locationLatlng.toString()
+                dataToUpdate.locationLatLng = "${it.locationLatlng?.latitude},${it.locationLatlng?.longitude}"
             }
 
             if (chosenTagList.isNotEmpty()){
@@ -291,23 +282,85 @@ class ScheduleCreateViewModel(val repository: Repository) : ViewModel() {
     fun selectedUser (userId: String, status: Boolean){
         if (status){
             participantUser.add(userId)
+            selectedUser.value = participantUser.toMutableList()
         } else {
             participantUser.remove(userId)
+            selectedUser.value = participantUser.toMutableList()
         }
     }
 
     fun updatePetSelector(petList: MutableList<Pet>?) {
+        Log.d("WHY","myPet get selector")
         petList?.let {
             val petSelectorCreate = mutableListOf<PetSelector>()
             for (pet in it){
-                petSelectorCreate.add(PetSelector(pet = pet))
+                petSelectorCreate.add(PetSelector(selectedStatus = participantPet.contains(pet.id),
+                pet = pet))
             }
             petSelector.value = petSelectorCreate
+            Log.d("WHY","myPet get selector ${petSelector.value}")
         }
     }
 
     fun startLoading() {
         _loadingStatus.value = true
+    }
+
+    fun getUserOption(userList: MutableList<String>){
+        coroutineScope.launch {
+            val list = mutableListOf<UserInfo>()
+            for (user in userList){
+                when (val result = repository.getUserProfile(user)){
+                    is Result.Success -> {
+                        list.add(result.data)
+                        if (list.size == userList.size){
+                            list.add(UserInfo())
+                            userOptionListLiveData.value = list
+                        }
+                    }
+                }
+
+
+
+            }
+
+        }
+
+    }
+
+    fun getPetOption(){
+        selectedUser.value?.let {selectedUserList->
+            userOptionListLiveData.value?.let {userInfoList->
+                coroutineScope.launch {
+                    val list = mutableSetOf<Pet>()
+                    val petIdList = mutableSetOf<String>()
+                    for (userId in selectedUserList){
+                        val userInfo = userInfoList.filter {
+                            it.userId == userId
+                        }
+                        userInfo.forEach {
+                            it.petList?.let { petList -> petIdList.addAll(petIdList) }
+                        }
+                    }
+
+                    for (petId in petIdList){
+                        when (val result = repository.getPetData(petId)){
+                            is Result.Success -> {
+                                list.add(result.data)
+                                if (list.size == petIdList.size){
+                                    list.addAll(myPet)
+                                    petOptions.value = list.toMutableList()
+                                }
+                            }
+                        }
+                    }
+
+                }
+
+            }
+
+        }
+
     }
 
 

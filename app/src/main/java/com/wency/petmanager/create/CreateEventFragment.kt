@@ -20,17 +20,20 @@ import com.wency.petmanager.databinding.FragmentCreateBinding
 import com.wency.petmanager.create.events.DiaryCreateFragment
 import com.wency.petmanager.create.events.MissionCreateFragment
 import com.wency.petmanager.create.events.ScheduleCreateFragment
+import com.wency.petmanager.data.UserInfo
 import com.wency.petmanager.ext.getVmFactory
+import com.wency.petmanager.friend.ChooseFriendFragment
+import com.wency.petmanager.friend.ChooseFriendViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 
 class CreateEventFragment : Fragment() {
     lateinit var binding: FragmentCreateBinding
 
     private val viewModel by viewModels<CreateEventViewModel>(){getVmFactory(
-        CreateEventFragmentArgs.fromBundle(requireArguments()).userInfo,
-        CreateEventFragmentArgs.fromBundle(requireArguments()).tagList,
-        CreateEventFragmentArgs.fromBundle(requireArguments()).petList
+        CreateEventFragmentArgs.fromBundle(requireArguments()).petList,
+        CreateEventFragmentArgs.fromBundle(requireArguments()).selectedUser
     )}
+
     private val mainViewModel by activityViewModels<MainViewModel>()
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -47,6 +50,10 @@ class CreateEventFragment : Fragment() {
         val fragmentList = arrayListOf<Fragment>(
             DiaryCreateFragment(), ScheduleCreateFragment(), MissionCreateFragment()
         )
+
+        mainViewModel.tagListLiveData.value?.let {
+            viewModel.tagListLiveData.value = it
+        }
 
 
         binding = FragmentCreateBinding.inflate(layoutInflater, container, false)
@@ -107,6 +114,21 @@ class CreateEventFragment : Fragment() {
             }
         })
 
+        viewModel.navigateToChooseFriend.observe(viewLifecycleOwner, Observer {
+            if (it){
+                mainViewModel.userInfoProfile.value?.let { userProfile->
+                    viewModel.currentSelectedList?.let {selectedUserList->
+                        findNavController().navigate(NavHostDirections.actionGlobalToChooseFriend(
+                            userProfile,
+                            selectedUserList.toTypedArray(),
+                            ChooseFriendViewModel.FRAGMENT_SCHEDULE,
+                        )
+                        )
+                        viewModel.navigatedToChooseFriend()
+                    }
+                }
+            }
+        })
 
     }
 

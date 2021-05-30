@@ -3,7 +3,6 @@ package com.wency.petmanager.ext
 import androidx.fragment.app.Fragment
 import com.wency.petmanager.ManagerApplication
 import com.wency.petmanager.data.Event
-import com.wency.petmanager.data.EventList
 import com.wency.petmanager.data.Pet
 import com.wency.petmanager.data.UserInfo
 import com.wency.petmanager.factory.*
@@ -19,9 +18,9 @@ fun Fragment.getVmFactory(event: Event): DetailViewModelFactory {
     return DetailViewModelFactory(repository, event)
 }
 
-fun Fragment.getVmFactory(userInfo: UserInfo, tagList: Array<String>?, petList: Array<Pet>): CreateEventViewModelFactory {
+fun Fragment.getVmFactory(petList: Array<Pet>, selectedList: Array<String>): CreateEventViewModelFactory {
     val repository = (requireContext().applicationContext as ManagerApplication).repository
-    return CreateEventViewModelFactory(repository, userInfo, tagList, petList)
+    return CreateEventViewModelFactory(repository, petList, selectedList)
 }
 
 fun Fragment.getVmFactory(userInfoProfile: UserInfo, petList: Array<Pet>?, eventList: Array<Event>?): HomeViewModelFactory {
@@ -37,4 +36,14 @@ fun Fragment.getVmFactory(userInfoProfile: UserInfo): UserViewModelFactory {
 fun Fragment.getVmFactory(petInfoProfile: Pet): PetViewModelFactory {
     val repository = (requireContext().applicationContext as ManagerApplication).repository
     return PetViewModelFactory(repository, petInfoProfile)
+}
+
+fun Fragment.getVmFactory(userInfo: UserInfo, friendInfo: UserInfo): FindFriendViewModelFactory {
+    val repository = (requireContext().applicationContext as ManagerApplication).repository
+    return FindFriendViewModelFactory(repository, userInfo, friendInfo)
+}
+
+fun Fragment.getVmFactory(userInfo: UserInfo, selectedList: Array<String>, fragmentInt: Int): FriendSelectViewModelFactory {
+    val repository = (requireContext().applicationContext as ManagerApplication).repository
+    return FriendSelectViewModelFactory(repository, userInfo, selectedList, fragmentInt)
 }

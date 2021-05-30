@@ -1,6 +1,7 @@
 package com.wency.petmanager.data
 
 import android.os.Parcelable
+import androidx.lifecycle.ViewModelProvider
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize

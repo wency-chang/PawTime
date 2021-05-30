@@ -59,9 +59,6 @@ class DiaryCreateViewModel(val repository: Repository) : ViewModel() {
 
     }
 
-    fun getSelectStatus(){
-
-    }
 
 
 

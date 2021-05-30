@@ -93,7 +93,7 @@
             android:text="@{pet.name}"
             android:textAlignment="center"
             android:textColor="@color/white"
-            android:visibility="@{pet.name.length()==0? View.GONE : View.VISIBLE }"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />

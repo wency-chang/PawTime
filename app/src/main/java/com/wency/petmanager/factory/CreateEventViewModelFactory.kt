@@ -8,15 +8,15 @@ import com.wency.petmanager.data.UserInfo
 import com.wency.petmanager.data.source.Repository
 
 class CreateEventViewModelFactory(private val repository: Repository
-        , val userInfo: UserInfo
-        , val tagList: Array<String>?
-        , val petList: Array<Pet>): ViewModelProvider.Factory {
+                                  , val petList: Array<Pet>
+                                  , val selectedList: Array<String>
+): ViewModelProvider.Factory {
 
     override fun <T : ViewModel?> create(modelClass: Class<T>)=
         with(modelClass) {
             when {
                 isAssignableFrom(CreateEventViewModel::class.java) ->
-                    CreateEventViewModel(repository, userInfo, tagList, petList)
+                    CreateEventViewModel(repository,  petList, selectedList)
 
                 else ->
                     throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")

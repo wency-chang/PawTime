@@ -19,6 +19,11 @@ import com.wency.petmanager.data.TimelineItem
 import com.wency.petmanager.home.PetHeaderAdapter
 import com.wency.petmanager.home.TimeLineMainAdapter
 import com.wency.petmanager.data.UserInfo
+import com.wency.petmanager.detail.DetailMemoAdapter
+import com.wency.petmanager.detail.DetailTagListAdapter
+import com.wency.petmanager.friend.InviteListAdapter
+import com.wency.petmanager.friend.FriendGridListAdapter
+import com.wency.petmanager.friend.FriendPetListAdapter
 import com.wency.petmanager.network.LoadApiStatus
 import com.wency.petmanager.profile.CoverPhotoAdapter
 
@@ -97,6 +102,22 @@ fun bindImageCircle(imgView: ImageView, imgUri: Uri?) {
     }
 }
 
+@BindingAdapter("imageUrlTest")
+fun bindImageTest(imgView: ImageView, imgUrl: String?) {
+    imgUrl?.let {
+        val imgUri = it.toUri().buildUpon().build()
+        Glide.with(imgView.context)
+            .load(imgUri)
+            .fitCenter()
+            .centerCrop()
+            .apply(
+                RequestOptions()
+                    .placeholder(R.drawable.ic_paw_time__ui__06))
+//                    .error(R.drawable.ic_placeholder))
+            .into(imgView)
+    }
+}
+
 
 @BindingAdapter("petPhotoIconAdapter")
 fun petHeaderBindRecyclerView(recyclerView: RecyclerView, data: List<Pet>?) {
@@ -104,6 +125,7 @@ fun petHeaderBindRecyclerView(recyclerView: RecyclerView, data: List<Pet>?) {
         recyclerView.adapter?.apply {
             when(this){
                 is PetHeaderAdapter -> submitList(it)
+                is FriendPetListAdapter -> submitList(it)
 
             }
         }
@@ -138,6 +160,8 @@ fun tagOptionBindRecyclerView(recyclerView: RecyclerView, data: List<String>?) {
                 is PhotoListAdapter -> submitList(it)
                 is CategoryAdapter -> submitList(it)
                 is CoverPhotoAdapter -> submitList(it)
+                is DetailTagListAdapter -> submitList(it)
+                is DetailMemoAdapter -> submitList(it)
             }
         }
     }
@@ -149,6 +173,8 @@ fun userBindRecyclerView(recyclerView: RecyclerView, data: List<UserInfo>?) {
         recyclerView.adapter?.apply {
             when(this){
                 is UserListAdapter -> submitList(it)
+                is InviteListAdapter -> submitList(it)
+                is FriendGridListAdapter -> submitList(it)
 
             }
         }

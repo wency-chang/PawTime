@@ -208,7 +208,10 @@ class DiaryCreateFragment: Fragment(), AddMemoDialog.MemoDialogListener, AddNewT
     }
 
     override fun getTag(tag: String) {
-        createEventViewModel.updateNewTag(tag)
+        createEventViewModel.myPetList?.let {
+            createEventViewModel.updateNewTag(tag, it.toList())
+        }
+
         binding.tagRecyclerView.adapter?.notifyDataSetChanged()
 
     }

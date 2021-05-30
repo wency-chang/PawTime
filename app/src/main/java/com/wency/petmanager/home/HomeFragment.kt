@@ -115,19 +115,21 @@ class HomeFragment: Fragment() {
 
 
         viewModel.navigateToCreateDestination.observe(viewLifecycleOwner, Observer {
+            Log.d("WHAT","navigate observe$it")
             it?.let {
                 if (it < 3){
-
-                    this.findNavController().navigate(
-                        HomeFragmentDirections
-                        .actionHomeFragmentToCreateEventFragment(
-                            it,
-                            viewModel.tagList.value?.toTypedArray(),
-                            viewModel.userPetList!!,
-                            viewModel.userInfoProfile!!
-                        )
-                    )
-
+                    mainViewModel.userInfoProfile.value?.let { userInfo->
+                        mainViewModel.userPetList.value?.let { petList->
+                            Log.d("WHY","USER PET LIST = $petList")
+                            this.findNavController().navigate(
+                                NavHostDirections.actionGlobalToCreateFragment(
+                                        it,
+                                        petList.toTypedArray(),
+                                        arrayOf(userInfo.userId)
+                                    )
+                            )
+                        }
+                    }
                     viewModel.onNavigated()
                 } else if (it == HomeViewModel.PAGE_PET_CREATE){
                     viewModel.userInfoProfile?.let {userInfo->

@@ -94,8 +94,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    app:layout_constraintStart_toStartOf="@+id/timeSelectButton"
-                    app:layout_constraintTop_toBottomOf="@+id/timeSelectButton"
+                    app:layout_constraintStart_toStartOf="@+id/participantPeopleIcon"
+                    app:layout_constraintTop_toBottomOf="@+id/participantPeopleRecycler"
+
                     app:srcCompat="@drawable/ic_baseline_pets_24" />
 
                 <androidx.recyclerview.widget.RecyclerView
@@ -106,7 +107,8 @@
                     android:layout_marginTop="10dp"
                     android:orientation="horizontal"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                    app:layout_constraintEnd_toEndOf="@+id/timeSelectButton"
+
+                    app:layout_constraintEnd_toEndOf="@+id/participantPeopleRecycler"
                     app:layout_constraintStart_toStartOf="@+id/petIcon"
                     app:layout_constraintTop_toBottomOf="@id/petIcon"
                     app:spanCount="5" />
@@ -208,20 +210,20 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    app:layout_constraintStart_toStartOf="@+id/petRecyclerView"
-                    app:layout_constraintTop_toBottomOf="@+id/petRecyclerView"
+                    app:layout_constraintStart_toStartOf="@+id/timeSelectButton"
+                    app:layout_constraintTop_toBottomOf="@+id/timeSelectButton"
+
                     app:srcCompat="@drawable/ic_baseline_person_24" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/participantPeopleRecycler"
-                    userAdapter="@{createViewModel.userListLiveData}"
+                    userAdapter="@{viewModel.userOptionListLiveData}"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_marginTop="10dp"
-                    android:layout_marginEnd="10dp"
                     android:orientation="horizontal"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                    app:layout_constraintEnd_toStartOf="@+id/imageView4"
+                    app:layout_constraintEnd_toEndOf="@+id/timeSelectButton"
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="@+id/participantPeopleIcon"
                     app:layout_constraintTop_toBottomOf="@+id/participantPeopleIcon" />
@@ -231,8 +233,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    app:layout_constraintStart_toStartOf="@+id/participantPeopleRecycler"
-                    app:layout_constraintTop_toBottomOf="@+id/participantPeopleRecycler"
+                    app:layout_constraintStart_toStartOf="@+id/petRecyclerView"
+                    app:layout_constraintTop_toBottomOf="@+id/petRecyclerView"
                     app:srcCompat="@drawable/ic_baseline_notifications_24" />
 
                 <TextView
@@ -350,9 +352,9 @@
                     android:id="@+id/imageView4"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    app:layout_constraintBottom_toBottomOf="@+id/participantPeopleRecycler"
+                    app:layout_constraintBottom_toBottomOf="@+id/selectPeopleText"
                     app:layout_constraintEnd_toEndOf="@+id/petRecyclerView"
-                    app:layout_constraintTop_toTopOf="@+id/participantPeopleRecycler"
+                    app:layout_constraintTop_toTopOf="@+id/selectPeopleText"
                     app:layout_constraintVertical_bias="0.0"
                     app:srcCompat="@drawable/ic_baseline_circle_notifications_24" />
 

@@ -22,7 +22,7 @@
         <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/detailPhotoPager"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="445dp"
             android:maxHeight="465dp"
             android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="parent"
@@ -32,6 +32,7 @@
             tools:layout_height="445dp">
         </androidx.viewpager2.widget.ViewPager2>
 
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/detailLayoutBottom"
             android:layout_width="0dp"
@@ -39,10 +40,11 @@
             android:background="@drawable/bg_confirm_button"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent">
 
-            <ScrollView
-                android:id="@+id/detailScoll"
+            <androidx.core.widget.NestedScrollView
+                android:id="@+id/detailScroll"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_marginStart="20dp"
@@ -53,7 +55,8 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="1.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.0">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -66,84 +69,159 @@
                         android:layout_height="wrap_content"
                         android:layout_marginHorizontal="20dp"
                         android:layout_marginTop="10dp"
+                        android:fontFamily="@font/gudea"
+                        android:textStyle="bold"
                         android:text="@{viewModel.eventDetail.title}"
                         android:textAlignment="center"
+                        android:textColor="@color/blue_light"
                         android:textSize="28dp"
 
                         />
 
-                    <androidx.constraintlayout.widget.ConstraintLayout
-                        android:id="@+id/detailLayoutMiddle"
+                    <TextView
+                        android:id="@+id/textForDate"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
+                        android:layout_height="wrap_content"
+                        android:text="@{viewModel.dateLiveData}"
+                        tools:text="2021.05.27"
+                        android:layout_marginHorizontal="20dp"
+                        android:layout_marginTop="10dp"
+                        android:textAlignment="textEnd"
+                        android:fontFamily="@font/gudea"
+                        android:textSize="16dp"
+                        />
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginVertical="8dp"
+                        android:layout_marginHorizontal="20dp"
+                        android:background="@color/grey_white"
+                        >
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/detailLayoutPetHeader"
+                        android:layout_width="match_parent"
+                        android:layout_height="80dp"
+                        android:layout_marginHorizontal="15dp"
+                        android:layout_marginTop="6dp"
+                        android:layout_marginBottom="4dp">
 
                         <ImageView
                             android:id="@+id/detailPetIcon"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="15dp"
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
                             app:layout_constraintBottom_toBottomOf="@+id/detailPetHeaderRecycler"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="@+id/detailPetHeaderRecycler"
-                            app:srcCompat="@drawable/ic_baseline_pets_24" />
+                            app:srcCompat="@drawable/ic_paw_time__ui__06" />
 
                         <androidx.recyclerview.widget.RecyclerView
                             android:id="@+id/detailPetHeaderRecycler"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="30dp"
-                            android:layout_marginTop="20dp"
-                            android:layout_marginEnd="30dp"
+                            android:layout_marginStart="34dp"
+                            android:layout_marginEnd="5dp"
                             android:orientation="horizontal"
                             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                            app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toEndOf="@id/detailPetIcon"
-                            app:layout_constraintTop_toTopOf="parent" />
+                            app:layout_constraintTop_toTopOf="parent"
+                            tools:listitem="@layout/item_participant_header">
+
+                        </androidx.recyclerview.widget.RecyclerView>
+
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginVertical="8dp"
+                        android:layout_marginHorizontal="20dp"
+                        android:background="@color/grey_white"
+                        >
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/detailTagLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginHorizontal="15dp"
+                        android:layout_marginVertical="4dp"
+                        >
 
                         <ImageView
                             android:id="@+id/detailTagIcon"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
-                            app:layout_constraintStart_toStartOf="@+id/detailPetIcon"
-                            app:layout_constraintTop_toTopOf="@+id/detailTagListRecycler"
-                            app:srcCompat="@drawable/ic_baseline_local_offer_24" />
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:srcCompat="@drawable/ic_round_local_offer_24_round" />
 
                         <androidx.recyclerview.widget.RecyclerView
                             android:id="@+id/detailTagListRecycler"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
+                            android:layout_marginStart="34dp"
+                            android:layout_marginEnd="5dp"
                             android:minHeight="30dp"
-                            android:layout_marginTop="10dp"
                             android:orientation="horizontal"
+                            tagSelectorAdapter="@{viewModel.tagListLiveData}"
                             app:layoutManager="com.google.android.flexbox.FlexboxLayoutManager"
-                            app:layout_constraintEnd_toEndOf="@+id/detailPetHeaderRecycler"
-                            app:layout_constraintStart_toStartOf="@+id/detailPetHeaderRecycler"
-                            app:layout_constraintTop_toBottomOf="@+id/detailPetHeaderRecycler" />
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toEndOf="@+id/detailTagIcon"
+                            app:layout_constraintTop_toTopOf="parent"
+                            tools:listitem="@layout/item_tag_view"/>
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginVertical="8dp"
+                        android:layout_marginHorizontal="20dp"
+                        android:background="@color/grey_white"
+                        >
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/detailMapLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginHorizontal="15dp"
+                        android:layout_marginVertical="4dp"
+                        android:minHeight="40dp"
+                        >
 
                         <ImageView
                             android:id="@+id/addressIcon"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:visibility="@{viewModel.eventDetail.locationName.length()==0?View.GONE:View.VISIBLE}"
-                            app:layout_constraintBottom_toBottomOf="@+id/mapCardView"
-                            app:layout_constraintStart_toStartOf="@+id/detailTagIcon"
+                            android:layout_width="36dp"
+                            android:layout_height="36dp"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="@+id/mapCardView"
-                            app:srcCompat="@drawable/ic_baseline_location_on_24" />
+                            app:srcCompat="@drawable/ic_paw_time__ui__13" />
 
                         <androidx.cardview.widget.CardView
                             android:id="@+id/mapCardView"
                             android:layout_width="0dp"
-                            android:layout_height="140dp"
-                            android:layout_marginTop="10dp"
-                            app:cardCornerRadius="8dp"
+                            android:layout_height="180dp"
+                            android:layout_marginStart="30dp"
+                            android:layout_marginEnd="5dp"
                             android:visibility="@{viewModel.eventDetail.locationName.length()==0?View.GONE:View.VISIBLE}"
-                            app:layout_constraintEnd_toEndOf="@+id/detailTagListRecycler"
-                            app:layout_constraintStart_toStartOf="@+id/detailTagListRecycler"
-                            app:layout_constraintTop_toBottomOf="@+id/detailTagListRecycler">
+                            app:cardCornerRadius="8dp"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toEndOf="@+id/addressIcon"
+                            app:layout_constraintTop_toTopOf="parent">
 
-                            <fragment
-                                xmlns:android="http://schemas.android.com/apk/res/android"
+                            <fragment xmlns:android="http://schemas.android.com/apk/res/android"
                                 xmlns:map="http://schemas.android.com/apk/res-auto"
                                 android:id="@+id/locationMap"
                                 android:name="com.google.android.gms.maps.SupportMapFragment"
@@ -151,48 +229,114 @@
                                 android:layout_height="match_parent"
                                 map:cameraZoom="16"
                                 map:liteMode="true"
-                                map:mapType="normal"
-                                />
+                                map:mapType="normal" />
 
                             <TextView
                                 android:id="@+id/addressName"
                                 android:layout_width="match_parent"
                                 android:layout_height="26dp"
                                 android:background="@color/transparent_black"
+                                android:gravity="center"
+                                android:maxLines="1"
+                                android:visibility="gone"
                                 android:text="@{viewModel.eventDetail.locationName}"
                                 android:textAlignment="center"
-                                android:textSize="16dp"
-                                android:maxLines="1"
-                                android:textStyle="bold"
                                 android:textColor="@color/grey_white"
-                                android:gravity="center"/>
+                                android:textSize="16dp"
+                                android:textStyle="bold" />
 
 
                         </androidx.cardview.widget.CardView>
+
+
                     </androidx.constraintlayout.widget.ConstraintLayout>
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginVertical="8dp"
+                        android:layout_marginHorizontal="20dp"
+                        android:background="@color/grey_white"
+                        >
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="15dp"
+                        android:layout_marginVertical="4dp"
+                        android:minHeight="40dp"
+                        >
+
+                        <ImageView
+                            android:id="@+id/memoIcon"
+                            android:layout_width="36dp"
+                            android:layout_height="36dp"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="@+id/diaryDetailMemoRecycler"
+                            app:srcCompat="@drawable/ic_paw_time__ui__10" />
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/diaryDetailMemoRecycler"
+                            tagSelectorAdapter="@{viewModel.memoListLiveData}"
+                            android:layout_width="0dp"
+                            android:layout_height="240dp"
+                            android:clipToPadding="false"
+                            android:overScrollMode="never"
+                            android:layout_marginStart="30dp"
+                            android:layout_marginEnd="5dp"
+                            android:orientation="vertical"
+                            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toEndOf="@+id/memoIcon"
+                            app:layout_constraintTop_toTopOf="parent"
+                            tools:listitem="@layout/item_detail_memo_list"
+                            android:nestedScrollingEnabled="false"/>
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
                 </LinearLayout>
-            </ScrollView>
+            </androidx.core.widget.NestedScrollView>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <ImageView
-            android:id="@+id/detailBackButton"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/backButtonLayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="30dp"
-            android:layout_marginTop="30dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
             app:layout_constraintStart_toStartOf="@+id/detailPhotoPager"
             app:layout_constraintTop_toTopOf="@+id/detailPhotoPager"
-            app:srcCompat="@drawable/ic_baseline_navigate_before_24" />
+            android:background="@drawable/bg_white_circle"
+            android:backgroundTint="@color/transparent_black">
+
+            <ImageView
+                android:id="@+id/detailBackButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:backgroundTint="@color/grey_white"
+                app:srcCompat="@drawable/ic_baseline_navigate_before_24" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/photoDotsRecycler"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
-            android:layout_marginBottom="25dp"
-            app:layout_constraintBottom_toBottomOf="@+id/detailPhotoPager"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintBottom_toTopOf="@+id/detailLayoutBottom"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:tabBackground="@drawable/item_dot_tablayout"
+            app:tabGravity="center"
+            app:tabIndicatorHeight="0dp" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/detailEditButton"

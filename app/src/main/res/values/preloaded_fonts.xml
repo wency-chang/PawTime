@@ -2,6 +2,8 @@
 <resources>
     <array name="preloaded_fonts" translatable="false">
         <item>@font/acme</item>
+        <item>@font/biryani_extralight</item>
         <item>@font/cantora_one</item>
+        <item>@font/gudea</item>
     </array>
 </resources>
