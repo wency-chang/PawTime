@@ -97,7 +97,7 @@
             android:minWidth="10dp"
             android:text="@{userInfo.name}"
             android:textAlignment="center"
-            android:textColor="@color/white"
+            android:textColor="@color/grey_cotton"
             android:visibility="@{user? View.VISIBLE : View.GONE }"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

@@ -9,6 +9,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.wency.petmanager.MainViewModel
 import com.wency.petmanager.NavHostDirections
@@ -61,7 +62,7 @@ class HomeFragment: Fragment() {
         val closeAnim = AnimationUtils.loadAnimation(this.context, R.anim.fab_to_bottom_animation)
         viewModel.initButtonStatus()
         val timelineRecycler = binding.timelineRecycler
-        val timelineAdapter = TimeLineMainAdapter(viewModel)
+        val timelineAdapter = TimeLineMainAdapter(viewModel, mainViewModel)
 
 
         binding.petOptionRecycler.adapter = PetHeaderAdapter(viewModel, this)
@@ -102,6 +103,8 @@ class HomeFragment: Fragment() {
             }
         }  )
 
+
+
         binding.todayFloatingActionButton.setOnClickListener {
             viewModel.scrollToToday.value?.let{
                 timelineRecycler.smoothScrollToPosition(it)
@@ -111,6 +114,9 @@ class HomeFragment: Fragment() {
         viewModel.timeline.observe(viewLifecycleOwner, Observer {
             Log.d("missionUpdate","timeline change")
             timelineAdapter.notifyDataSetChanged()
+            viewModel.scrollToToday.value?.let {
+                timelineRecycler.scrollToPosition(it)
+            }
         })
 
 
@@ -160,9 +166,9 @@ class HomeFragment: Fragment() {
         viewModel.evenForTimeline.observe(viewLifecycleOwner, Observer { eventForTimeline->
             Log.d("missionUpdate","insert timeline update list")
             eventForTimeline?.let {
-                if (it.isNotEmpty()){
+
                 viewModel.createTimelineItem(it)
-                }
+
             }
         })
 
@@ -175,11 +181,10 @@ class HomeFragment: Fragment() {
 
 
         viewModel.todayMissionListForTimeline.observe(viewLifecycleOwner, Observer {
-            Log.d("missionUpdate","missionTimelineItem update")
-            if (mainViewModel.missionListToday.value?.size == it.size){
+
                 Log.d("missionUpdate","start insertMissionToTimeline")
                 viewModel.insertMissionToTimeline()
-            }
+
         })
 
 
@@ -195,14 +200,18 @@ class HomeFragment: Fragment() {
 
         })
 
-        viewModel.scrollToToday.observe(viewLifecycleOwner, Observer {
-
-            if (it > 0){
-
-                timelineRecycler.scrollToPosition(it)
-
+        viewModel.timeline.observe(viewLifecycleOwner, Observer {
+            viewModel.scrollToToday.value?.let {
+                if (it > 3){
+                    timelineRecycler.scrollToPosition(it)
+                }
             }
+        })
 
+        viewModel.scrollToToday.observe(viewLifecycleOwner, Observer {
+            if (it > 3){
+                timelineRecycler.scrollToPosition(it)
+            }
         })
 
     }

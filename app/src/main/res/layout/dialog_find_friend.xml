@@ -24,110 +24,134 @@
         android:focusableInTouchMode="false"
         >
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/cardView2"
-            android:layout_width="220dp"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:minHeight="200dp"
-            android:maxHeight="340dp"
-            app:cardCornerRadius="6dp"
-            android:focusableInTouchMode="true"
-            android:clickable="false"
-            android:focusable="true"
-
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:layout_height="wrap_content">
+            app:layout_constraintTop_toTopOf="parent">
 
-            <LinearLayout
-                android:layout_width="match_parent"
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardView2"
+                android:layout_width="220dp"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:layout_margin="10dp"
+                android:layout_marginTop="70dp"
+                android:clickable="false"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:maxHeight="340dp"
+                android:minHeight="150dp"
+                app:cardCornerRadius="6dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/headerCard"
+                tools:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+
+                    <TextView
+                        android:id="@+id/chooseFriendListName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="100dp"
+                        android:text="@{viewModel.friendInfo.name}"
+                        android:textAlignment="center"
+                        android:textSize="20dp"
+                        android:textStyle="bold" />
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/friendPetList"
+                        petPhotoIconAdapter="@{viewModel.petList}"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginHorizontal="6dp"
+                        android:layout_marginVertical="8dp"
+                        android:orientation="vertical"
+                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                        tools:listitem="@layout/sub_item_friend_pet_list" />
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginVertical="8dp"
+                        android:orientation="horizontal">
+
+                        <Button
+                            android:id="@+id/closeButton"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:layout_marginTop="5dp"
+                            android:layout_marginBottom="5dp"
+                            android:background="@drawable/bg_friend_invite_button"
+                            android:backgroundTint="@color/grey_medium2"
+                            android:drawableStart="@drawable/ic_baseline_close_24"
+                            android:onClick="@{()->viewModel.negativeButtonClick()}"
+                            android:paddingStart="8dp"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toStartOf="@+id/searchFriendConfirmButton"
+                            app:layout_constraintHorizontal_bias="0.5"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <Button
+                            android:id="@+id/searchFriendConfirmButton"
+                            android:layout_width="110dp"
+                            android:layout_height="40dp"
+                            android:layout_marginTop="5dp"
+                            android:layout_marginBottom="5dp"
+                            android:background="@drawable/bg_friend_invite_button"
+                            android:backgroundTint="@color/blue_light"
+                            android:clickable="@{viewModel.buttonClickable==true?true:false}"
+                            android:drawableStart="@drawable/ic_baseline_check_24"
+                            android:onClick="@{()->viewModel.confirmButtonClick()}"
+                            android:paddingStart="6dp"
+                            android:text="@{viewModel.buttonString}"
+                            android:textColor="@color/grey_white"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintHorizontal_bias="0.5"
+                            app:layout_constraintStart_toEndOf="@+id/closeButton"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+                </LinearLayout>
+
+
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/headerCard"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                app:cardCornerRadius="50dp"
+                app:layout_constraintEnd_toEndOf="@+id/cardView2"
+                app:layout_constraintStart_toStartOf="@+id/cardView2"
+                app:layout_constraintTop_toTopOf="parent">
 
                 <ImageView
                     android:id="@+id/chooseFriendListPhoto"
-                    android:layout_width="66dp"
-                    android:layout_height="66dp"
-                    android:layout_gravity="center"
-                    android:layout_margin="6dp"
                     imageUrlCircle="@{viewModel.friendInfo.userPhoto}"
-
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:layout_margin="3dp"
                     tools:srcCompat="@tools:sample/avatars" />
 
-                <TextView
-                    android:id="@+id/chooseFriendListName"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="3dp"
-                    android:textSize="20dp"
-                    android:text="@{viewModel.friendInfo.name}"
-                    android:textStyle="bold"
-                    android:textAlignment="center" />
+            </androidx.cardview.widget.CardView>
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/friendPetList"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginHorizontal="6dp"
-                    android:layout_marginVertical="8dp"
-                    android:orientation="vertical"
-                    petPhotoIconAdapter="@{viewModel.petList}"
-                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                    tools:listitem="@layout/sub_item_friend_pet_list" />
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginVertical="8dp"
-                    android:orientation="horizontal">
-
-                    <Button
-                        android:id="@+id/closeButton"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:background="@drawable/bg_friend_invite_button"
-                        android:backgroundTint="@color/grey_medium2"
-                        android:drawableStart="@drawable/ic_baseline_close_24"
-                        android:paddingStart="8dp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toStartOf="@+id/searchFriendConfirmButton"
-                        app:layout_constraintHorizontal_bias="0.5"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        android:onClick="@{()->viewModel.negativeButtonClick()}"
-                        />
-
-                    <Button
-                        android:id="@+id/searchFriendConfirmButton"
-                        android:layout_width="110dp"
-                        android:layout_height="40dp"
-                        android:background="@drawable/bg_friend_invite_button"
-                        android:backgroundTint="@color/blue_light"
-                        android:drawableStart="@drawable/ic_baseline_check_24"
-                        android:paddingStart="6dp"
-                        android:text="@{viewModel.buttonString}"
-                        android:clickable="@{viewModel.buttonClickable==true?true:false}"
-                        android:textColor="@color/grey_white"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="0.5"
-                        app:layout_constraintStart_toEndOf="@+id/closeButton"
-                        app:layout_constraintTop_toTopOf="parent"
-                        android:onClick="@{()->viewModel.confirmButtonClick()}"/>
-
-
-                </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-            </LinearLayout>
-
-
-        </androidx.cardview.widget.CardView>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

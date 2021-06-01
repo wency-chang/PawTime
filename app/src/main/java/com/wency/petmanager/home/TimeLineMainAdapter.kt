@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.CompositePageTransformer
 import androidx.viewpager2.widget.MarginPageTransformer
 import androidx.viewpager2.widget.ViewPager2
+import com.wency.petmanager.MainViewModel
 import com.wency.petmanager.data.*
 import com.wency.petmanager.databinding.ItemHomeScheduleCardBinding
 import com.wency.petmanager.databinding.ItemHomeTimelineEventBinding
@@ -21,7 +22,7 @@ import java.lang.Math.abs
 import java.text.SimpleDateFormat
 import java.util.*
 
-class TimeLineMainAdapter(val viewModel: HomeViewModel) :
+class TimeLineMainAdapter(val viewModel: HomeViewModel, val mainViewModel: MainViewModel) :
     ListAdapter<TimelineItem, RecyclerView.ViewHolder>(DiffCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -101,7 +102,7 @@ class TimeLineMainAdapter(val viewModel: HomeViewModel) :
             }
             is TimelineCardViewHolder -> {
 
-                holder.bind((item as TimelineItem.TimelineSchedule).event, viewModel)
+                holder.bind((item as TimelineItem.TimelineSchedule).event, viewModel, mainViewModel)
                 holder.recyclerScheduleCard.apply {
                     setRecycledViewPool(viewPool)
                 }
@@ -191,11 +192,11 @@ class TimeLineMainAdapter(val viewModel: HomeViewModel) :
     class TimelineCardViewHolder(val binding: ItemHomeScheduleCardBinding) :
         RecyclerView.ViewHolder(binding.root) {
         val recyclerScheduleCard = binding.contentCardRecycler
-        fun bind(events: DayEvent, viewModel: HomeViewModel) {
+        fun bind(events: DayEvent, viewModel: HomeViewModel, mainViewModel: MainViewModel) {
             binding.year = Today.yearOnlyFormat.format(events.date)
             binding.date = Today.dateOnlyFormat.format(events.date)
             binding.dayOfWeek = Today.dayOfWeekFormat.format(events.date)
-            binding.contentCardRecycler.adapter = ScheduleCardAdapter(events.eventList, viewModel)
+            binding.contentCardRecycler.adapter = ScheduleCardAdapter(events.eventList.sortedBy { it.time }, viewModel, mainViewModel)
             binding.executePendingBindings()
         }
     }

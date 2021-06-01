@@ -1,5 +1,6 @@
 package com.wency.petmanager.friend
 
+import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -12,18 +13,33 @@ class FriendChooseAdapter(val viewModel: ChooseFriendViewModel): ListAdapter<Use
 
     class UserChooseViewHolder(val binding: ItemFriendListChooseHolderBinding): RecyclerView.ViewHolder(binding.root){
         val petListRecycler = binding.friendPetList
-        fun bind(user: UserInfo){
+        fun bind(user: UserInfo, selected:Boolean){
             binding.user = user
+            binding.selected = selected
             binding.executePendingBindings()
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserChooseViewHolder {
-        TODO("Not yet implemented")
+        val layoutInflater = LayoutInflater.from(parent.context)
+        return UserChooseViewHolder(ItemFriendListChooseHolderBinding.inflate(layoutInflater, parent, false))
     }
 
     override fun onBindViewHolder(holder: UserChooseViewHolder, position: Int) {
-        TODO("Not yet implemented")
+
+        val user = getItem(position)
+        user.petList?.let {petList->
+            holder.petListRecycler.adapter = PetListAdapter(petList, viewModel)
+        }
+        holder.bind(user, viewModel.selectedIdList.contains(user.userId))
+        holder.itemView.setOnClickListener {
+            if (viewModel.selectedIdList.contains(user.userId)){
+                viewModel.selectedIdList.remove(user.userId)
+            } else {
+                viewModel.selectedIdList.add(user.userId)
+            }
+            notifyDataSetChanged()
+        }
     }
 
 

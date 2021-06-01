@@ -13,7 +13,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 class FriendListViewModel(val repository: Repository) : ViewModel() {
-    private val _userDetailDialogData = MutableLiveData<UserInfo>()
+    val _userDetailDialogData = MutableLiveData<UserInfo>()
     val userDetailDialogData : LiveData<UserInfo>
         get() = _userDetailDialogData
 

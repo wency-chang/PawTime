@@ -8,6 +8,7 @@ import com.wency.petmanager.create.events.MissionCreateViewModel
 import com.wency.petmanager.create.events.ScheduleCreateViewModel
 import com.wency.petmanager.data.source.Repository
 import com.wency.petmanager.friend.FriendListViewModel
+import com.wency.petmanager.login.LogInViewModel
 
 @Suppress("UNCHECKED_CAST")
 class ViewModelFactory constructor(
@@ -31,6 +32,9 @@ class ViewModelFactory constructor(
 
                 isAssignableFrom(FriendListViewModel::class.java) ->
                     FriendListViewModel(repository)
+
+                isAssignableFrom(LogInViewModel::class.java)->
+                    LogInViewModel(repository)
 
                 else ->
                     throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")

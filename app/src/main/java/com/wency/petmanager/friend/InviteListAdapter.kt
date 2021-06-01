@@ -13,6 +13,8 @@ class InviteListAdapter(val viewModel: FriendListViewModel): ListAdapter<UserInf
     class InviteRequestViewHolder(val binding: ItemInviteListBinding): RecyclerView.ViewHolder(binding.root){
         val acceptButton = binding.inviteConfirmButton
         val rejectButton = binding.inviteRejectButton
+        val clickToDetail = binding.clickToDialog
+
         fun bind(user: UserInfo){
             binding.user = user
             binding.executePendingBindings()
@@ -32,6 +34,9 @@ class InviteListAdapter(val viewModel: FriendListViewModel): ListAdapter<UserInf
         }
         holder.rejectButton.setOnClickListener {
             viewModel.rejectInvite(user.userId)
+        }
+        holder.clickToDetail.setOnClickListener {
+            viewModel._userDetailDialogData.value = user
         }
         holder.bind(user)
     }

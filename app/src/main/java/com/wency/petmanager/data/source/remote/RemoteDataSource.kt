@@ -5,6 +5,8 @@ import android.util.Log
 import android.webkit.MimeTypeMap
 import androidx.lifecycle.MutableLiveData
 import com.google.firebase.Timestamp
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.*
 import com.google.firebase.storage.FirebaseStorage
@@ -312,6 +314,7 @@ object RemoteDataSource : DataSource {
 
     override suspend fun addOwner(petID: String, ownerID: String): Result<Boolean> =
         suspendCoroutine {continuation->
+            Log.d("Choose Owner","Remote update to firebase $petID, $ownerID")
             val fireStore = FirebaseFirestore.getInstance()
             fireStore
                 .collection(PATH_USERS)
@@ -319,11 +322,13 @@ object RemoteDataSource : DataSource {
                 .update(USER_PET_LIST, FieldValue.arrayUnion(petID))
                 .addOnCompleteListener {
                     if (it.isSuccessful){
+                        Log.d("Choose Owner","Owner update success")
                         fireStore.collection(PATH_PETS)
                             .document(petID)
                             .update(PET_USER_LIST, FieldValue.arrayUnion(ownerID))
                             .addOnCompleteListener {
                                 if (it.isSuccessful){
+                                    Log.d("Choose Owner","Pet update success")
                                     continuation.resume(Result.Success(true))
                                 }
                             }
@@ -513,6 +518,162 @@ object RemoteDataSource : DataSource {
                     }
                 }
             }
+    }
+
+    override suspend fun signInWithGoogle(idToken: String): Result<String> = suspendCoroutine {continuation->
+        val auth = FirebaseAuth.getInstance()
+        val credential = GoogleAuthProvider.getCredential(idToken, null)
+        val userCollection = FirebaseFirestore.getInstance().collection(PATH_USERS)
+        if (auth.currentUser == null) {
+
+            auth.signInWithCredential(credential)
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        val user = auth.currentUser
+                        if (user != null) {
+                            userCollection
+                                .document(user.uid)
+                                .get()
+                                .addOnCompleteListener { fireStoreUserTask ->
+                                    if (fireStoreUserTask.isSuccessful) {
+                                        val userInfo =
+                                            fireStoreUserTask.result.toObject(UserInfo::class.java)
+                                        if (userInfo == null) {
+                                            var name = user.displayName
+                                            if (name == null) {
+                                                name = "UNKNOWN"
+                                            }
+                                            var mail = user.email
+                                            if (mail == null) {
+                                                mail = "UNKNOWN"
+                                            }
+
+
+                                            val newUser = UserInfo(
+                                                user.uid,
+                                                name,
+                                                mail,
+                                                userPhoto = user.photoUrl.toString()
+                                            )
+
+                                            userCollection
+                                                .document(user.uid)
+                                                .set(newUser)
+                                                .addOnCompleteListener {
+                                                    if (it.isSuccessful) {
+                                                        continuation.resume(Result.Success(user.uid))
+                                                    } else {
+                                                        continuation.resume(Result.Fail(it.exception.toString()))
+                                                    }
+
+                                                }
+
+                                        } else {
+                                            continuation.resume(Result.Success(userInfo.userId))
+                                        }
+                                    }
+                                }
+                        }
+
+                    } else {
+                        continuation.resume(Result.Fail(task.exception.toString()))
+                    }
+                }
+        } else {
+            auth.currentUser?.let {
+                continuation.resume(Result.Success(it.uid))
+            }
+        }
+    }
+
+    override suspend fun sinOut(): Result<Boolean> {
+        FirebaseAuth.getInstance().signOut()
+        return Result.Success(true)
+    }
+
+    override suspend fun updateOwner(petId: String, userIdList: List<String>): Result<Pet> = suspendCoroutine {continuation->
+        val petDocument = FirebaseFirestore.getInstance().collection(PATH_PETS).document(petId)
+        val userCollection = FirebaseFirestore.getInstance().collection(PATH_USERS)
+        Log.d("UpdateOwner", "repository $petId")
+        petDocument
+            .update(PET_USER_LIST, FieldValue.delete())
+            .addOnCompleteListener { taskDelete->
+                Log.d("UpdateOwner", "success delete")
+                if (taskDelete.isSuccessful){
+                    Log.d("UpdateOwner", "success delete")
+                    petDocument.update(PET_USER_LIST, userIdList)
+                        .addOnCompleteListener {taskUpdate->
+                            Log.d("UpdateOwner", "success update")
+                            if (taskUpdate.isSuccessful) {
+                                Log.d("UpdateOwner", "success delete")
+                                var userUpdatedCount = 0
+                                for (userId in userIdList) {
+                                    Log.d("UpdateOwner", "repository start update to user")
+                                    userCollection.document(userId)
+                                        .update(USER_PET_LIST, FieldValue.arrayUnion(petId))
+                                        .addOnCompleteListener {
+                                            if (it.isSuccessful) {
+                                                userUpdatedCount += 1
+                                                if (userUpdatedCount == userIdList.size) {
+                                                    petDocument
+                                                        .get()
+                                                        .addOnCompleteListener { petTask ->
+                                                            if (petTask.isSuccessful) {
+                                                                val petData =
+                                                                    petTask.result.toObject(Pet::class.java)
+                                                                petData?.let {
+                                                                    continuation.resume(
+                                                                        Result.Success(
+                                                                            it
+                                                                        )
+                                                                    )
+                                                                }
+                                                            }
+                                                        }
+                                                }
+                                            }
+                                        }
+
+
+                                }
+                            }
+
+
+
+
+                        }
+
+
+
+                }
+            }
+    }
+
+    override suspend fun userPetListUpdate(petId: String, userId: String, add: Boolean): Result<Boolean> = suspendCoroutine{ continuation->
+        val userDocument = FirebaseFirestore.getInstance().collection(PATH_USERS).document(userId)
+
+        if (add){
+
+            userDocument.update(USER_PET_LIST, FieldValue.arrayUnion(petId))
+                .addOnCompleteListener { task->
+                    if (task.isSuccessful){
+                        continuation.resume(Result.Success(true))
+                    } else {
+                        Log.d("UpdateOwner","fail update ${task.result}")
+                    }
+
+                }
+        } else {
+            userDocument.update(USER_PET_LIST, FieldValue.arrayRemove(petId))
+                .addOnCompleteListener { task->
+                    if (task.isSuccessful){
+                        continuation.resume(Result.Success(true))
+                    }
+                    else {
+                        Log.d("UpdateOwner","fail update ${task.result}")
+                    }
+                }
+        }
     }
 
 

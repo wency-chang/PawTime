@@ -74,12 +74,15 @@ class MissionAdapter(private val mission: List<MissionToday>, val viewModel: Hom
             }
         }
         holder.completeUserPhoto.setOnClickListener {
-            viewModel.changeMissionStatus(mission.petID, mission.missionId, false)
-            holder.completeUserPhoto.apply {
-                visibility = View.GONE
-                startAnimation(AnimationUtils.loadAnimation(this.context,R.anim.image_gone))
+            if (mission.completeUserId == viewModel.userInfoProfile.userId) {
+
+                viewModel.changeMissionStatus(mission.petID, mission.missionId, false)
+                holder.completeUserPhoto.apply {
+                    visibility = View.GONE
+                    startAnimation(AnimationUtils.loadAnimation(this.context, R.anim.image_gone))
+                }
+                holder.completeCheckBox.isChecked = false
             }
-            holder.completeCheckBox.isChecked = false
 
         }
 

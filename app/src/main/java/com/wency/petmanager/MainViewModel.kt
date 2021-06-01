@@ -32,7 +32,7 @@ class MainViewModel(private val firebaseRepository: Repository) : ViewModel() {
     val error: LiveData<String?>
         get() = _error
 
-    // status for the loading icon of swl
+    // status for the loading.json icon of swl
     private val _refreshStatus = MutableLiveData<Boolean>()
 
     val refreshStatus: LiveData<Boolean>
@@ -75,6 +75,10 @@ class MainViewModel(private val firebaseRepository: Repository) : ViewModel() {
     val tagListLiveData : LiveData<MutableList<String>>
         get() = _tagListLiveData
 
+    val petDataForAll = mutableSetOf<Pet>()
+
+    val badgeString = MutableLiveData<String>("")
+
 
 
     fun getTodayMissionLiveData(petList: MutableList<Pet>) {
@@ -82,39 +86,42 @@ class MainViewModel(private val firebaseRepository: Repository) : ViewModel() {
     }
 
     init {
-        getUserProfile()
+//        getUserProfile()
     }
 
     fun getUserProfile(){
         UserManager.userID?.let {
-            coroutineScope.launch {
-                val result = firebaseRepository.getUserProfile(it)
-                _userProfile.value = when(result){
-                    is Result.Success -> {
-                        _error.value = null
-                        _status.value = LoadApiStatus.DONE
-                        Log.d("debug", "MainViewModel get User Profile Success")
-                        result.data
-                    }
-                    is Result.Error -> {
-                        _error.value = result.exception.toString()
-                        _status.value = LoadApiStatus.ERROR
-                        Log.d("debug", "MainViewModel get User Profile Error${_error.value}")
-                        null
-                    }
-                    is Result.Fail -> {
-                        _error.value = result.error
-                        _status.value = LoadApiStatus.ERROR
-                        Log.d("debug", "MainViewModel get User Profile Error${_error.value}")
-                        null
-                    }
-                    else -> {
-                        _error.value = ManagerApplication.instance.getString(R.string.error_message)
-                        _status.value = LoadApiStatus.ERROR
-                        Log.d("debug", "MainViewModel get User Profile Error${_error.value}")
-                        null
-                    }
+            if (it.isNotEmpty()) {
+                coroutineScope.launch {
+                    val result = firebaseRepository.getUserProfile(it)
+                    _userProfile.value = when (result) {
+                        is Result.Success -> {
+                            _error.value = null
+                            _status.value = LoadApiStatus.DONE
+                            Log.d("debug", "MainViewModel get User Profile Success")
+                            result.data
+                        }
+                        is Result.Error -> {
+                            _error.value = result.exception.toString()
+                            _status.value = LoadApiStatus.ERROR
+                            Log.d("debug", "MainViewModel get User Profile Error${_error.value}")
+                            null
+                        }
+                        is Result.Fail -> {
+                            _error.value = result.error
+                            _status.value = LoadApiStatus.ERROR
+                            Log.d("debug", "MainViewModel get User Profile Error${_error.value}")
+                            null
+                        }
+                        else -> {
+                            _error.value =
+                                ManagerApplication.instance.getString(R.string.error_message)
+                            _status.value = LoadApiStatus.ERROR
+                            Log.d("debug", "MainViewModel get User Profile Error${_error.value}")
+                            null
+                        }
 
+                    }
                 }
             }
 
@@ -146,6 +153,7 @@ class MainViewModel(private val firebaseRepository: Repository) : ViewModel() {
                                     }
                                 }
                                 _userPetList.value = tempList
+                                petDataForAll.addAll(tempList)
 
                             }
                         }
@@ -191,6 +199,9 @@ class MainViewModel(private val firebaseRepository: Repository) : ViewModel() {
                         is Result.Success -> {
                             _error.value = null
                             eventDetailList.add(result.data)
+                            result.data.petParticipantList?.let { petList->
+                                checkPetList(petList)
+                            }
                             if (eventDetailList.size == eventIdList.size) {
                                 _eventDetailList.value = eventDetailList
                             }
@@ -288,20 +299,74 @@ class MainViewModel(private val firebaseRepository: Repository) : ViewModel() {
     }
 
     fun getTagList(){
-        val tagList = tagListLiveData.value
+
+        val tagList = mutableSetOf<String>()
+
         userPetList.value?.let { petList->
             petList.forEach { pet->
-                tagList?.addAll(pet.tagList)
+                tagList.addAll(pet.tagList)
             }
 
         }
         eventDetailList.value?.let { eventList->
             eventList.forEach { event->
-                tagList?.addAll(event.tagList)
+                tagList.addAll(event.tagList)
             }
         }
-        _tagListLiveData.value = tagList?.toMutableList()
+        _tagListLiveData.value = tagList.toMutableList()
     }
+
+    fun getRestPetData(petId: String){
+        Log.d("petDataForAll","getRestPetData $petId")
+        coroutineScope.launch {
+            when (val result = firebaseRepository.getPetData(petId)){
+                is Result.Success -> {
+                    petDataForAll.add(result.data)
+                    Log.d("petDataForAll","$petDataForAll")
+                }
+            }
+        }
+
+    }
+
+    fun checkPetList(petList: List<String>){
+        Log.d("petDataForAll","check pet list $petDataForAll")
+        Log.d("petDataForAll","event pet list $petList")
+        val listId = mutableListOf<String>()
+        petDataForAll.forEach {
+            listId.add(it.id)
+        }
+        val restPetId = petList.filter {
+            !listId.contains(it)
+        }
+        Log.d("petDataForAll","restPetId $restPetId")
+        if (restPetId.isNotEmpty()){
+            restPetId.forEach {
+                getRestPetData(it)
+            }
+        }
+
+    }
+
+    fun updatePetData(newPetData: Pet){
+        _userPetList.value?.let { petList->
+            for (i in petList.indices) {
+                if (petList[i].id == newPetData.id){
+                    petList.removeAt(i)
+                    petList.add(i, newPetData)
+                }
+            }
+        }
+
+        petDataForAll?.let { allPetData->
+            allPetData.removeIf { it.id == newPetData.id }
+            allPetData.add(newPetData)
+        }
+    }
+
+
+
+
 
 
 

@@ -132,4 +132,20 @@ class ManagerLocalDataSource(val context: Context) : com.wency.petmanager.data.s
         TODO("Not yet implemented")
     }
 
+    override suspend fun signInWithGoogle(idToken: String): Result<String> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun sinOut(): Result<Boolean> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun updateOwner(petId: String, userIdList: List<String>): Result<Pet> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun userPetListUpdate(petId: String, userId: String, add: Boolean): Result<Boolean> {
+        TODO("Not yet implemented")
+    }
+
 }

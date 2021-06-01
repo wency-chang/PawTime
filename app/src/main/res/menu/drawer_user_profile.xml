@@ -2,10 +2,17 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     >
 
-    <item android:id="@id/friendListFragment"
-        android:title="FRIENDS"
-        />
-    <item android:title="PROFILE"/>
+    <group android:id="@+id/nav_group">
+        <item android:id="@id/friendListFragment"
+            android:title="FRIENDS"
+            android:actionLayout="@layout/sub_invite_badge"
+            />
+        <item android:title="PROFILE"/>
+    </group>
+
+
+
+
 
 
 </menu>

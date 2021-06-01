@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+        <variable
+            name="mainViewModel"
+            type="com.wency.petmanager.MainViewModel" />
+        <import type="android.view.View"/>
+
+    </data>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center_vertical">
+        <TextView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:id="@+id/inviteBadge"
+            android:gravity="center"
+            android:visibility="@{mainViewModel.badgeString.length()==0?View.GONE:View.VISIBLE}"
+            android:text="@{mainViewModel.badgeString}"
+            android:textColor="@color/white"
+            android:background="@drawable/bg_white_circle"
+            android:backgroundTint="@color/blue_light"
+            android:textSize="12sp"
+            android:textStyle="bold"/>
+
+    </LinearLayout>
+</layout>

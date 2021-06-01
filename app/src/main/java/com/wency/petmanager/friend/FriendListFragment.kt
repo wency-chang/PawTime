@@ -79,6 +79,16 @@ class FriendListFragment : Fragment() {
             }
         })
 
+        binding.friendListBackButton.setOnClickListener {
+            mainViewModel.userInfoProfile.value?.let {
+                findNavController().navigate(NavHostDirections.actionGlobalToHomeFragment(
+                    it,
+                    mainViewModel.userPetList.value?.toTypedArray(),
+                    mainViewModel.eventDetailList.value?.toTypedArray()
+                ))
+            }
+        }
+
 
 
     }

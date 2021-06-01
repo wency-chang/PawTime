@@ -14,9 +14,12 @@ import androidx.lifecycle.Observer
 import androidx.navigation.*
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.libraries.places.api.Places
 import com.wency.petmanager.databinding.ActivityMainBinding
 import com.wency.petmanager.databinding.NavHeaderDrawerBinding
+import com.wency.petmanager.databinding.SubInviteBadgeBinding
 import com.wency.petmanager.ext.getVmFactory
 import com.wency.petmanager.profile.UserManager
 
@@ -35,6 +38,7 @@ class MainActivity : AppCompatActivity() {
 
 //        google place initialize
         Places.initialize(this.applicationContext, UserManager.KEY)
+
 //        get profile
         viewModel.userInfoProfile.observe(this, Observer {
 
@@ -54,7 +58,11 @@ class MainActivity : AppCompatActivity() {
 
             viewModel.inviteListLiveData.observe(this, Observer {
 //                for badge
-
+                if (it.size > 0){
+                    viewModel.badgeString.value = "${it.size}"
+                } else {
+                    viewModel.badgeString.value = ""
+                }
 
             })
 
@@ -126,6 +134,15 @@ class MainActivity : AppCompatActivity() {
         bindingNavHeader.lifecycleOwner = this
         bindingNavHeader.viewModel = viewModel
         binding.drawerNavView.addHeaderView(bindingNavHeader.root)
+        val layoutInflater = LayoutInflater.from(this)
+        val badge = SubInviteBadgeBinding.inflate(layoutInflater, binding.drawerProfile, false)
+        badge.lifecycleOwner = this
+        badge.mainViewModel = viewModel
+        binding.drawerNavView.menu.findItem(R.id.friendListFragment).actionView = badge.root
+
+
+
+
 
 
     }

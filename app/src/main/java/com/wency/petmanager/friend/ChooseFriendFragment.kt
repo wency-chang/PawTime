@@ -15,6 +15,7 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.wency.petmanager.MainViewModel
 import com.wency.petmanager.NavHostDirections
+import com.wency.petmanager.create.CreateEventViewModel
 import com.wency.petmanager.data.UserInfo
 import com.wency.petmanager.databinding.FragmentSelectFriendBinding
 import com.wency.petmanager.ext.getVmFactory
@@ -25,10 +26,9 @@ class ChooseFriendFragment(): Fragment() {
     val viewModel by viewModels<ChooseFriendViewModel> { getVmFactory(
         ChooseFriendFragmentArgs.fromBundle(requireArguments()).userInfo,
         ChooseFriendFragmentArgs.fromBundle(requireArguments()).selectedUser,
-        ChooseFriendFragmentArgs.fromBundle(requireArguments()).fragmentInt
+        ChooseFriendFragmentArgs.fromBundle(requireArguments()).fragmentInt,
+        ChooseFriendFragmentArgs.fromBundle(requireArguments()).petId
     ) }
-
-
 
     val mainViewModel by activityViewModels<MainViewModel> { getVmFactory()}
 
@@ -41,6 +41,11 @@ class ChooseFriendFragment(): Fragment() {
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
         binding.mainViewModel = mainViewModel
+
+        mainViewModel.friendUserList.value?.let {
+            viewModel.getPetInfo(it)
+        }
+        binding.friendListRecycler.adapter = FriendChooseAdapter(viewModel)
         return binding.root
     }
 
@@ -78,16 +83,33 @@ class ChooseFriendFragment(): Fragment() {
             }
         })
 
-        binding.friendListRecycler.adapter =
+        viewModel.petInfoList.observe(viewLifecycleOwner, Observer {
+            binding.friendListRecycler.adapter?.notifyDataSetChanged()
+        })
 
+        viewModel.navigateToFragmentSchedule.observe(viewLifecycleOwner, Observer { selectedList->
+            mainViewModel.userPetList.value?.let { petList->
+                findNavController().navigate(ChooseFriendFragmentDirections.actionChooseFriendFragmentToCreateEventFragment(
+                    CreateEventViewModel.SCHEDULE_CREATE_PAGE,
+                    petList.toTypedArray(),
+                    selectedList.toTypedArray()
+                    ))
+            }
+        }
+        )
 
+        viewModel.navigateToPetProfile.observe(viewLifecycleOwner, Observer {
+            mainViewModel.updatePetData(it)
+            mainViewModel.getFriendData()
+            findNavController().navigate(ChooseFriendFragmentDirections.actionChooseFriendFragmentToPetProfileFragment(
+                it
+            ))
+        }
+        )
 
-
-
-
+        viewModel.updatePetLoadingStatus.observe(viewLifecycleOwner, Observer {
+            Log.d("loading Status", "$it")
+        })
 
     }
-
-
-
 }

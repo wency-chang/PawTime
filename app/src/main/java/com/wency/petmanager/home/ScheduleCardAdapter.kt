@@ -1,39 +1,45 @@
 package com.wency.petmanager.home
 
+import android.graphics.Rect
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.wency.petmanager.MainViewModel
 import com.wency.petmanager.data.Event
 import com.wency.petmanager.databinding.SubItemTimelineScheduleBinding
 import com.wency.petmanager.home.schedule.MemoAdapter
 import com.wency.petmanager.home.schedule.ParticipantHeaderAdapter
 import com.wency.petmanager.profile.Today
 
-class ScheduleCardAdapter(val events: List<Event>, val viewModel: HomeViewModel): RecyclerView.Adapter<ScheduleCardAdapter.ScheduleCardViewHolder>() {
+class ScheduleCardAdapter(val events: List<Event>, val viewModel: HomeViewModel, val mainViewModel: MainViewModel): RecyclerView.Adapter<ScheduleCardAdapter.ScheduleCardViewHolder>() {
+
+    val expendList = MutableListFalse<Boolean>(events.size)
+
+    private fun <T> MutableListFalse(size: Int): MutableList<Boolean> {
+        val list = mutableListOf<Boolean>()
+        for (i in 0 until size){
+            list.add(false)
+        }
+        return list
+    }
 
     class ScheduleCardViewHolder(val binding: SubItemTimelineScheduleBinding): RecyclerView.ViewHolder(binding.root){
         val expendButton = binding.expendButton
-        var expend: Boolean = false
-        var needExpend: Boolean = true
         fun bind(event: Event){
             binding.date = Today.dateFormat.format(event.date.toDate()).toString()
             event.time?.let {
-                binding.time = Today.timeFormat.format(it.toDate()).toString()
+                binding.time = Today.timeFormat12.format(it.toDate()).toString()
             }
             if (!event.memoList.isNullOrEmpty()) {
                 binding.scheduleMemoRecycler.adapter = MemoAdapter(event.memoList)
             }
-            binding.expand = expend
-            binding.needExpand = needExpend
-            binding.event = event
 
+            binding.event = event
             binding.executePendingBindings()
         }
-        fun clickExpend(){
-            expend = expend == false
-            needExpend = false
-        }
+
 
         fun bindUserPhoto(images: List<String>){
             binding.participantHeaderRecycler.adapter = ParticipantHeaderAdapter(images)
@@ -42,6 +48,12 @@ class ScheduleCardAdapter(val events: List<Event>, val viewModel: HomeViewModel)
 
         fun bindPetPhoto(images: List<String>){
             binding.participantPetHeaderRecycler.adapter = ParticipantHeaderAdapter(images)
+            binding.executePendingBindings()
+        }
+
+        fun bindExpend(expend: Boolean){
+            binding.expand = expend
+            binding.needExpand = !expend
             binding.executePendingBindings()
         }
 
@@ -65,9 +77,10 @@ class ScheduleCardAdapter(val events: List<Event>, val viewModel: HomeViewModel)
                     val photo = viewModel.friendList.filter {
                         it.userId == userId
                     }
-                    Log.d("get user photo","$photo")
-                    photo[0].userPhoto?.let {
-                        photoList.add(it)
+                    if (photo.isNotEmpty()) {
+                        photo[0].userPhoto?.let {
+                            photoList.add(it)
+                        }
                     }
                 }
                 holder.bindUserPhoto(photoList)
@@ -77,20 +90,24 @@ class ScheduleCardAdapter(val events: List<Event>, val viewModel: HomeViewModel)
         event.petParticipantList?.let {petParticipant->
             val photoList = mutableListOf<String>()
             for (petId in petParticipant){
-                val photo = viewModel.userPetList?.filter {
+                val photo = mainViewModel.petDataForAll.filter {
                     it.id == petId
                 }
-                photo?.get(0)?.profilePhoto?.let {
-                    photoList.add(it)
+                if (photo.isNotEmpty()){
+                    photo[0].profilePhoto.let {
+                        photoList.add(it)
+                    }
                 }
             }
             holder.bindPetPhoto(photoList)
         }
 
+        holder.bindExpend(expendList[position])
+
 
 
         holder.expendButton.setOnClickListener {
-            holder.clickExpend()
+            expendList[position] = true
             notifyDataSetChanged()
         }
 

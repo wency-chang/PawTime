@@ -103,7 +103,7 @@ class DefaultRepository(private val remoteDataSource: DataSource
     }
 
     override suspend fun addOwner(petID: String, ownerID: String): Result<Boolean> {
-        TODO("Not yet implemented")
+        return remoteDataSource.addOwner(petID, ownerID)
     }
 
     override suspend fun checkInviteList(searchId: String, ownerId: String): Result<Boolean> {
@@ -132,6 +132,22 @@ class DefaultRepository(private val remoteDataSource: DataSource
 
     override suspend fun searchUserByMail(userMail: String): Result<UserInfo?> {
         return remoteDataSource.searchUserByMail(userMail)
+    }
+
+    override suspend fun signInWithGoogle(idToken: String): Result<String> {
+        return remoteDataSource.signInWithGoogle(idToken)
+    }
+
+    override suspend fun sinOut(): Result<Boolean> {
+        return remoteDataSource.sinOut()
+    }
+
+    override suspend fun updateOwner(petId: String, userIdList: List<String>): Result<Pet> {
+        return remoteDataSource.updateOwner(petId, userIdList)
+    }
+
+    override suspend fun userPetListUpdate(petId: String, userId: String, add: Boolean): Result<Boolean> {
+        return remoteDataSource.userPetListUpdate(petId, userId, add)
     }
 
 

@@ -21,6 +21,7 @@ import com.wency.petmanager.home.TimeLineMainAdapter
 import com.wency.petmanager.data.UserInfo
 import com.wency.petmanager.detail.DetailMemoAdapter
 import com.wency.petmanager.detail.DetailTagListAdapter
+import com.wency.petmanager.friend.FriendChooseAdapter
 import com.wency.petmanager.friend.InviteListAdapter
 import com.wency.petmanager.friend.FriendGridListAdapter
 import com.wency.petmanager.friend.FriendPetListAdapter
@@ -175,6 +176,7 @@ fun userBindRecyclerView(recyclerView: RecyclerView, data: List<UserInfo>?) {
                 is UserListAdapter -> submitList(it)
                 is InviteListAdapter -> submitList(it)
                 is FriendGridListAdapter -> submitList(it)
+                is FriendChooseAdapter -> submitList(it)
 
             }
         }

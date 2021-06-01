@@ -69,4 +69,13 @@ interface Repository {
     suspend fun rejectInvite(userId: String, friendId: String) : Result<Boolean>
 
     suspend fun searchUserByMail(userMail: String) : Result<UserInfo?>
+
+    suspend fun signInWithGoogle (idToken: String) : Result<String>
+
+    suspend fun sinOut() : Result<Boolean>
+
+    suspend fun updateOwner(petId: String, userIdList: List<String>) : Result<Pet>
+
+    suspend fun userPetListUpdate(petId: String, userId: String, add: Boolean) : Result<Boolean>
+
 }

@@ -10,7 +10,8 @@ class FriendSelectViewModelFactory (
     private val firebaseRepository: Repository,
     private val userInfoProfile: UserInfo,
     private val selectedList: Array<String>,
-    private val fragmentInt: Int
+    private val fragmentInt: Int,
+    private val petId: String
 
 ) : ViewModelProvider.Factory {
 
@@ -19,7 +20,7 @@ class FriendSelectViewModelFactory (
             when {
 
                 isAssignableFrom(ChooseFriendViewModel::class.java) ->
-                    ChooseFriendViewModel(firebaseRepository, userInfoProfile,  selectedList, fragmentInt)
+                    ChooseFriendViewModel(firebaseRepository, userInfoProfile,  selectedList, fragmentInt, petId)
 
 
                 else ->

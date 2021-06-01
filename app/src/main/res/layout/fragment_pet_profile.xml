@@ -8,6 +8,8 @@
             name="viewModel"
             type="com.wency.petmanager.profile.PetProfileViewModel" />
 
+        <import type="android.view.View"/>
+
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -23,7 +25,46 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:srcCompat="@tools:sample/backgrounds/scenic"
-            android:src="@drawable/ic_paw_time__ui__06"/>
+            android:src="@drawable/ic_paw_time__ui__06">
+
+        </androidx.viewpager2.widget.ViewPager2>
+
+        <com.google.android.material.tabs.TabLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/petProfileCoverTab"
+            android:layout_marginTop="2dp"
+            android:layout_marginEnd="10dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tabBackground="@drawable/item_dot_tablayout"
+            app:tabGravity="center"
+            app:tabIndicatorHeight="0dp"/>
+
+        <ImageView
+            android:id="@+id/coverPhotoCancelButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:background="@drawable/bg_white_circle"
+            android:backgroundTint="@color/transparent_black"
+            android:visibility="@{viewModel.editable?View.VISIBLE:View.GONE}"
+            app:layout_constraintBottom_toBottomOf="@+id/coverPhotoEditButton"
+            app:layout_constraintStart_toStartOf="parent"
+            app:srcCompat="@drawable/ic_baseline_close_24" />
+
+        <ImageView
+            android:id="@+id/coverPhotoEditButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="20dp"
+            android:background="@drawable/bg_white_circle"
+            android:backgroundTint="@color/transparent_black"
+            android:visibility="@{viewModel.editable?View.VISIBLE:View.GONE}"
+            app:layout_constraintBottom_toBottomOf="@+id/petCoverPicture"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:srcCompat="@drawable/ic_baseline_add_24" />
 
         <ImageView
             android:id="@+id/petHeaderPicture"
@@ -80,20 +121,23 @@
             android:textAlignment="center"
             android:textSize="26dp"
             android:textColor="@color/black"
-            app:layout_constraintEnd_toStartOf="@+id/petWeightText"
+            app:layout_constraintEnd_toStartOf="@+id/petOwnerText"
             app:layout_constraintHorizontal_bias="0.5"
+            android:clickable="@{viewModel.editable?true:false}"
             app:layout_constraintHorizontal_chainStyle="spread"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/petLocationText" />
 
         <TextView
-            android:id="@+id/petWeightText"
+            android:id="@+id/petOwnerText"
             android:layout_width="100dp"
             android:layout_height="wrap_content"
-            android:text="@{viewModel.weightShow}"
+            android:text="@{viewModel.ownerNumber}"
             android:textAlignment="center"
             android:textSize="26dp"
+            android:clickable="@{viewModel.editable?true:false}"
             android:textColor="@color/black"
+            android:onClick="@{()->viewModel.chooseOwner()}"
             app:layout_constraintBottom_toBottomOf="@+id/petOldText"
             app:layout_constraintEnd_toStartOf="@+id/petMissionText"
             app:layout_constraintHorizontal_bias="0.5"
@@ -108,11 +152,11 @@
             android:textSize="26dp"
             android:textColor="@color/black"
             android:textAlignment="center"
-            app:layout_constraintBottom_toBottomOf="@+id/petWeightText"
+            app:layout_constraintBottom_toBottomOf="@+id/petOwnerText"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/petWeightText"
-            app:layout_constraintTop_toTopOf="@+id/petWeightText" />
+            app:layout_constraintStart_toEndOf="@+id/petOwnerText"
+            app:layout_constraintTop_toTopOf="@+id/petOwnerText" />
 
         <TextView
             android:id="@+id/years"
@@ -128,9 +172,9 @@
             android:id="@+id/weight"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="WEIGHT"
-            app:layout_constraintEnd_toEndOf="@+id/petWeightText"
-            app:layout_constraintStart_toStartOf="@+id/petWeightText"
+            android:text="OWNER"
+            app:layout_constraintEnd_toEndOf="@+id/petOwnerText"
+            app:layout_constraintStart_toStartOf="@+id/petOwnerText"
             app:layout_constraintTop_toTopOf="@+id/years" />
 
         <LinearLayout
@@ -140,7 +184,7 @@
             android:orientation="horizontal"
             app:layout_constraintBottom_toBottomOf="@+id/linearLayout2"
             app:layout_constraintEnd_toStartOf="@+id/petMissionText"
-            app:layout_constraintStart_toEndOf="@+id/petWeightText"
+            app:layout_constraintStart_toEndOf="@+id/petOwnerText"
             app:layout_constraintTop_toTopOf="@+id/petMissionText" />
 
         <LinearLayout
@@ -150,7 +194,7 @@
             android:background="@color/grey_white"
             android:orientation="horizontal"
             app:layout_constraintBottom_toBottomOf="@+id/years"
-            app:layout_constraintEnd_toStartOf="@+id/petWeightText"
+            app:layout_constraintEnd_toStartOf="@+id/petOwnerText"
             app:layout_constraintStart_toEndOf="@+id/petOldText"
             app:layout_constraintTop_toTopOf="@+id/petOldText" />
 
@@ -170,12 +214,40 @@
             android:layout_marginTop="40dp"
             android:background="@drawable/bg_edit_button_grey"
             android:gravity="center"
-            android:text="EDIT"
+            android:text="@{viewModel.buttonString}"
             android:textAlignment="center"
             android:textColor="@color/white"
             android:textSize="20dp"
+            android:onClick="@{()->viewModel.clickButton()}"
             app:layout_constraintEnd_toEndOf="@+id/petNameText"
             app:layout_constraintStart_toStartOf="@+id/petNameText"
             app:layout_constraintTop_toBottomOf="@+id/weight" />
+
+        <ImageView
+            android:id="@+id/profilePhotoEditButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="5dp"
+            android:layout_marginBottom="5dp"
+            app:layout_constraintBottom_toBottomOf="@+id/petHeaderPicture"
+            app:layout_constraintEnd_toEndOf="@+id/petHeaderPicture"
+            app:srcCompat="@drawable/ic_baseline_edit_24"
+            android:background="@drawable/bg_white_circle"
+            android:backgroundTint="@color/transparent_black"
+            android:visibility="@{viewModel.editable?View.VISIBLE:View.GONE}"/>
+
+        <ImageView
+            android:id="@+id/locationEditButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            app:layout_constraintBottom_toBottomOf="@+id/petLocationText"
+            app:layout_constraintStart_toEndOf="@+id/petLocationText"
+            app:layout_constraintTop_toTopOf="@+id/petLocationText"
+            app:srcCompat="@drawable/ic_baseline_edit_24"
+            android:background="@drawable/bg_white_circle"
+            android:backgroundTint="@color/blue_light_transparent"
+            android:visibility="@{viewModel.editable?View.VISIBLE:View.GONE}"
+            />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

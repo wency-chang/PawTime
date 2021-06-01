@@ -52,6 +52,7 @@ class CreateEventFragment : Fragment() {
         )
 
         mainViewModel.tagListLiveData.value?.let {
+            Log.d("TAGLIST!!!","initiail taglist: $it")
             viewModel.tagListLiveData.value = it
         }
 
@@ -79,7 +80,7 @@ class CreateEventFragment : Fragment() {
         viewModel.navigateDestination.observe(viewLifecycleOwner, Observer {
 
             binding.navCreateNavigation.setCurrentItem(it, true)
-            Log.d("get current item","${binding.navCreateNavigation.currentItem}")
+
         })
 
         binding.lifecycleOwner = this
@@ -108,9 +109,24 @@ class CreateEventFragment : Fragment() {
 
         viewModel.backHome.observe(viewLifecycleOwner, Observer {
             if (it){
-//                findNavController().navigate(NavHostDirections.actionGlobalToHomeFragment(viewModel.userInfo))
-                mainViewModel.getPetData()
-                viewModel.backHome()
+                viewModel.navigateDestination.value?.let { page->
+                    if (page == CreateEventViewModel.MISSION_CREATE_PAGE){
+                        mainViewModel.userInfoProfile.value?.let { userInfo->
+                            mainViewModel.userPetList.value?.let {petList->
+                                mainViewModel.eventDetailList.value?.let { eventList->
+                                    findNavController().navigate(NavHostDirections.actionGlobalToHomeFragment(
+                                        userInfo, petList.toTypedArray(), eventList.toTypedArray()
+                                    ))
+                                }
+                            }
+                        }
+
+                    }else {
+                        findNavController().navigate(NavHostDirections.actionGlobalToLoadingFragment())
+                        viewModel.backHome()
+                    }
+                }
+
             }
         })
 

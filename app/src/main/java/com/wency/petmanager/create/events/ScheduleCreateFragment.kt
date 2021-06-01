@@ -58,28 +58,50 @@ class ScheduleCreateFragment: Fragment(), AddMemoDialog.MemoDialogListener, AddN
         binding.viewModel = viewModel
         binding.createViewModel = createEventViewModel
 
-
-        viewModel.myPet = createEventViewModel.myPetList.toList()
-        viewModel.updatePetSelector(viewModel.myPet.toMutableList())
-
-        createEventViewModel.selectUserOptionList.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
-            viewModel.getUserOption(it)
-            viewModel.getPetOption()
-        })
-
-        createEventViewModel.participantUserIdList.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
-            it?.let {
-                viewModel.selectedUser.value = it
-            }
-        })
-
         viewModel.selectedUser.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+            Log.d("USER!","observe selected user change $it")
+            viewModel.getPetOption()
+            viewModel.setNotification()
+
+        })
+
+        viewModel.petOptions.observe(viewLifecycleOwner, androidx.lifecycle.Observer {  petOption->
+            Log.d("USER!","observe petOption change $petOption")
+            viewModel.updatePetSelector(petOption)
+
+        })
+
+        binding.petRecyclerView.adapter = PetSelectorAdapter(PetSelectorAdapter.OnClickListener{ petId: String, status: Boolean ->
+            viewModel.selectedPet(petId, status)
+        })
+
+
+        viewModel.userOptionListLiveData.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
             viewModel.getPetOption()
         })
 
-        viewModel.petOptions.value?.let { petOption->
-            viewModel.updatePetSelector(petOption)
+
+
+//      get my pet option from createFragment
+        viewModel.myPet = createEventViewModel.myPetList.toList()
+
+
+//      get user select state
+        createEventViewModel.participantUserIdList.value?.let {
+            viewModel.initUserSelectState(it)
         }
+//        get user option list
+        createEventViewModel.selectUserOptionList.value?.let {
+            viewModel.getUserOption(it)
+        }
+
+//        createEventViewModel.selectUserOptionList.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+//            viewModel.getUserOption(it)
+//            viewModel.getPetOption()
+//        })
+
+
+
         return binding.root
     }
 
@@ -202,9 +224,7 @@ class ScheduleCreateFragment: Fragment(), AddMemoDialog.MemoDialogListener, AddN
             }
         })
 
-        binding.petRecyclerView.adapter = PetSelectorAdapter(PetSelectorAdapter.OnClickListener{ petId: String, status: Boolean ->
-            viewModel.selectedPet(petId, status)
-        })
+
 
         binding.participantPeopleRecycler.adapter = UserListAdapter(UserListAdapter.OnClickListener{ userId: String, status: Boolean ->
             if (userId == "TYPE_ADDER"){
@@ -222,6 +242,8 @@ class ScheduleCreateFragment: Fragment(), AddMemoDialog.MemoDialogListener, AddN
                 createEventViewModel.backHome()
             }
         })
+
+
     }
     override fun getMemo(memo: String) {
         viewModel.memoList.value?.let {

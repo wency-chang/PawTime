@@ -20,13 +20,13 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="10dp"
-        >
+        android:layout_margin="0dp">
 
         <androidx.core.widget.NestedScrollView
             android:id="@+id/nestedScrollView"
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -39,19 +39,19 @@
 
                 <ImageView
                     android:id="@+id/photoIcon"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
                     android:layout_marginTop="10dp"
                     app:layout_constraintStart_toStartOf="@+id/petIcon"
                     app:layout_constraintTop_toBottomOf="@+id/petRecyclerView"
-                    app:srcCompat="@drawable/ic_baseline_collections_24" />
+                    app:srcCompat="@drawable/ic_paw_time__ui__08" />
 
                 <EditText
                     android:id="@+id/titleInput"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="55dp"
-                    android:layout_marginTop="16dp"
+                    android:layout_marginTop="30dp"
                     android:layout_marginEnd="55dp"
                     android:foregroundTint="@color/blue_rainy_day"
                     android:hint="@{viewModel.pickDate}"
@@ -67,11 +67,11 @@
                     android:id="@+id/tagIcon"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
+                    android:layout_marginStart="30dp"
                     android:layout_marginTop="16dp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/titleInput"
-                    app:srcCompat="@drawable/ic_baseline_local_offer_24" />
+                    app:srcCompat="@drawable/ic_round_local_offer_24_round" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/tagRecyclerView"
@@ -89,12 +89,12 @@
 
                 <ImageView
                     android:id="@+id/petIcon"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
                     android:layout_marginTop="10dp"
                     app:layout_constraintStart_toStartOf="@id/tagIcon"
                     app:layout_constraintTop_toBottomOf="@id/tagRecyclerView"
-                    app:srcCompat="@drawable/ic_baseline_pets_24" />
+                    app:srcCompat="@drawable/ic_paw_time__ui__06" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/petRecyclerView"
@@ -102,11 +102,12 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:layout_marginEnd="20dp"
+                    android:clipToPadding="false"
                     android:orientation="horizontal"
+                    android:paddingStart="55dp"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="@+id/petIcon"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/petIcon"
                     app:spanCount="5" />
 
@@ -143,23 +144,24 @@
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/photoRecyclerView"
+                    tagSelectorAdapter="@{viewModel.photoList}"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:orientation="horizontal"
                     android:clipToPadding="false"
+                    android:orientation="horizontal"
+                    android:paddingStart="55dp"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     app:layout_constraintEnd_toEndOf="@+id/petRecyclerView"
-                    app:layout_constraintStart_toStartOf="@id/photoIcon"
-                    app:layout_constraintTop_toBottomOf="@id/photoIcon"
-                    tagSelectorAdapter="@{viewModel.photoList}"/>
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/photoIcon" />
 
                 <ImageView
                     android:id="@+id/locationIcon"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    app:layout_constraintStart_toStartOf="@+id/photoRecyclerView"
+                    app:layout_constraintStart_toStartOf="@+id/calendarDiaryIcon"
                     app:layout_constraintTop_toBottomOf="@+id/dateButton"
                     app:srcCompat="@drawable/ic_baseline_location_on_24" />
 
@@ -168,7 +170,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    app:layout_constraintStart_toStartOf="@+id/photoRecyclerView"
+                    app:layout_constraintStart_toStartOf="@+id/locationIcon"
                     app:layout_constraintTop_toBottomOf="@+id/addressButton"
                     app:srcCompat="@drawable/ic_baseline_edit_note_24" />
 
@@ -189,20 +191,22 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:layout_marginBottom="60dp"
+                    android:layout_marginBottom="70dp"
                     android:orientation="horizontal"
+                    android:paddingStart="55dp"
+                    android:clipToPadding="false"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="@+id/photoRecyclerView"
-                    app:layout_constraintStart_toStartOf="@+id/memoIcon"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/memoIcon" />
 
                 <ImageView
                     android:id="@+id/calendarDiaryIcon"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    app:layout_constraintStart_toStartOf="@+id/photoRecyclerView"
+                    android:layout_marginTop="8dp"
+                    app:layout_constraintStart_toStartOf="@+id/photoIcon"
                     app:layout_constraintTop_toBottomOf="@+id/photoRecyclerView"
                     app:srcCompat="@drawable/ic_baseline_date_range_24" />
 
@@ -222,8 +226,8 @@
                     android:layout_width="0dp"
                     android:layout_marginTop="10dp"
                     android:hint="@{viewModel.pickDate}"
-                    app:layout_constraintEnd_toEndOf="@+id/photoRecyclerView"
-                    app:layout_constraintStart_toStartOf="@+id/calendarDiaryIcon"
+                    app:layout_constraintEnd_toEndOf="@+id/tagRecyclerView"
+                    app:layout_constraintStart_toStartOf="@+id/tagRecyclerView"
                     app:layout_constraintTop_toBottomOf="@+id/calendarDiaryIcon" />
 
                 <TextView
@@ -242,8 +246,8 @@
                     android:layout_width="0dp"
                     android:layout_marginTop="10dp"
                     android:text="@{viewModel.locationName}"
-                    app:layout_constraintEnd_toEndOf="@+id/dateButton"
-                    app:layout_constraintStart_toStartOf="@+id/locationIcon"
+                    app:layout_constraintEnd_toEndOf="@+id/tagRecyclerView"
+                    app:layout_constraintStart_toStartOf="@+id/tagRecyclerView"
                     app:layout_constraintTop_toBottomOf="@+id/locationIcon" />
 
 

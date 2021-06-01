@@ -25,10 +25,26 @@
         android:clipChildren="false"
         android:clipToPadding="false"
         >
+        <TextView
+            android:layout_width="match_parent"
+            android:maxLines="1"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="6dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="6dp"
+            android:textColor="@color/white"
+            android:textSize="@dimen/timeline_title_text_size"
+            android:gravity="top|center_horizontal"
+            android:visibility="@{title.empty? View.GONE: View.VISIBLE }"
+            />
+
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            >
 
             <ImageView
                 imageUrl="@{image}"
@@ -44,9 +60,11 @@
                 android:id="@+id/titleLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:gravity="top|center_horizontal"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
+                android:background="@color/transparent_black"
                 android:visibility="@{title.empty? View.GONE: View.VISIBLE }"
                 >
 
@@ -61,7 +79,7 @@
                     android:layout_marginEnd="16dp"
                     android:layout_marginBottom="6dp"
                     android:text="@{title}"
-                    android:textColor="@color/grey_white"
+                    android:textColor="@color/white"
                     android:textSize="@dimen/timeline_title_text_size"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -70,6 +88,9 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
 
+
+
         </androidx.constraintlayout.widget.ConstraintLayout>
+
     </androidx.cardview.widget.CardView>
 </layout>

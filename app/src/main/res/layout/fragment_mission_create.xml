@@ -18,15 +18,10 @@
     </data>
 
 
-
-
-
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="10dp"
-        >
+        android:layout_margin="0dp">
 
         <androidx.core.widget.NestedScrollView
             android:id="@+id/nestedScrollView"
@@ -48,7 +43,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="55dp"
-                    android:layout_marginTop="16dp"
+                    android:layout_marginTop="30dp"
                     android:layout_marginEnd="55dp"
                     android:foregroundTint="@color/blue_rainy_day"
                     android:hint="Missions"
@@ -62,13 +57,13 @@
 
                 <ImageView
                     android:id="@+id/petIcon"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
                     android:layout_marginStart="30dp"
                     android:layout_marginTop="10dp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/missionInput"
-                    app:srcCompat="@drawable/ic_baseline_pets_24" />
+                    app:srcCompat="@drawable/ic_paw_time__ui__06" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/petRecyclerView"
@@ -76,11 +71,12 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:layout_marginEnd="30dp"
+                    android:clipToPadding="false"
+                    android:paddingStart="55dp"
                     android:orientation="horizontal"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="@+id/petIcon"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/petIcon"
                     app:spanCount="5" />
 
@@ -101,7 +97,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    app:layout_constraintStart_toStartOf="@+id/regularitySelectSpinner"
+                    app:layout_constraintStart_toStartOf="@+id/imageView"
                     app:layout_constraintTop_toBottomOf="@+id/regularitySelectSpinner"
                     app:srcCompat="@drawable/ic_baseline_edit_note_24" />
 
@@ -125,14 +121,15 @@
                     android:layout_marginTop="10dp"
                     android:layout_marginBottom="60dp"
                     android:clipToPadding="false"
+                    android:paddingStart="55dp"
                     android:foregroundGravity="center"
                     android:orientation="horizontal"
                     app:flow_horizontalAlign="center"
                     app:flow_verticalAlign="center"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="@+id/regularitySelectSpinner"
-                    app:layout_constraintStart_toStartOf="@+id/memoIcon"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/memoIcon" />
 
                 <ImageView
@@ -151,8 +148,8 @@
                     android:layout_marginTop="10dp"
                     android:text="@{viewModel.dateRange}"
                     android:textAlignment="center"
-                    app:layout_constraintEnd_toEndOf="@+id/petRecyclerView"
-                    app:layout_constraintStart_toStartOf="@+id/calendarIcon"
+                    app:layout_constraintEnd_toEndOf="@+id/missionInput"
+                    app:layout_constraintStart_toStartOf="@+id/missionInput"
                     app:layout_constraintTop_toBottomOf="@+id/calendarIcon" />
 
                 <TextView
@@ -170,7 +167,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    app:layout_constraintStart_toStartOf="@+id/dateRangeSelectButton"
+                    app:layout_constraintStart_toStartOf="@+id/calendarIcon"
                     app:layout_constraintTop_toBottomOf="@+id/dateRangeSelectButton"
                     app:srcCompat="@drawable/ic_baseline_autorenew_24" />
 
@@ -194,7 +191,7 @@
                     android:selectedItemPosition="@={viewModel.selectedRegularityPosition}"
                     android:spinnerMode="dialog"
                     app:layout_constraintEnd_toEndOf="@+id/dateRangeSelectButton"
-                    app:layout_constraintStart_toStartOf="@+id/imageView"
+                    app:layout_constraintStart_toStartOf="@+id/dateRangeSelectButton"
                     app:layout_constraintTop_toBottomOf="@+id/imageView" />
 
 

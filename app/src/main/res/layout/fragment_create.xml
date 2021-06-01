@@ -19,16 +19,30 @@
 
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraintLayout8"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:background="@color/blue_light"
             android:layout_marginBottom="24dp"
+            android:background="@color/blue_light"
             app:layout_constraintBottom_toBottomOf="@+id/cardView"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
         </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/navCreateNavigation"
+            android:name="androidx.navigation.fragment.NavHostFragment"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/constraintLayout8">
+
+        </androidx.viewpager2.widget.ViewPager2>
 
         <androidx.cardview.widget.CardView
             android:id="@+id/cardView"
@@ -154,35 +168,34 @@
 
         </androidx.cardview.widget.CardView>
 
-        <androidx.viewpager2.widget.ViewPager2
-            android:id="@+id/navCreateNavigation"
-            android:name="androidx.navigation.fragment.NavHostFragment"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_marginStart="16dp"
             android:layout_marginTop="20dp"
-            android:layout_marginEnd="16dp"
-            app:layout_constraintBottom_toBottomOf="@+id/createDoneButton"
+            android:background="@drawable/bd_gradiant_tranparent"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/cardView">
+            app:layout_constraintTop_toTopOf="@+id/createDoneButton">
 
-        </androidx.viewpager2.widget.ViewPager2>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <Button
             android:id="@+id/createDoneButton"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="50dp"
-            android:layout_marginEnd="50dp"
+            android:layout_height="45dp"
             android:layout_marginBottom="20dp"
-            android:background="@drawable/bg_edit_button_grey"
+            android:background="@drawable/bg_square_button"
+            android:backgroundTint="@color/blue_light"
+            android:drawableStart="@drawable/ic_baseline_check_24"
             android:onClick="@{()->viewModel.clickConfirmButton()}"
+            android:paddingStart="20dp"
             android:text="DONE &amp; SAVE"
+            android:textColor="@color/white"
+            android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintEnd_toEndOf="@+id/cardView"
+            app:layout_constraintStart_toStartOf="@+id/cardView" />
 
         <ProgressBar
             android:id="@+id/createProgressBar"
@@ -190,10 +203,28 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:visibility="@{viewModel.loadingStatus? View.VISIBLE : View.GONE }"
-            app:layout_constraintBottom_toBottomOf="@+id/navCreateNavigation"
+            app:layout_constraintBottom_toBottomOf="@+id/createDoneButton"
             app:layout_constraintEnd_toEndOf="@+id/createDoneButton"
             app:layout_constraintStart_toStartOf="@+id/createDoneButton"
             app:layout_constraintTop_toTopOf="@+id/createDoneButton" />
+
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/loadingAnimation"
+            android:background="@color/white_transparent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            app:lottie_autoPlay="true"
+            app:lottie_loop="true"
+            app:lottie_fileName="loading.json"
+            android:visibility="@{viewModel.loadingStatus? View.VISIBLE : View.GONE }"
+            >
+
+
+        </com.airbnb.lottie.LottieAnimationView>
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_host"
-    app:startDestination="@id/loadingFragment">
+    app:startDestination="@id/logInFragment">
 
     <fragment
         android:id="@+id/homeFragment"
@@ -80,9 +80,7 @@
         app:startDestination="@id/nav_create">
         <include app:graph="@navigation/nav_create" />
     </navigation>
-    <action
-        android:id="@+id/action_global_to_home_fragment"
-        app:destination="@id/homeFragment" />
+
     <fragment
         android:id="@+id/petCreateFragment"
         android:name="com.wency.petmanager.create.pet.PetCreateFragment"
@@ -92,30 +90,14 @@
             android:name="userInfo"
             app:argType="com.wency.petmanager.data.UserInfo" />
     </fragment>
-    <action
-        android:id="@+id/action_global_to_pet_create"
-        app:destination="@id/petCreateFragment" />
 
-    <action
-        android:id="@+id/action_global_to_diary_detail_fragment"
-        app:destination="@id/diaryDetailFragment" />
-
-    <action
-        android:id="@+id/action_global_to_pet_profile_fragment"
-        app:destination="@id/petProfileFragment" />
 
     <fragment
         android:id="@+id/loadingFragment"
         android:name="com.wency.petmanager.home.LoadingFragment"
-        android:label="LoadingFragment" />
+        android:label="LoadingFragment"
+        />
 
-    <action
-        android:id="@+id/action_global_to_schedule_detail"
-        app:destination="@id/scheduleDetailFragment" />
-
-    <action
-        android:id="@+id/action_global_to_dialog_find_friend"
-        app:destination="@id/findFriendDialog" />
 
     <dialog
         android:id="@+id/findFriendDialog"
@@ -145,13 +127,71 @@
         <argument
             android:name="fragmentInt"
             app:argType="integer" />
+        <argument
+            android:name="petId"
+            app:argType="string"
+            android:defaultValue="0" />
+        <action
+            android:id="@+id/action_chooseFriendFragment_to_createEventFragment"
+            app:destination="@id/createEventFragment"
+            app:popUpTo="@id/createEventFragment"
+            app:popUpToInclusive="true"/>
+
+        <action
+            android:id="@+id/action_chooseFriendFragment_to_petProfileFragment"
+            app:destination="@id/petProfileFragment"
+            app:popUpToInclusive="true"
+            app:popUpTo="@id/petProfileFragment"/>
     </fragment>
     <action
         android:id="@+id/action_global_to_choose_friend"
-        app:destination="@id/chooseFriendFragment" />
+        app:destination="@id/chooseFriendFragment"
+        />
     <action
         android:id="@+id/action_global_to_create_fragment"
-        app:destination="@id/createEventFragment" />
+        app:destination="@id/createEventFragment"
+        app:launchSingleTop="true"
+        app:popUpToInclusive="true" />
+    <action
+        android:id="@+id/action_global_to_schedule_detail"
+        app:destination="@id/scheduleDetailFragment"
+        app:popUpToInclusive="true"/>
+
+    <action
+        android:id="@+id/action_global_to_dialog_find_friend"
+        app:destination="@id/findFriendDialog"
+        app:popUpToInclusive="true"/>
+
+    <action
+        android:id="@+id/action_global_to_pet_create"
+        app:destination="@id/petCreateFragment"
+        app:popUpToInclusive="true"/>
+
+    <action
+        android:id="@+id/action_global_to_diary_detail_fragment"
+        app:destination="@id/diaryDetailFragment"
+        app:popUpToInclusive="true"/>
+
+    <action
+        android:id="@+id/action_global_to_pet_profile_fragment"
+        app:destination="@id/petProfileFragment"
+        app:launchSingleTop="true"
+        app:popUpToInclusive="true" />
+
+    <action
+        android:id="@+id/action_global_to_home_fragment"
+        app:destination="@id/homeFragment"
+        app:popUpTo="@id/homeFragment"
+        app:popUpToInclusive="true"
+        />
+
+    <action
+        android:id="@+id/action_global_to_loading_fragment"
+        app:destination="@id/loadingFragment"
+        app:popUpTo="@id/loadingFragment"
+        app:popUpToInclusive="true"
+        />
+
 
 
 </navigation>

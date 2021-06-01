@@ -34,7 +34,7 @@
                     android:id="@+id/newTagText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Enter Tag"
+                    android:hint="#"
                     android:maxLines="2"
                     android:backgroundTint="@color/blue_light2"
                     app:layout_constraintEnd_toEndOf="parent"

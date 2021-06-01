@@ -31,6 +31,7 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:id="@+id/friendListBackButton"
                 android:src="@drawable/ic_baseline_navigate_before_24_grey"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -44,6 +45,7 @@
             android:id="@+id/friendListTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
             android:text="My Friends"
             android:textSize="36dp"
             android:textStyle="bold" />
@@ -57,12 +59,12 @@
             android:background="@drawable/bg_select_friend_bar"
             android:drawableStart="@drawable/ic_baseline_search_24"
             android:drawablePadding="20dp"
-            android:hint="Add New Friend by mail"
-            android:imeOptions="actionDone"
+            android:hint="Search Friend by Mail"
+            android:imeOptions="actionSearch"
             android:inputType="textEmailAddress"
             android:maxLines="1"
             android:paddingStart="16dp"
-            android:textSize="20dp" />
+            android:textSize="16dp" />
 
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
@@ -119,6 +121,7 @@
                         android:padding="10dp"
                         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
                         app:spanCount="3"
+
                         tools:listitem="@layout/item_friend_list_holder" />
                 </LinearLayout>
 

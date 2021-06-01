@@ -9,20 +9,21 @@
 
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:id="@+id/linearLayoutForMargin"
+        android:layout_marginLeft="-22dp"
+        android:background="@drawable/bg_white_circle"
+        android:backgroundTint="@color/grey_white">
 
         <ImageView
             android:layout_width="36dp"
             android:layout_height="36dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:layout_margin="5dp"
-            imageUrlCircle="@{image}"/>
+            imageUrlCircle="@{image}"
+            android:layout_margin="0.5dp"
+            />
 
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
 </layout>

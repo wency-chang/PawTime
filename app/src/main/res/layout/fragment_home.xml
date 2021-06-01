@@ -196,6 +196,21 @@
                     app:layout_constraintTop_toTopOf="parent" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
+            <com.airbnb.lottie.LottieAnimationView
+                android:id="@+id/progressBar"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:lottie_autoPlay="true"
+                android:focusable="true"
+                android:background="@color/white_transparent"
+                app:lottie_loop="true"
+                app:lottie_fileName="paw_loading.json"
+                android:visibility="@{viewModel.refreshStatus?View.VISIBLE:View.GONE}"/>
+
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

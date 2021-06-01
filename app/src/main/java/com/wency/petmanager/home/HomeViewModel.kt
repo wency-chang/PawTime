@@ -92,7 +92,7 @@ class HomeViewModel(
     val error: LiveData<String?>
         get() = _error
 
-    // status for the loading icon of swl
+    // status for the loading.json icon of swl
     private val _refreshStatus = MutableLiveData<Boolean>(false)
 
     val refreshStatus: LiveData<Boolean>
@@ -126,7 +126,7 @@ class HomeViewModel(
 
     var onStatusQuery = false
 
-    private var _scrollToToday = MutableLiveData<Int>()
+    private var _scrollToToday = MutableLiveData<Int>(0)
 
     val scrollToToday: LiveData<Int>
         get() = _scrollToToday
@@ -324,9 +324,7 @@ class HomeViewModel(
 
     private fun getOrderedList(eventList: MutableList<Event>): MutableList<Event> {
         if (!eventList.isNullOrEmpty()) {
-            eventList.sortBy {
-                it.date
-            }
+            eventList.sortWith(compareBy<Event> { it.date }.thenBy { it.time })
         }
 //        store event list for certain petList
         _allEventList = eventList
@@ -335,7 +333,7 @@ class HomeViewModel(
 
     fun createTimelineItem(eventList: MutableList<Event>) {
 
-        _scrollToToday.value = 0
+//        _scrollToToday.value = 0
         _timeline.value = mutableListOf()
         val listTimelineItem = mutableListOf<TimelineItem>()
         var isTodayAdd = false
@@ -358,12 +356,13 @@ class HomeViewModel(
                             )
                         )
                     )
-
                     isTodayAdd = true
-                    timelineCount += 1
                     todayLocation = timelineCount
+                    timelineCount += 1
 
                 }
+
+
                 val countDay = eventList[count].date.toDate()
                 val listCardHolder = mutableListOf<Event>()
                 val listPhotoHolder = mutableListOf<Event>()
@@ -396,6 +395,7 @@ class HomeViewModel(
                             )
                         )
                     )
+                    timelineCount += 1
                 }
 
                 if (!listPhotoHolder.isNullOrEmpty()) {
@@ -408,6 +408,7 @@ class HomeViewModel(
                             )
                         )
                     )
+                    timelineCount += 1
                 }
 
                 if (count == eventList.size && !isTodayAdd) {
@@ -420,10 +421,10 @@ class HomeViewModel(
                         )
                     )
                     isTodayAdd = true
-                    timelineCount += 1
+
                     todayLocation = timelineCount
                 }
-                timelineCount += 1
+
 
             } while (count < eventList.size)
 
@@ -436,19 +437,6 @@ class HomeViewModel(
         }
     }
 
-    fun findFriendList() {
-        val allPeopleIdList = mutableSetOf<String>()
-        userInfoProfile.friendList?.let { allPeopleIdList.addAll(it) }
-        userPetList?.let { petList ->
-            for (pet in petList) {
-                pet?.let {
-                    allPeopleIdList.addAll(it.users)
-                }
-            }
-        }
-        getAllFriendUsers(allPeopleIdList.toList())
-
-    }
 
 
     fun findTodayLocation(eventList: MutableList<Event>): Int {
@@ -486,11 +474,35 @@ class HomeViewModel(
         if (isQuery) {
             petList.value?.let { totalPetList ->
                 totalPetList[petPosition]?.let { pet ->
-                    _eventForTimeline.value = petEventList?.filter {
-                        it.petParticipantList.contains(pet.id)
-                    }?.toMutableList()
+
+                    if (pet.eventList.isNullOrEmpty()){
+                        Log.d("PetEventList","isNullOrEmpty")
+                        _eventForTimeline.value?.clear()
+                        _eventForTimeline.value = mutableListOf()
+                    } else {
+
+                        _eventForTimeline.value = petEventList?.filter {
+                            it.petParticipantList.contains(pet.id)
+                        }?.toMutableList()
+                    }
+
+
                     onStatusQuery = true
+
+                    missionListToday.value?.let { todayMission->
+                        createMissionTimeItem(todayMission.filter {
+                            it.petId == pet.id
+                        })
+                    }
+
+
                 }
+
+
+
+
+
+
                 _petQueryPosition.value = petPosition
             }
 //            petList.value?.let {
@@ -502,6 +514,11 @@ class HomeViewModel(
             _eventForTimeline.value = petEventList?.toMutableList()
             onStatusQuery = false
             _petQueryPosition.value = null
+            missionListToday.value?.let {
+                createMissionTimeItem(it)
+            }
+
+
 //            petList.value.let {
 //                it?.let {
 //                    getEvents(it)

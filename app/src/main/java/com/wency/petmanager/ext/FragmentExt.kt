@@ -43,7 +43,7 @@ fun Fragment.getVmFactory(userInfo: UserInfo, friendInfo: UserInfo): FindFriendV
     return FindFriendViewModelFactory(repository, userInfo, friendInfo)
 }
 
-fun Fragment.getVmFactory(userInfo: UserInfo, selectedList: Array<String>, fragmentInt: Int): FriendSelectViewModelFactory {
+fun Fragment.getVmFactory(userInfo: UserInfo, selectedList: Array<String>, fragmentInt: Int, petId: String): FriendSelectViewModelFactory {
     val repository = (requireContext().applicationContext as ManagerApplication).repository
-    return FriendSelectViewModelFactory(repository, userInfo, selectedList, fragmentInt)
+    return FriendSelectViewModelFactory(repository, userInfo, selectedList, fragmentInt, petId)
 }

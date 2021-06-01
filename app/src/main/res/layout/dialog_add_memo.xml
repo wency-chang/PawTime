@@ -53,8 +53,9 @@
                 android:layout_marginHorizontal="40dp"
                 android:layout_marginBottom="8dp"
                 android:background="@drawable/bg_pet_header_name"
-                android:backgroundTint="@color/blue_sunday"
+                android:backgroundTint="@color/blue_light2"
                 android:text="Save"
+                android:textStyle="bold"
                 android:textColor="@color/white">
 
             </Button>

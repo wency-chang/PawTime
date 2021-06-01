@@ -13,6 +13,7 @@ import com.wency.petmanager.data.*
 import com.wency.petmanager.data.source.Repository
 import com.wency.petmanager.home.HomeViewModel
 import com.wency.petmanager.profile.Today
+import com.wency.petmanager.profile.UserManager
 import kotlinx.coroutines.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -42,30 +43,36 @@ class ScheduleCreateViewModel(val repository: Repository) : ViewModel() {
 
     val checkingStatus = MutableLiveData<Boolean?>(null)
 
+//    data for update
     private var participantPet = mutableSetOf<String>()
 
     var participantUser = mutableSetOf<String>()
 
     private var chosenTagList = mutableSetOf<String>()
 
-    val petSelector = MutableLiveData<MutableList<PetSelector>>()
+    val notificationAvailable = MutableLiveData<Boolean>(false)
+
+
+
 
     val today: String = Today.todayString
-
     val title = MutableLiveData<String>("")
-
     val _loadingStatus = MutableLiveData<Boolean>(false)
     val loadingStatus : LiveData<Boolean>
      get() = _loadingStatus
 
 
     var myPet = listOf<Pet>()
-
+    //    pet option for pet selector
     val petOptions = MutableLiveData<MutableList<Pet>>()
-
+    //    user option recycler list
     val userOptionListLiveData = MutableLiveData<MutableList<UserInfo>>()
-
+//    selected User live data for update pet option
     val selectedUser = MutableLiveData<MutableList<String>>()
+//    pet option for recycler list
+    val petSelector = MutableLiveData<MutableList<PetSelector>>()
+
+    val me = UserInfo()
 
 
 
@@ -73,7 +80,6 @@ class ScheduleCreateViewModel(val repository: Repository) : ViewModel() {
 
     init {
         createTagList()
-        updatePetSelector(petOptions.value)
     }
     @SuppressLint("SimpleDateFormat")
     val timeFormat = SimpleDateFormat("hh:mm")
@@ -186,6 +192,11 @@ class ScheduleCreateViewModel(val repository: Repository) : ViewModel() {
 
     }
 
+    fun initUserSelectState(userList: List<String>){
+        participantUser.addAll(userList)
+        selectedUser.value = participantUser.toMutableList()
+    }
+
 
 
 
@@ -216,6 +227,13 @@ class ScheduleCreateViewModel(val repository: Repository) : ViewModel() {
             }
 
         }
+    }
+
+    fun setNotification(){
+        selectedUser.value?.let {
+            notificationAvailable.value = it.size > 1 || !it.contains(UserManager.userID)
+        }
+
     }
 
     fun createSchedule() {
@@ -283,9 +301,11 @@ class ScheduleCreateViewModel(val repository: Repository) : ViewModel() {
         if (status){
             participantUser.add(userId)
             selectedUser.value = participantUser.toMutableList()
+            selectedUser.value = selectedUser.value
         } else {
             participantUser.remove(userId)
             selectedUser.value = participantUser.toMutableList()
+            selectedUser.value = selectedUser.value
         }
     }
 
@@ -316,12 +336,10 @@ class ScheduleCreateViewModel(val repository: Repository) : ViewModel() {
                         if (list.size == userList.size){
                             list.add(UserInfo())
                             userOptionListLiveData.value = list
+                            Log.d("USER!","getOptionListLiveData ${userOptionListLiveData.value}")
                         }
                     }
                 }
-
-
-
             }
 
         }
@@ -329,9 +347,14 @@ class ScheduleCreateViewModel(val repository: Repository) : ViewModel() {
     }
 
     fun getPetOption(){
+
+
         selectedUser.value?.let {selectedUserList->
+
+
             userOptionListLiveData.value?.let {userInfoList->
-                coroutineScope.launch {
+
+                coroutineScope.async {
                     val list = mutableSetOf<Pet>()
                     val petIdList = mutableSetOf<String>()
                     for (userId in selectedUserList){
@@ -339,21 +362,26 @@ class ScheduleCreateViewModel(val repository: Repository) : ViewModel() {
                             it.userId == userId
                         }
                         userInfo.forEach {
-                            it.petList?.let { petList -> petIdList.addAll(petIdList) }
+                            it.petList?.let { petList -> petIdList.addAll(petList) }
                         }
                     }
+                    Log.d("USER!","getPetOption petList: $petIdList")
 
                     for (petId in petIdList){
                         when (val result = repository.getPetData(petId)){
                             is Result.Success -> {
                                 list.add(result.data)
                                 if (list.size == petIdList.size){
-                                    list.addAll(myPet)
-                                    petOptions.value = list.toMutableList()
+                                    val optionList = myPet.toMutableSet()
+
+                                    optionList.addAll(list)
+                                    petOptions.value = optionList.toMutableList()
                                 }
                             }
                         }
+                        Log.d("USER!","done: $petIdList")
                     }
+
 
                 }
 
