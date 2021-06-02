@@ -197,16 +197,6 @@
             app:layout_constraintEnd_toEndOf="@+id/cardView"
             app:layout_constraintStart_toStartOf="@+id/cardView" />
 
-        <ProgressBar
-            android:id="@+id/createProgressBar"
-            style="@style/create_event_progress"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="@{viewModel.loadingStatus? View.VISIBLE : View.GONE }"
-            app:layout_constraintBottom_toBottomOf="@+id/createDoneButton"
-            app:layout_constraintEnd_toEndOf="@+id/createDoneButton"
-            app:layout_constraintStart_toStartOf="@+id/createDoneButton"
-            app:layout_constraintTop_toTopOf="@+id/createDoneButton" />
 
         <com.airbnb.lottie.LottieAnimationView
             android:id="@+id/loadingAnimation"
@@ -219,8 +209,8 @@
             android:layout_width="match_parent"
             app:lottie_autoPlay="true"
             app:lottie_loop="true"
-            app:lottie_fileName="loading.json"
-            android:visibility="@{viewModel.loadingStatus? View.VISIBLE : View.GONE }"
+            app:lottie_fileName="upload_to_cloud.json"
+            android:visibility="@{viewModel.loadingStatus?View.VISIBLE:View.GONE}"
             >
 
 

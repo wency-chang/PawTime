@@ -10,6 +10,9 @@
         <variable
             name="viewModel"
             type="com.wency.petmanager.home.HomeViewModel" />
+        <variable
+            name="mainViewModel"
+            type="com.wency.petmanager.MainViewModel" />
 
     </data>
 

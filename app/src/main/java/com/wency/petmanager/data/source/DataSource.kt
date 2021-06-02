@@ -9,8 +9,6 @@ interface DataSource {
 
     suspend fun getUserProfile(token: String): Result<UserInfo>
 
-    suspend fun getAllPetData(petList: List<String>): Result<List<Pet>>
-
     suspend fun getPetData(id: String): Result<Pet>
 
     suspend fun getEvents (id: String): Result<Event>
@@ -27,11 +25,7 @@ interface DataSource {
 
     suspend fun updateImage (uri: Uri, folder: String): Result<String>
 
-    suspend fun getEventList (list: List<String>) : Result<List<EventList>>
-
     fun getTodayMissionLiveData(petList: List<Pet>): MutableLiveData<List<MissionGroup>>
-
-    suspend fun getTimelineList (list: List<String>) : Result<List<TimelineItem>>
 
     suspend fun deleteEvent (id: String) : Result<Boolean>
 
@@ -48,10 +42,6 @@ interface DataSource {
     suspend fun addEventID (petID: String, eventID: String) : Result<Boolean>
 
     suspend fun createPet (pet: Pet) : Result<String>
-
-    suspend fun updatePetInfo (id: String, pet: Pet) : Result<Boolean>
-
-    suspend fun addFriends (friendID: String, userInfo: UserInfo) : Result<Boolean>
 
     suspend fun addOwner (petID: String, ownerID: String) : Result<Boolean>
 
@@ -76,5 +66,11 @@ interface DataSource {
     suspend fun updateOwner(petId: String, userIdList: List<String>) : Result<Pet>
 
     suspend fun userPetListUpdate(petId: String, userId: String, add: Boolean) : Result<Boolean>
+
+    suspend fun updatePetData(petId: String, petData: Pet) : Result<Boolean>
+
+    suspend fun deleteEventFromPetData(petId: String, eventId: String) : Result<Boolean>
+
+    suspend fun updatePetEventList(petId: String, eventId: String, add: Boolean): Result<Boolean>
 
 }

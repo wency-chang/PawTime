@@ -82,8 +82,6 @@ class GetImageFromGallery() {
     }
 
     fun onActivityHeaderResult(result: ActivityResult): String {
-
-
         if (result.resultCode == Activity.RESULT_OK) {
 
 
@@ -94,6 +92,28 @@ class GetImageFromGallery() {
 
         }
         return ""
+    }
+
+    fun onActivityNewCoverResult(result: ActivityResult): List<Uri>{
+        val list = mutableListOf<Uri>()
+        if (result.resultCode == Activity.RESULT_OK){
+            val intent = result.data
+            intent?.let {
+                if (it.clipData != null) {
+                    for (index in 0 until it.clipData!!.itemCount) {
+                        list.add(it.clipData!!.getItemAt(index).uri)
+                    }
+
+
+                } else {
+                    it.data?.let {uri->
+                        list.add(uri)
+                    }
+                }
+
+            }
+        }
+        return list
     }
 
 

@@ -196,8 +196,8 @@ class HomeViewModel(
 //        getPetData()
     }
 
-    private fun getPetHeaderList(petList: List<Pet>) {
-        userPetList?.let {
+    fun getPetHeaderList(petList: List<Pet>) {
+        petList?.let {
             _petList.value = it.toMutableList()
             _petList.value?.add(null)
         }

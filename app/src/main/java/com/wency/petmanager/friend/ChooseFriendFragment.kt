@@ -38,14 +38,19 @@ class ChooseFriendFragment(): Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentSelectFriendBinding.inflate(layoutInflater, container, false)
-        binding.lifecycleOwner = this
-        binding.viewModel = viewModel
-        binding.mainViewModel = mainViewModel
+
 
         mainViewModel.friendUserList.value?.let {
             viewModel.getPetInfo(it)
         }
+
         binding.friendListRecycler.adapter = FriendChooseAdapter(viewModel)
+
+        binding.lifecycleOwner = this
+        binding.viewModel = viewModel
+        binding.mainViewModel = mainViewModel
+
+
         return binding.root
     }
 

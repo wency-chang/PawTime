@@ -39,6 +39,7 @@ object RemoteDataSource : DataSource {
     private const val USER_FRIEND_LIST_FIELD = "friendList"
     private const val PET_USER_LIST = "users"
     private const val USER_MAIL_FIELD = "email"
+    private const val PET_EVENT_LIST = "eventList"
 
 
     override suspend fun getUserProfile(token: String): Result<UserInfo> =
@@ -50,7 +51,6 @@ object RemoteDataSource : DataSource {
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         task.result?.let { document ->
-                            Log.d("debug", "onCompleted ${document.data}")
                             document.toObject(UserInfo::class.java)?.let {
                                 continuation.resume(Result.Success(it))
                             }
@@ -67,7 +67,6 @@ object RemoteDataSource : DataSource {
 
 
     override suspend fun getPetData(id: String): Result<Pet> = suspendCoroutine { continuation ->
-        Log.d("remote data source", "get Pet Data $id ")
 
         FirebaseFirestore.getInstance()
             .collection(PATH_PETS)
@@ -108,6 +107,14 @@ object RemoteDataSource : DataSource {
                             continuation.resume(Result.Success(it))
                         }
                     }
+                    if (task.result == null){
+                        continuation.resume(Result.Success(Event()))
+                    } else if (task.result.data == null) {
+                        Log.d("delete Event","$id")
+                        continuation.resume(Result.Success(Event()))
+                    }
+
+
                 } else {
                     task.exception?.let {
                         continuation.resume(Result.Error(it))
@@ -595,6 +602,7 @@ object RemoteDataSource : DataSource {
         val petDocument = FirebaseFirestore.getInstance().collection(PATH_PETS).document(petId)
         val userCollection = FirebaseFirestore.getInstance().collection(PATH_USERS)
         Log.d("UpdateOwner", "repository $petId")
+
         petDocument
             .update(PET_USER_LIST, FieldValue.delete())
             .addOnCompleteListener { taskDelete->
@@ -676,6 +684,53 @@ object RemoteDataSource : DataSource {
         }
     }
 
+    override suspend fun updatePetData(petId: String, petData: Pet): Result<Boolean> = suspendCoroutine { continuation->
+        val petDocument = FirebaseFirestore.getInstance().collection(PATH_PETS).document(petId)
+        petDocument.set(petData)
+            .addOnCompleteListener { task->
+                if (task.isSuccessful){
+                    continuation.resume(Result.Success(true))
+                }
+            }
+
+    }
+
+    override suspend fun deleteEventFromPetData(petId: String, eventId: String): Result<Boolean> = suspendCoroutine {continuation->
+        val petDocument = FirebaseFirestore.getInstance().collection(PATH_PETS).document(petId)
+        petDocument.update(PET_EVENT_LIST, FieldValue.arrayRemove(eventId))
+            .addOnCompleteListener {
+                if (it.isSuccessful){
+                    continuation.resume(Result.Success(true))
+                }
+            }
+    }
+
+    override suspend fun updatePetEventList(
+        petId: String,
+        eventId: String,
+        add: Boolean
+    ): Result<Boolean> = suspendCoroutine {continuation->
+        val petDocument = FirebaseFirestore.getInstance().collection(PATH_PETS).document(petId)
+
+        if (add){
+            petDocument.update(PET_EVENT_LIST, FieldValue.arrayUnion(eventId))
+                .addOnCompleteListener {
+                    if (it.isSuccessful){
+                        continuation.resume(Result.Success(true))
+                    }
+                }
+
+        } else {
+            petDocument.update(PET_EVENT_LIST, FieldValue.arrayRemove(eventId))
+                .addOnCompleteListener {
+                    if (it.isSuccessful){
+                        continuation.resume(Result.Success(true))
+                    }
+                }
+        }
+
+    }
+
 
     override suspend fun createMission(petId: String, mission: MissionGroup): Result<Boolean> =
         suspendCoroutine { continuation ->
@@ -699,8 +754,14 @@ object RemoteDataSource : DataSource {
                 }
         }
 
-    override suspend fun updateEvent(event: Event): Result<Boolean> {
-        TODO("Not yet implemented")
+    override suspend fun updateEvent(event: Event): Result<Boolean> = suspendCoroutine {continuation->
+        val eventDocument = FirebaseFirestore.getInstance().collection(PATH_EVENT).document(event.eventID)
+        eventDocument.set(event)
+            .addOnCompleteListener {
+                if (it.isSuccessful){
+                    continuation.resume(Result.Success(true))
+                }
+            }
     }
 
     override suspend fun updateImage(uri: Uri, folder: String): Result<String> =
@@ -734,49 +795,21 @@ object RemoteDataSource : DataSource {
         return mimeTypeMap.getExtensionFromMimeType(contentResolver.getType(uri))
     }
 
-    override suspend fun deleteEvent(id: String): Result<Boolean> {
-        TODO("Not yet implemented")
+    override suspend fun deleteEvent(id: String): Result<Boolean> = suspendCoroutine {continuation->
+        val eventDocument = FirebaseFirestore.getInstance().collection(PATH_EVENT).document(id)
+        eventDocument.delete()
+            .addOnCompleteListener {
+                if (it.isSuccessful){
+                    continuation.resume(Result.Success(true))
+                }
+            }
+
     }
 
     override suspend fun deleteMission(id: String): Result<Boolean> {
         TODO("Not yet implemented")
     }
 
-
-    override suspend fun updatePetInfo(id: String, pet: Pet): Result<Boolean> {
-        TODO("Not yet implemented")
-    }
-
-
-
-//    oops
-
-    override suspend fun addFriends(friendID: String, userInfo: UserInfo): Result<Boolean> =
-        suspendCoroutine { continuation ->
-            FirebaseFirestore.getInstance().collection(PATH_USERS).document(friendID).collection(
-                USER_INVITE_LIST
-            )
-                .document()
-                .set(userInfo)
-                .addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        continuation.resume(Result.Success(true))
-                    } else {
-                        task.exception?.let {
-                            continuation.resume(Result.Error(it))
-                            return@addOnCompleteListener
-                        }
-                        continuation.resume(Result.Fail("failed unknown reason"))
-                    }
-                }
-        }
-
-
-    override suspend fun getEventList(list: List<String>): Result<List<EventList>> =
-        suspendCoroutine { continuation ->
-
-
-        }
 
 
     override fun getTodayMissionLiveData(petList: List<Pet>): MutableLiveData<List<MissionGroup>> {
@@ -817,17 +850,6 @@ object RemoteDataSource : DataSource {
         return liveData
     }
 
-    override suspend fun getAllPetData(petList: List<String>): Result<List<Pet>> =
-        suspendCoroutine { continuation ->
-            val petDataList = mutableListOf<Pet>()
-
-            continuation.resume(Result.Success(petDataList))
-            return@suspendCoroutine
-        }
-
-    override suspend fun getTimelineList(list: List<String>): Result<List<TimelineItem>> {
-        TODO("Not yet implemented")
-    }
 
 
 }

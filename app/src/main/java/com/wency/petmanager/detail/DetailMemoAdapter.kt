@@ -1,15 +1,20 @@
 package com.wency.petmanager.detail
 
+import android.content.Context
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LiveData
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.wency.petmanager.create.events.adapter.TagListAdapter
 import com.wency.petmanager.databinding.ItemDetailMemoListBinding
 
-class DetailMemoAdapter(private val editable: Boolean):
+class DetailMemoAdapter(val editable: LiveData<Boolean>, val lifecycleOwner: LifecycleOwner):
     ListAdapter<String, RecyclerView.ViewHolder>(TagListAdapter.DiffCallback) {
+
+
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -26,17 +31,18 @@ class DetailMemoAdapter(private val editable: Boolean):
         when(holder){
             is TagHolder -> {
                 Log.d("memo","${getItem(position)}")
-                holder.bind(getItem(position))
-                holder.bindClickable(editable)
-
+                holder.bind(getItem(position), lifecycleOwner, this)
+                editable.value?.let { holder.bindClickable(it) }
             }
         }
     }
 
     class TagHolder(val binding: ItemDetailMemoListBinding): RecyclerView.ViewHolder(binding.root){
 
-        fun bind(memo: String){
+        fun bind(memo: String, lifecycleOwner: LifecycleOwner, adapter: DetailMemoAdapter){
             binding.memo = memo
+            binding.lifecycleOwner = lifecycleOwner
+            binding.adapter = adapter
             binding.executePendingBindings()
         }
         fun bindClickable(clickable: Boolean){
@@ -47,6 +53,7 @@ class DetailMemoAdapter(private val editable: Boolean):
 
     override fun getItemViewType(position: Int): Int {
         return when (getItem(position)){
+
 
             else ->{
                 TagListAdapter.ITEM_TYPE_TAG

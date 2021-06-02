@@ -14,11 +14,10 @@
 
     </data>
 
-    <androidx.constraintlayout.motion.widget.MotionLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout7"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layoutDescription="@xml/fragment_select_friend_xml_constraintlayout7_scene">
+        android:layout_height="match_parent">
 
         <LinearLayout
             android:id="@+id/searchFriendTitleLayout"
@@ -39,9 +38,9 @@
                 android:textStyle="normal" />
 
             <EditText
+                android:id="@+id/searchFriendByMail"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
-                android:id="@+id/searchFriendByMail"
                 android:layout_marginHorizontal="30dp"
                 android:layout_marginVertical="10dp"
                 android:background="@drawable/bg_select_friend_bar"
@@ -53,9 +52,6 @@
                 android:maxLines="1"
                 android:paddingStart="16dp"
                 android:textSize="16dp" />
-
-
-
         </LinearLayout>
 
         <androidx.recyclerview.widget.RecyclerView
@@ -64,19 +60,19 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:clipToPadding="false"
+            android:foregroundGravity="top"
             android:orientation="vertical"
             android:paddingTop="0dp"
+            app:flow_horizontalGap="2dp"
+            app:flow_horizontalStyle="packed"
+            app:flow_verticalAlign="top"
+            app:flow_verticalStyle="packed"
             app:layoutManager="androidx.recyclerview.widget.StaggeredGridLayoutManager"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/searchFriendTitleLayout"
             app:spanCount="2"
-            app:flow_verticalAlign="top"
-            app:flow_verticalStyle="packed"
-            app:flow_horizontalStyle="packed"
-            app:flow_horizontalGap="2dp"
-            android:foregroundGravity="top"
             tools:listitem="@layout/item_friend_list_choose_holder" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -85,32 +81,32 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="30dp"
             android:clickable="true"
+            android:onClick="@{()->viewModel.confirmButtonClick()}"
             app:backgroundTint="@color/blue_light"
+            app:borderWidth="1dp"
             app:fabSize="normal"
+            android:src="@drawable/ic_baseline_check_24"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:srcCompat="@drawable/ic_baseline_check_24"
-            app:borderWidth="1dp"
-            android:onClick="@{()->viewModel.confirmButtonClick()}"/>
+            app:layout_constraintStart_toStartOf="parent" />
+
 
         <com.airbnb.lottie.LottieAnimationView
-            android:id="@+id/loadingAnimation"
+            android:id="@+id/updateOwnerAnimation"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:background="@color/white_transparent"
+            android:visibility="@{viewModel.updatePetLoadingStatus==true?View.VISIBLE:View.GONE}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:visibility="@{viewModel.updatePetLoadingStatus == true?View.VISIBLE:View.GONE}"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:layout_height="match_parent"
-            android:layout_width="match_parent"
             app:lottie_autoPlay="true"
-            app:lottie_loop="true"
             app:lottie_fileName="loading.json"
-            >
+            app:lottie_loop="true">
 
         </com.airbnb.lottie.LottieAnimationView>
 
 
-    </androidx.constraintlayout.motion.widget.MotionLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -40,6 +40,7 @@ class HomeFragment: Fragment() {
         binding = FragmentHomeBinding.inflate(inflater, container,false)
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
+        binding.mainViewModel = mainViewModel
         binding.todayFloatingActionButton.hide()
         viewModel.friendList = mainViewModel.friendList
 
@@ -97,11 +98,12 @@ class HomeFragment: Fragment() {
                     }
                     RecyclerView.SCROLL_STATE_IDLE -> {
                         binding.todayFloatingActionButton.hide()
+
                     }
                 }
-
             }
-        }  )
+        }
+        )
 
 
 
@@ -213,6 +215,11 @@ class HomeFragment: Fragment() {
                 timelineRecycler.scrollToPosition(it)
             }
         })
+
+        mainViewModel.userPetList.observe(viewLifecycleOwner, Observer {
+            viewModel.getPetHeaderList(it)
+        })
+
 
     }
 

@@ -80,7 +80,6 @@
                     android:id="@+id/scheduleTitle"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="bottom|center_horizontal"
                     android:layout_marginTop="6dp"
                     android:text="@{event.title}"
                     android:textSize="16dp"
@@ -93,7 +92,6 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:orientation="vertical"
-                    android:layout_marginTop="6dp"
                     android:visibility="@{expand? View.VISIBLE: View.GONE}"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="@+id/scheduleTitle"
@@ -225,8 +223,8 @@
 
                 <ImageView
                     android:id="@+id/expendButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
                     android:layout_marginTop="10dp"
                     android:visibility="@{needExpand? View.VISIBLE: View.GONE}"
                     app:layout_constraintEnd_toEndOf="@+id/scheduleTitle"
@@ -242,15 +240,15 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
                     <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
                         android:layout_gravity="center_vertical"
                         android:src="@drawable/ic_outline_location_on_24"
                         android:visibility="@{event.locationName.length()==0?View.GONE: View.VISIBLE}"/>
 
                     <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
                         android:layout_gravity="center_vertical"
                         android:src="@drawable/ic_baseline_edit_note_24"
                         android:visibility="@{event.memoList.size()==0?View.GONE: View.VISIBLE}"/>

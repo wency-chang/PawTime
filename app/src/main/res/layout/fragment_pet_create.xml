@@ -19,49 +19,14 @@
         android:background="@color/grey_white">
 
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/constraintLayout4"
-            android:layout_width="150dp"
-            android:layout_height="150dp"
-            android:layout_marginTop="30dp"
-            android:background="@drawable/bg_icon_outline_medium"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <ImageView
-                android:id="@+id/petDefaultImage"
-                android:layout_width="90dp"
-                android:layout_height="90dp"
-                android:scaleType="fitCenter"
-                android:src="@drawable/ic_paw_blue_light"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-
-            </ImageView>
-
-            <ImageView
-                android:id="@+id/petHeaderImage"
-                android:layout_width="140dp"
-                android:layout_height="140dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-
-            </ImageView>
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
         <Button
             android:id="@+id/confirmButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="120dp"
-            android:layout_marginEnd="120dp"
+            android:layout_marginStart="125dp"
+            android:layout_marginEnd="125dp"
             android:layout_marginBottom="20dp"
-            android:background="@drawable/bg_edit_button_grey"
+            android:background="@drawable/bg_edit_button_blue"
             android:onClick="@{()->viewModel.checkInfoComplete()}"
             android:text="SAVE"
             android:textColor="@color/white"
@@ -74,29 +39,79 @@
             android:id="@+id/nestedScrollView2"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_marginTop="20dp"
-            android:layout_marginBottom="20dp"
             android:fillViewport="true"
-            app:layout_constraintBottom_toTopOf="@+id/confirmButton"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/constraintLayout4">
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="60dp"
-                android:orientation="vertical">
+                android:layout_marginHorizontal="50dp"
+                android:orientation="vertical"
+                android:layout_marginBottom="50dp">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/constraintLayout4"
+                    android:layout_width="150dp"
+                    android:layout_height="150dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="30dp"
+                    android:background="@drawable/bg_icon_outline_medium">
+
+                    <ImageView
+                        android:id="@+id/petDefaultImage"
+                        android:layout_width="90dp"
+                        android:layout_height="90dp"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/ic_paw_blue_light"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                    </ImageView>
+
+                    <ImageView
+                        android:id="@+id/petHeaderImage"
+                        android:layout_width="140dp"
+                        android:layout_height="140dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                    </ImageView>
+
+                    <ImageView
+                        android:id="@+id/imageView5"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="6dp"
+                        android:layout_marginBottom="6dp"
+                        android:background="@drawable/bg_drawe_header_circle"
+                        android:backgroundTint="@color/blue_light2"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="@+id/petHeaderImage"
+                        app:srcCompat="@drawable/ic_baseline_add_photo_alternate_24" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <EditText
                     android:id="@+id/nameInputText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
+                    android:layout_marginStart="60dp"
                     android:layout_marginTop="8dp"
+                    android:autoSizeMaxTextSize="32dp"
                     android:backgroundTint="@color/transparent"
+                    android:drawableStart="@drawable/ic_paw_26dp"
+                    android:drawablePadding="20dp"
                     android:hint="NAME"
-                    android:maxLines="1"
+                    android:imeOptions="actionDone"
+                    android:singleLine="true"
                     android:text="@={viewModel.petName}"
                     android:textAlignment="center"
                     android:textColor="@color/blue_light"
@@ -107,48 +122,45 @@
                     android:id="@+id/birthInputText"
                     style="@style/petProfileInputTextStyle"
                     android:text="@{viewModel.birthDay}"
-                    app:cardCornerRadius="6dp" />
+                    android:drawableStart="@drawable/ic_baseline_cake_24"
+                    android:foregroundTint="@color/white"
+                    android:drawablePadding="-44dp"
+                    app:cardCornerRadius="6dp"
+                    />
 
                 <TextView
                     android:id="@+id/birthInfo"
                     style="@style/petProfileInfoTextStyle"
                     android:text="BIRTHDAY" />
 
-
-                <EditText
-                    android:id="@+id/petWeightInput"
-                    style="@style/petProfileInputTextStyle"
-                    android:layout_width="match_parent"
-                    android:inputType="number"
-                    android:text="@={viewModel.petWeight}" />
-
-                <TextView
-                    android:id="@+id/weightInfoText"
-                    style="@style/petProfileInfoTextStyle"
-                    android:text="WEIGHT" />
-
                 <TextView
                     android:id="@+id/petLocationInput"
                     style="@style/petProfileInputTextStyle"
                     android:layout_width="match_parent"
-                    android:text="@{viewModel.livingPlaceName}" />
+                    android:drawablePadding="-44dp"
+                    android:drawableStart="@drawable/ic_baseline_location_on_24_white"
+                    android:text="@{viewModel.livingPlaceName}"
+
+                    />
 
                 <TextView
                     android:id="@+id/LocationInfoText"
                     style="@style/petProfileInfoTextStyle"
-                    android:text="LOCATION" />
+                    android:text="LOCATION"
+                    />
 
                 <TextView
                     android:id="@+id/petHospitalInput"
                     style="@style/petProfileInputTextStyle"
                     android:layout_width="match_parent"
+                    android:drawablePadding="-44dp"
+                    android:drawableStart="@drawable/ic_baseline_local_hospital_24"
                     android:text="@{viewModel.hospitalName}" />
 
                 <TextView
                     android:id="@+id/HospitalInfoText"
                     style="@style/petProfileInfoTextStyle"
                     android:text="HOSPITAL" />
-
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/petGalleryRecycler"
@@ -157,9 +169,12 @@
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="10dp"
                     android:layout_marginTop="20dp"
-                    android:background="@color/blue_light2"
+                    android:background="@color/transparent"
                     android:orientation="vertical"
-                    app:layoutManager="androidx.recyclerview.widget.StaggeredGridLayoutManager"
+                    android:paddingVertical="3dp"
+                    android:paddingHorizontal="3dp"
+                    android:clipToPadding="false"
+                    app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
                     app:spanCount="2" />
 
                 <TextView
@@ -172,18 +187,21 @@
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
 
-        <ProgressBar
-            android:id="@+id/progressBarPetCreate"
-            style="@style/create_event_progress"
-            android:layout_width="wrap_content"
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/loadingAnimation"
+            android:background="@color/white_transparent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             android:layout_height="wrap_content"
-            android:focusable="@{viewModel.statusLoading? true: false}"
-            android:visibility="@{viewModel.statusLoading? View.VISIBLE: View.GONE}"
-            app:layout_constraintBottom_toBottomOf="@+id/confirmButton"
-            app:layout_constraintEnd_toEndOf="@+id/confirmButton"
-            app:layout_constraintStart_toStartOf="@+id/confirmButton"
-            app:layout_constraintTop_toTopOf="@+id/confirmButton"
+            android:layout_width="wrap_content"
+            app:lottie_autoPlay="true"
+            app:lottie_loop="true"
+            app:lottie_fileName="upload_to_cloud.json"
+            android:visibility="@{viewModel.statusLoading?View.VISIBLE:View.GONE}"
             />
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

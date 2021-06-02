@@ -94,19 +94,21 @@ class CreateEventViewModel(
 
     fun updateNewTag(tag: String, petList: List<Pet>) {
 
-        tagListLiveData.value.let {
-            it?.add(tag)
-        }
-        tagListLiveData.value = tagListLiveData.value
+
 
         coroutineScope.launch {
-
+            var count = 0
             for(pet in petList) {
-//                repository.addNewTag(pet.id, tag)
                 when(val result = repository.addNewTag(pet.id, tag)) {
                     is Result.Success -> {
-                        result.data
-                        Log.d("add New Tag", "update Success ${result.data}")
+                        if (result.data){
+                            count += 1
+                            if (count == petList.size){
+                                tagListLiveData.value.let {
+                                    it?.add(tag)
+                                }
+                            }
+                        }
                     }
                     is Result.Error -> {
                         Log.d("add New Tag", "update Error")

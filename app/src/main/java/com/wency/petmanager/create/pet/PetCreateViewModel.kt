@@ -199,7 +199,6 @@ class PetCreateViewModel(val repository: Repository, val userInfoProfile: UserIn
     }
 
     private fun uploadImage(listUri: List<String>, folder: String){
-        Log.d("update image function","${folder}")
 
         coroutineScope.launch {
             for (uri in listUri) {

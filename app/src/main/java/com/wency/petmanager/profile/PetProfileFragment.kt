@@ -1,12 +1,15 @@
 package com.wency.petmanager.profile
 
+import android.app.DatePickerDialog
 import android.graphics.Paint
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.PathInterpolator
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -15,12 +18,18 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.material.tabs.TabLayoutMediator
 import com.wency.petmanager.MainViewModel
 import com.wency.petmanager.NavHostDirections
+import com.wency.petmanager.R
+import com.wency.petmanager.create.CreateEventViewModel
+import com.wency.petmanager.create.GetImageFromGallery
+import com.wency.petmanager.create.GetLocationFromMap
 import com.wency.petmanager.data.Pet
 import com.wency.petmanager.databinding.FragmentPetCreateBinding
 import com.wency.petmanager.databinding.FragmentPetProfileBinding
 import com.wency.petmanager.detail.PhotoPagerAdapter
 import com.wency.petmanager.ext.getVmFactory
 import com.wency.petmanager.friend.ChooseFriendViewModel
+import java.time.Instant
+import java.util.*
 
 class PetProfileFragment: Fragment() {
 
@@ -30,6 +39,29 @@ class PetProfileFragment: Fragment() {
     ) }
 
     private val mainViewModel by activityViewModels<MainViewModel>()
+
+
+    private val getLocation = GetLocationFromMap()
+
+
+    private val getLocationActivity =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
+            getLocation.onActivityResult(it, CreateEventViewModel.CASE_PICK_LOCATION)?.let {place->
+                viewModel.getNewLocation(place)
+            }
+        }
+
+    private val getImage = GetImageFromGallery()
+
+    private val getHeaderPhotoActivity =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            viewModel.getNewProfilePhoto(Uri.parse(getImage.onActivityHeaderResult(it)))
+        }
+
+    private val getCoverPhotoActivity =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {result->
+            viewModel.getNewCoverPhoto(getImage.onActivityNewCoverResult(result))
+        }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -46,9 +78,9 @@ class PetProfileFragment: Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        val coverPager = binding.petCoverPicture
         viewModel.petProfile.coverPhotos?.let {
-
-            binding.petCoverPicture.adapter = PhotoPagerAdapter(it)
+            coverPager.adapter = PhotoPagerAdapter(it)
         }
         TabLayoutMediator(binding.petProfileCoverTab, binding.petCoverPicture){ tab, position ->
         }.attach()
@@ -84,6 +116,56 @@ class PetProfileFragment: Fragment() {
 
             }
 
+        })
+
+        binding.petOldText.setOnClickListener {
+            val calendar = Calendar.getInstance()
+            viewModel.petProfile.birth?.let {
+                calendar.time = it.toDate()
+            }
+
+            val year = calendar.get(Calendar.YEAR)
+            val month = calendar.get(Calendar.MONTH)
+            val date = calendar.get(Calendar.DAY_OF_MONTH)
+            val datePicker = DatePickerDialog(requireContext(), R.style.datePickDialog,
+                { _, pickYear, pickMonth, pickDayOfMonth ->
+                    calendar.set(pickYear, pickMonth, pickDayOfMonth)
+                    viewModel.getNewBirth(calendar.time)
+                }, year, month, date)
+            datePicker.datePicker.maxDate = Instant.now().toEpochMilli()
+            datePicker.show()
+
+        }
+
+        binding.locationEditButton.setOnClickListener {
+            val intent = getLocation.createIntent(this.requireActivity())
+            getLocationActivity.launch(intent)
+        }
+
+        binding.coverPhotoCancelButton.setOnClickListener {
+            viewModel.deleteCoverPhoto(coverPager.currentItem)
+        }
+
+        binding.coverPhotoEditButton.setOnClickListener {
+            getCoverPhotoActivity.launch(getImage.pickImageIntent())
+        }
+
+        binding.petHeaderPicture.setOnClickListener {
+            getHeaderPhotoActivity.launch(getImage.pickSingleImageIntent())
+        }
+
+        viewModel.coverPhoto.observe(viewLifecycleOwner, Observer {
+            coverPager.adapter = PhotoPagerAdapter(it)
+            TabLayoutMediator(binding.petProfileCoverTab, coverPager){ tab, position ->
+            }.attach()
+
+        })
+
+        viewModel.doneUpdate.observe(viewLifecycleOwner, Observer {
+            if (it){
+                mainViewModel.updatePetData(viewModel.petDataBeUpdate)
+                viewModel.doneUpdate()
+            }
         })
 
     }

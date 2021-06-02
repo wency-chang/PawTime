@@ -38,7 +38,6 @@ class MainViewModel(private val firebaseRepository: Repository) : ViewModel() {
     val refreshStatus: LiveData<Boolean>
         get() = _refreshStatus
 
-    var profile = _userProfile.value
 
     private val _userPetList = MutableLiveData<MutableList<Pet>>()
     val userPetList : LiveData<MutableList<Pet>>
@@ -71,13 +70,17 @@ class MainViewModel(private val firebaseRepository: Repository) : ViewModel() {
     var friendNumber = MutableLiveData("0")
     var petNumber = MutableLiveData("0")
 
-    val _tagListLiveData = MutableLiveData<MutableList<String>>()
+    private val _tagListLiveData = MutableLiveData<MutableList<String>>()
     val tagListLiveData : LiveData<MutableList<String>>
         get() = _tagListLiveData
 
     val petDataForAll = mutableSetOf<Pet>()
 
     val badgeString = MutableLiveData<String>("")
+
+    private val _memoryPetList = MutableLiveData<MutableList<Pet>>()
+    val memoryPetList : LiveData<MutableList<Pet>>
+        get() = _memoryPetList
 
 
 
@@ -152,9 +155,15 @@ class MainViewModel(private val firebaseRepository: Repository) : ViewModel() {
                                         tempList.add(it)
                                     }
                                 }
-                                _userPetList.value = tempList
+                                val petListForHome = tempList.filter {
+                                    !it.memoryMode
+                                }
+                                val memoryList = tempList.filter {
+                                    it.memoryMode
+                                }
+                                _userPetList.value = petListForHome.toMutableList()
+                                _memoryPetList.value = memoryList.toMutableList()
                                 petDataForAll.addAll(tempList)
-
                             }
                         }
                         is Result.Error -> {
@@ -236,11 +245,11 @@ class MainViewModel(private val firebaseRepository: Repository) : ViewModel() {
             for (pet in petList) {
                 pet?.let {
                     allPeopleIdList.addAll(it.users)
-                    Log.d("friendList","allPeopleList : $it")
+
                 }
             }
         }
-        Log.d("friendList","allPeopleList : $allPeopleIdList")
+
         getAllFriendUsers(allPeopleIdList.toList())
 
     }
@@ -316,8 +325,7 @@ class MainViewModel(private val firebaseRepository: Repository) : ViewModel() {
         _tagListLiveData.value = tagList.toMutableList()
     }
 
-    fun getRestPetData(petId: String){
-        Log.d("petDataForAll","getRestPetData $petId")
+    private fun getRestPetData(petId: String){
         coroutineScope.launch {
             when (val result = firebaseRepository.getPetData(petId)){
                 is Result.Success -> {
@@ -329,9 +337,7 @@ class MainViewModel(private val firebaseRepository: Repository) : ViewModel() {
 
     }
 
-    fun checkPetList(petList: List<String>){
-        Log.d("petDataForAll","check pet list $petDataForAll")
-        Log.d("petDataForAll","event pet list $petList")
+    private fun checkPetList(petList: List<String>){
         val listId = mutableListOf<String>()
         petDataForAll.forEach {
             listId.add(it.id)
@@ -339,7 +345,6 @@ class MainViewModel(private val firebaseRepository: Repository) : ViewModel() {
         val restPetId = petList.filter {
             !listId.contains(it)
         }
-        Log.d("petDataForAll","restPetId $restPetId")
         if (restPetId.isNotEmpty()){
             restPetId.forEach {
                 getRestPetData(it)
@@ -361,6 +366,12 @@ class MainViewModel(private val firebaseRepository: Repository) : ViewModel() {
         petDataForAll?.let { allPetData->
             allPetData.removeIf { it.id == newPetData.id }
             allPetData.add(newPetData)
+        }
+    }
+
+    fun deleteEvent(event: Event){
+        _eventDetailList.value?.let {
+            it.remove(event)
         }
     }
 

@@ -232,7 +232,7 @@
                                 map:mapType="normal" />
 
                             <TextView
-                                android:id="@+id/addressName"
+                                android:id="@+id/addressSelectButton"
                                 android:layout_width="match_parent"
                                 android:layout_height="26dp"
                                 android:background="@color/transparent_black"

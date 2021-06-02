@@ -7,6 +7,10 @@
         <variable
             name="memo"
             type="String" />
+        <variable
+            name="adapter"
+            type="com.wency.petmanager.detail.DetailMemoAdapter" />
+        <import type="android.view.View"/>
 
     </data>
 
@@ -21,7 +25,8 @@
             android:layout_marginHorizontal="12dp"
             android:layout_marginTop="14dp"
             android:layout_marginBottom="14dp"
-            app:cardCornerRadius="4dp"
+            app:cardCornerRadius="5dp"
+            android:background="@{adapter.editable?@color/white:@color/transparent}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -30,22 +35,23 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="16dp"
-                android:minHeight="40dp"
+                android:layout_margin="10dp"
+                android:minHeight="0dp"
+                android:textSize="18dp"
                 android:text="@{memo}"
                 tools:text="memo~" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top|end"
+                android:layout_margin="8dp"
+                android:adjustViewBounds="true"
+                android:src="@drawable/ic_baseline_cancel_24"
+                android:visibility="@{adapter.editable?View.VISIBLE:View.GONE}"/>
+
         </androidx.cardview.widget.CardView>
 
-<!--        <ImageView-->
-<!--            android:id="@+id/imageView2"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_marginStart="8dp"-->
-<!--            android:layout_marginTop="8dp"-->
-<!--            android:background="@drawable/bg_icon_white_outline"-->
-<!--            app:layout_constraintStart_toStartOf="parent"-->
-<!--            app:layout_constraintTop_toTopOf="parent"-->
-<!--            app:srcCompat="@drawable/ic_baseline_list_24" />-->
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

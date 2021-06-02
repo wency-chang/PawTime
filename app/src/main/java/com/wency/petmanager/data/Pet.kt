@@ -27,5 +27,6 @@ data class Pet(
     var hospitalLocationName: String? = null,
     var hospitalLocationAddress: String? = null,
     var hospitalLocationLatLng: String? = null,
+    var memoryMode : Boolean = false
 
 ): Parcelable

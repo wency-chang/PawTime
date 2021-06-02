@@ -11,20 +11,8 @@ class DefaultRepository(private val remoteDataSource: DataSource
         return remoteDataSource.getUserProfile(token)
     }
 
-    override suspend fun getAllPetData(petList: List<String>): Result<List<Pet>> {
-        return remoteDataSource.getAllPetData(petList)
-    }
-
     override suspend fun getPetData(id: String): Result<Pet> {
         return remoteDataSource.getPetData(id)
-    }
-
-    override suspend fun getEventList(list: List<String>): Result<List<EventList>> {
-        return remoteDataSource.getEventList(list)
-    }
-
-    override suspend fun getTimelineList(list: List<String>): Result<List<TimelineItem>> {
-        return remoteDataSource.getTimelineList(list)
     }
 
     override suspend fun getEvents(id: String): Result<Event> {
@@ -49,7 +37,7 @@ class DefaultRepository(private val remoteDataSource: DataSource
 
 
     override suspend fun updateEvent(event: Event): Result<Boolean> {
-        TODO("Not yet implemented")
+        return remoteDataSource.updateEvent(event)
     }
 
     override suspend fun addNewPetIdToUser(petId: String, userID: String): Result<Boolean> {
@@ -66,7 +54,7 @@ class DefaultRepository(private val remoteDataSource: DataSource
 
 
     override suspend fun deleteEvent(id: String): Result<Boolean> {
-        TODO("Not yet implemented")
+        return remoteDataSource.deleteEvent(id)
     }
 
     override suspend fun deleteMission(id: String): Result<Boolean> {
@@ -94,13 +82,6 @@ class DefaultRepository(private val remoteDataSource: DataSource
         return remoteDataSource.createPet(pet)
     }
 
-    override suspend fun updatePetInfo(id: String, pet: Pet): Result<Boolean> {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun addFriends(friendID: String, userInfo: UserInfo): Result<Boolean> {
-        TODO("Not yet implemented")
-    }
 
     override suspend fun addOwner(petID: String, ownerID: String): Result<Boolean> {
         return remoteDataSource.addOwner(petID, ownerID)
@@ -148,6 +129,22 @@ class DefaultRepository(private val remoteDataSource: DataSource
 
     override suspend fun userPetListUpdate(petId: String, userId: String, add: Boolean): Result<Boolean> {
         return remoteDataSource.userPetListUpdate(petId, userId, add)
+    }
+
+    override suspend fun updatePetData(petId: String, petData: Pet): Result<Boolean> {
+        return remoteDataSource.updatePetData(petId, petData)
+    }
+
+    override suspend fun deleteEventFromPetData(petId: String, eventId: String): Result<Boolean> {
+        return remoteDataSource.deleteEventFromPetData(petId, eventId)
+    }
+
+    override suspend fun updatePetEventList(
+        petId: String,
+        eventId: String,
+        add: Boolean
+    ): Result<Boolean> {
+        return remoteDataSource.updatePetEventList(petId, eventId, add)
     }
 
 

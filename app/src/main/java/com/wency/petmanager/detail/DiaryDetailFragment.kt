@@ -10,6 +10,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
@@ -44,6 +45,7 @@ class DiaryDetailFragment: Fragment(), OnMapReadyCallback {
 
 
 
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -69,10 +71,7 @@ class DiaryDetailFragment: Fragment(), OnMapReadyCallback {
             )
         }
 
-        binding.diaryDetailMemoRecycler.adapter = viewModel.editable.value?.let {
-            Log.d("memo","bind adapter")
-            DetailMemoAdapter(it)
-        }
+        binding.diaryDetailMemoRecycler.adapter = DetailMemoAdapter(viewModel.editable, this)
 
         TabLayoutMediator(binding.photoDotsRecycler, binding.detailPhotoPager){ tab, position ->
         }.attach()

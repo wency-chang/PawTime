@@ -45,11 +45,13 @@
         <item name="android:layout_marginTop">20dp</item>
         <item name="android:layout_marginEnd">10dp</item>
         <item name="android:textAlignment">center</item>
-        <item name="android:textSize">22dp</item>
+        <item name="android:textSize">18dp</item>
+        <item name="android:paddingStart">20dp</item>
         <item name="android:textColor">@color/blue_billow</item>
         <item name="android:background">@drawable/bg_edit_button_grey</item>
-        <item name="android:backgroundTint">@color/blue_light2</item>
-        <item name="android:gravity">center</item>
+        <item name="android:backgroundTint">@color/blue_light3</item>
+        <item name="android:gravity">start|center_vertical</item>
+
     </style>
 
     <style name="petProfileInfoTextStyle">
