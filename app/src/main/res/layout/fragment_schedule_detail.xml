@@ -12,6 +12,7 @@
         <import type="android.view.View" />
         <import type="com.wency.petmanager.data.LoadStatus"/>
 
+
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -57,9 +58,12 @@
                         android:gravity="start|center_vertical"
                         android:text="@{viewModel.dateLiveData}"
                         android:clickable="@{viewModel.editable?true:false}"
+                        android:paddingStart="16dp"
                         android:textSize="20dp"
                         android:textColor="@color/blue_light"
                         android:textStyle="bold"
+                        android:background="@drawable/bg_edit_button_blue"
+                        android:backgroundTint="@{viewModel.editable?@color/blue_light3_transparent:@color/transparent}"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toEndOf="@id/calendarIcon"
                         app:layout_constraintTop_toTopOf="parent" />
@@ -73,8 +77,11 @@
                         android:text="@{viewModel.timeLiveData}"
                         android:clickable="@{viewModel.editable?true:false}"
                         android:textSize="20dp"
+                        android:paddingStart="16dp"
                         android:textColor="@color/blue_light"
                         android:textStyle="bold"
+                        android:background="@drawable/bg_edit_button_blue"
+                        android:backgroundTint="@{viewModel.editable?@color/blue_light3_transparent:@color/transparent}"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="@+id/scheduleDateTextView"
                         app:layout_constraintStart_toStartOf="@id/scheduleDateTextView"
@@ -120,6 +127,7 @@
                         android:layout_marginStart="24dp"
                         android:orientation="vertical"
                         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                        userAdapter="@{viewModel.participantUserInfo}"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toEndOf="@+id/scheduleParticipantUserIcon"
@@ -157,6 +165,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="24dp"
                         android:orientation="vertical"
+                        petPhotoIconAdapter="@{viewModel.petDataList}"
                         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -189,7 +198,7 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="@+id/mapCardView"
                         app:srcCompat="@drawable/ic_paw_time__ui__13"
-                        android:clickable="@{viewModel.editable?true:false}"/>
+                        />
 
                     <androidx.cardview.widget.CardView
                         android:id="@+id/mapCardView"
@@ -222,11 +231,10 @@
                             android:gravity="center"
                             android:paddingStart="20dp"
                             android:maxLines="1"
-                            android:text="@{viewModel.currentDetailData.locationName}"
+                            android:text="@{viewModel.locationNameLiveData}"
                             android:textAlignment="center"
-                            android:textColor="@color/grey_medium"
+                            android:textColor="@color/black_sleep"
                             android:textSize="16dp"
-                            android:textStyle="bold"
                             android:visibility="@{viewModel.editable?View.VISIBLE:View.GONE}" />
 
 
@@ -257,10 +265,13 @@
 
                     <TextView
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content"
+                        android:layout_height="42dp"
+                        android:layout_marginStart="24dp"
                         android:gravity="center"
                         android:text="NONE"
                         android:textSize="18dp"
+                        android:background="@drawable/bg_edit_button_blue"
+                        android:backgroundTint="@{viewModel.editable?@color/blue_light3_transparent:@color/transparent}"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toEndOf="@id/scheduleNotificationIcon"
@@ -289,7 +300,19 @@
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
+                        android:visibility="@{viewModel.editable?View.INVISIBLE:View.VISIBLE}"
                         app:srcCompat="@drawable/ic_round_local_offer_24_round" />
+
+                    <ImageView
+                        android:id="@+id/detailTagAddIcon"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:visibility="@{viewModel.editable?View.VISIBLE:View.GONE}"
+                        android:clickable="@{viewModel.editable?true:false}"
+                        app:srcCompat="@drawable/ic_baseline_add_circle_outline_24_blue" />
 
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/detailTagListRecycler"
@@ -327,8 +350,24 @@
                         android:layout_height="36dp"
                         app:layout_constraintBottom_toBottomOf="@id/scheduleDetailMemoRecycler"
                         app:layout_constraintStart_toStartOf="parent"
+                        android:visibility="@{viewModel.editable?View.INVISIBLE:View.VISIBLE}"
+                        app:layout_constraintTop_toTopOf="@id/scheduleDetailMemoRecycler"
+                        app:srcCompat="@drawable/ic_baseline_sticky_note_2_24" />
+
+
+                    <ImageView
+                        android:id="@+id/memoAddIcon"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        app:layout_constraintBottom_toBottomOf="@id/scheduleDetailMemoRecycler"
+                        app:layout_constraintStart_toStartOf="parent"
+                        android:visibility="@{viewModel.editable?View.VISIBLE:View.GONE}"
+                        android:clickable="@{viewModel.editable?true:false}"
                         app:layout_constraintTop_toTopOf="@id/scheduleDetailMemoRecycler"
                         app:srcCompat="@drawable/ic_paw_time__ui__10" />
+
+
+
 
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/scheduleDetailMemoRecycler"
@@ -358,6 +397,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
+                    android:layout_marginBottom="40dp"
                     android:minHeight="40dp">
 
                     <ImageView
@@ -367,7 +407,19 @@
                         app:layout_constraintBottom_toBottomOf="@id/schedulePhotoListRecycler"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="@id/schedulePhotoListRecycler"
+                        android:visibility="@{viewModel.editable?View.INVISIBLE:View.VISIBLE}"
                         app:srcCompat="@drawable/ic_paw_time__ui__08" />
+
+                    <ImageView
+                        android:id="@+id/photoListAddIcon"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        app:layout_constraintBottom_toBottomOf="@id/schedulePhotoListRecycler"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="@id/schedulePhotoListRecycler"
+                        android:clickable="@{viewModel.editable?true:false}"
+                        android:visibility="@{viewModel.editable?View.VISIBLE:View.GONE}"
+                        app:srcCompat="@drawable/ic_baseline_add_photo_alternate_24" />
 
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/schedulePhotoListRecycler"
@@ -375,13 +427,16 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="18dp"
                         android:orientation="vertical"
+                        android:layout_marginBottom="60dp"
+                        tagSelectorAdapter="@{viewModel.photoListLiveData}"
                         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toEndOf="@+id/photoListIcon"
                         app:layout_constraintTop_toTopOf="parent"
-                        app:spanCount="2"
-                        tools:listitem="@layout/item_detail_memo_list" />
+                        app:spanCount="1"
+                        android:padding="8dp"
+                        tools:listitem="@layout/item_detail_photo_holder" />
 
                     <com.airbnb.lottie.LottieAnimationView
                         android:layout_width="120dp"
@@ -409,12 +464,12 @@
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="16dp"
             android:clickable="true"
+            android:onClick="@{()->viewModel.clickEditButton()}"
+            android:visibility="@{viewModel.editable?View.GONE:View.VISIBLE}"
             app:backgroundTint="@color/blue_light"
             app:layout_constraintBottom_toBottomOf="@+id/nestedScrollView3"
             app:layout_constraintEnd_toEndOf="parent"
-            app:srcCompat="@drawable/ic_baseline_edit_24"
-            android:onClick="@{()->viewModel.clickEditButton()}"
-            android:visibility="@{viewModel.editable?View.GONE:View.VISIBLE}"/>
+            app:srcCompat="@drawable/ic_baseline_edit_24" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/scheduleConfirmButton"
@@ -427,7 +482,6 @@
             app:layout_constraintBottom_toBottomOf="@+id/nestedScrollView3"
             app:layout_constraintEnd_toEndOf="parent"
             app:srcCompat="@drawable/ic_baseline_check_24"
-            android:onClick="@{()->viewModel.clickEditButton()}"
             android:visibility="@{viewModel.editable?View.VISIBLE:View.GONE}"/>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -459,57 +513,98 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="40dp"
                 android:layout_marginEnd="80dp"
+                android:backgroundTint="@{viewModel.editable?@color/grey_white:@color/transparent}"
+                android:clickable="@{viewModel.editable?true:false}"
+                android:focusable="@{viewModel.editable?true:false}"
+                android:focusableInTouchMode="@{viewModel.editable?true:false}"
+                android:imeOptions="actionDone"
                 android:maxWidth="260dp"
                 android:text="@{viewModel.eventDetail.title}"
                 android:textColor="@color/white"
                 android:textSize="28dp"
                 android:textStyle="bold"
-                android:clickable="@{viewModel.editable?true:false}"
-                android:background="@null"
-                android:backgroundTint="@{viewModel.editable?@color/white:@color/transparent}"
-                android:imeOptions="actionDone"
-                android:focusable="@{viewModel.editable?true:false}"
-                android:focusableInTouchMode="@{viewModel.editable?true:false}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.6" />
 
-            <Switch
-                android:id="@+id/completeSwitch"
+            <CheckBox
+                android:id="@+id/completeButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="16dp"
+                android:text=""
                 android:layout_marginBottom="8dp"
-                android:allowUndo="true"
-                android:breakStrategy="balanced"
+                android:layout_marginEnd="12dp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
+                app:layout_constraintEnd_toEndOf="parent"
+                android:checked="@{viewModel.eventDetail.complete}"
+                android:clickable="@{viewModel.editable?true:false}"
+                android:onClick="@{viewModel.clickCompleteButton}"
+                android:button="@drawable/sc_event_complete_button"/>
+
+            <CheckBox
+                android:id="@+id/privateButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:layout_marginEnd="8dp"
+                android:button="@drawable/sc_event_lock_button"
+                android:checked="@{viewModel.eventDetail.private}"
+                android:clickable="@{viewModel.editable?true:false}"
+                android:onClick="@{viewModel.clickPrivateButton}"
+                app:layout_constraintBottom_toBottomOf="@id/completeButton"
+                app:layout_constraintEnd_toStartOf="@id/completeButton" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <com.airbnb.lottie.LottieAnimationView
-            android:layout_width="120dp"
-            android:layout_height="120dp"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:lottie_fileName="delete_done.json"
-            app:lottie_autoPlay="true"
-            app:lottie_loop="true"
-            android:visibility="@{viewModel.loadingStatus==LoadStatus.Delete?View.VISIBLE:View.GONE}"/>
+            android:visibility="@{viewModel.loadingStatus==LoadStatus.Done?View.GONE:View.VISIBLE}"
+            android:background="@color/white_transparent">
 
-        <com.airbnb.lottie.LottieAnimationView
-            android:layout_width="120dp"
-            android:layout_height="120dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:lottie_fileName="upload_n_success.json"
-            app:lottie_autoPlay="true"
-            app:lottie_loop="true"
-            android:visibility="@{viewModel.loadingStatus==LoadStatus.Upload?View.VISIBLE:View.GONE}"/>
+
+            <com.airbnb.lottie.LottieAnimationView
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:visibility="@{viewModel.loadingStatus==LoadStatus.Delete?View.VISIBLE:View.GONE}"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:lottie_autoPlay="true"
+                app:lottie_fileName="delete_done.json"
+                app:lottie_loop="true" />
+
+            <com.airbnb.lottie.LottieAnimationView
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:visibility="@{viewModel.loadingStatus==LoadStatus.Upload?View.VISIBLE:View.GONE}"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:lottie_autoPlay="true"
+                app:lottie_fileName="upload_n_success.json"
+                app:lottie_loop="true" />
+
+            <com.airbnb.lottie.LottieAnimationView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="@{viewModel.loadingStatus==LoadStatus.DoneUpdate?View.VISIBLE:View.GONE}"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:lottie_autoPlay="true"
+                app:lottie_fileName="paw_loading.json"
+                app:lottie_loop="true" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

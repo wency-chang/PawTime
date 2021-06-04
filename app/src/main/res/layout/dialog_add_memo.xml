@@ -40,7 +40,7 @@
                     android:layout_height="wrap_content"
                     android:layout_margin="20dp"
                     android:hint="text in memo"
-                    android:text=""
+                    android:text="@{memoText}"
                     android:background="@color/transparent"/>
 
             </androidx.core.widget.NestedScrollView>

@@ -308,14 +308,14 @@ class HomeViewModel(
 
     fun insertMissionToTimeline(){
         if (petEventList.isNullOrEmpty() || timeline.value.isNullOrEmpty()){
-            _timeline.value?.add(TimelineItem.Today(DayMission(Date(),
+            _timeline.value = mutableListOf(TimelineItem.Today(DayMission(Date(),
                 todayMissionListForTimeline.value)))
         } else {
-            Log.d("missionUpdate","update scrollToday location")
             scrollToToday.value?.let {
-                _timeline.value?.removeAt(it)
-                _timeline.value?.add(it,TimelineItem.Today(DayMission(Date(),
-                    todayMissionListForTimeline.value)) )
+                _timeline.value?.let { timeline->
+                    timeline[it] = TimelineItem.Today(DayMission(Date(),
+                        todayMissionListForTimeline.value))
+                }
                 _timeline.value = _timeline.value
             }
         }
@@ -432,8 +432,6 @@ class HomeViewModel(
 
             _timeline.value = listTimelineItem
             _scrollToToday.value = todayLocation
-            Log.d("scroll function", "timeline created $todayLocation")
-            _scrollToToday.value = _scrollToToday.value
         }
     }
 

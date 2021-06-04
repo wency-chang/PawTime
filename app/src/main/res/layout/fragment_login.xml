@@ -7,26 +7,28 @@
 
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <androidx.constraintlayout.motion.widget.MotionLayout
+        android:id="@+id/constraintLayout9"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/blue_light">
+        android:background="@drawable/ic_paw_time_login_background"
+        app:layoutDescription="@xml/fragment_login_xml_constraintlayout9_scene">
 
         <ImageView
             android:id="@+id/imageView3"
             android:layout_width="240dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="220dp"
+            android:layout_marginTop="430dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_paw_time__ui__15" />
+            app:srcCompat="@drawable/ic_paw_time_login_title" />
 
         <ImageView
             android:id="@+id/secreteButton"
             android:layout_width="45dp"
             android:layout_height="45dp"
-            android:layout_marginTop="40dp"
+            android:layout_marginTop="80dp"
             android:layout_marginEnd="60dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/imageView3"
@@ -38,7 +40,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="70dp"
             android:layout_marginEnd="70dp"
-            android:layout_marginBottom="70dp"
+            android:layout_marginBottom="50dp"
             android:background="@drawable/bg_google_login_button"
             android:drawableStart="@drawable/googleg_standard_color_18"
             android:paddingStart="18dp"
@@ -51,5 +53,34 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        <Button
+            android:id="@+id/getStartButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="100dp"
+            android:layout_marginEnd="100dp"
+            android:layout_marginBottom="50dp"
+            android:background="@drawable/bg_google_login_button"
+            android:backgroundTint="#3881A3"
+            android:fontFamily="@font/gudea"
+            android:text="Get Started"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="26dp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <ImageView
+            android:id="@+id/picture"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="90dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_paw_time_login_picture" />
+
+    </androidx.constraintlayout.motion.widget.MotionLayout>
 </layout>

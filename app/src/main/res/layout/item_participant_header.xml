@@ -12,10 +12,7 @@
             name="user"
             type="Boolean" />
         <variable
-            name="editable"
-            type="Boolean" />
-        <variable
-            name="coverPhoto"
+            name="selected"
             type="Boolean" />
 
     </data>
@@ -75,13 +72,25 @@
                 android:layout_gravity="center"
                 android:layout_margin="2dp"
                 android:background="@drawable/bg_white_circle"
-                android:longClickable="true"
                 android:visibility="@{pet.name.length()==0? View.INVISIBLE : View.VISIBLE }"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:src="@drawable/ic_launcher_foreground" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/unSelectedForeground"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_gravity="center"
+                android:background="@drawable/bg_white_circle"
+                android:backgroundTint="@color/white_transparent2"
+                android:visibility="@{selected? View.INVISIBLE : View.VISIBLE }"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -103,17 +112,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/constraintLayout6" />
-
-        <ImageView
-            android:id="@+id/cancelButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
-            android:layout_marginEnd="2dp"
-            android:visibility="@{editable? View.VISIBLE : View.GONE }"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_baseline_cancel_24" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

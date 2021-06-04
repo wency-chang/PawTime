@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MotionScene 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:motion="http://schemas.android.com/apk/res-auto">
+
+    <Transition
+        motion:constraintSetEnd="@+id/end"
+        motion:constraintSetStart="@id/start"
+        motion:duration="1000">
+       <KeyFrameSet>
+           <KeyAttribute
+               motion:motionTarget="@+id/picture"
+               motion:framePosition="0"
+               android:alpha="1" />
+
+           <KeyAttribute
+               motion:motionTarget="@+id/picture"
+               motion:framePosition="100"
+               android:alpha="0" />
+
+           <KeyAttribute
+               motion:motionTarget="@+id/googleSignInButton"
+               motion:framePosition="100"
+               android:alpha="1" />
+
+           <KeyAttribute
+               motion:motionTarget="@+id/googleSignInButton"
+               motion:framePosition="0"
+               android:alpha="0" />
+       </KeyFrameSet>
+        <OnClick motion:targetId="@+id/getStartButton" />
+    </Transition>
+
+    <ConstraintSet android:id="@+id/start">
+        <Constraint
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="0dp"
+            motion:layout_constraintBottom_toBottomOf="parent"
+            motion:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="0dp"
+            motion:layout_constraintStart_toStartOf="parent"
+            android:id="@+id/googleSignInButton"
+            android:layout_marginEnd="70dp"
+            android:layout_marginStart="70dp" />
+    </ConstraintSet>
+
+    <ConstraintSet android:id="@+id/end">
+        <Constraint
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            motion:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginBottom="150dp"
+            motion:layout_constraintStart_toStartOf="parent"
+            android:id="@+id/getStartButton"
+            android:layout_marginEnd="100dp"
+            android:layout_marginStart="100dp"
+            motion:layout_constraintEnd_toEndOf="parent" />
+        <Constraint
+            motion:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            motion:layout_constraintTop_toTopOf="parent"
+            motion:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="200dp"
+            android:id="@+id/imageView3" />
+        <Constraint
+            motion:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            motion:layout_constraintTop_toTopOf="parent"
+            motion:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="-200dp"
+            android:id="@+id/picture" />
+        <Constraint
+            motion:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            motion:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginBottom="70dp"
+            android:layout_marginEnd="70dp"
+            android:layout_marginStart="70dp"
+            motion:layout_constraintStart_toStartOf="parent"
+            android:id="@+id/googleSignInButton" />
+    </ConstraintSet>
+</MotionScene>

@@ -33,6 +33,7 @@ class MainActivity : AppCompatActivity() {
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         setUpDrawer()
+        hideSystemUI()
 
 
 
@@ -85,6 +86,7 @@ class MainActivity : AppCompatActivity() {
 
 
         viewModel.eventIdList.observe(this, Observer {
+            Log.d("debugg","start to find event list")
             if (it.isNullOrEmpty()){
                 viewModel.userInfoProfile.value?.let { userProfile->
                     viewModel.userPetList.value?.let { petList->
@@ -101,6 +103,7 @@ class MainActivity : AppCompatActivity() {
         })
 
         viewModel.eventDetailList.observe(this, Observer {
+            Log.d("debugg","start to get event Detail list")
             if (it.size > 0){
                 viewModel.getTagList()
                 viewModel.userInfoProfile.value?.let { userProfile->
@@ -140,10 +143,20 @@ class MainActivity : AppCompatActivity() {
         badge.mainViewModel = viewModel
         binding.drawerNavView.menu.findItem(R.id.friendListFragment).actionView = badge.root
 
+    }
 
-
-
-
-
+    private fun hideSystemUI() {
+        // Enables regular immersive mode.
+        // For "lean back" mode, remove SYSTEM_UI_FLAG_IMMERSIVE.
+        // Or for "sticky immersive," replace it with SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+        window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE)
+                // Set the content to appear under the system bars so that the
+                // content doesn't resize when the system bars hide and show.
+//                or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+//                or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+//                or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+//                // Hide the nav bar and status bar
+//                or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+//                or View.SYSTEM_UI_FLAG_FULLSCREEN)
     }
 }

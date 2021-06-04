@@ -9,6 +9,7 @@
         <variable
             name="viewModel"
             type="com.wency.petmanager.detail.DiaryDetailViewModel" />
+        <import type="com.wency.petmanager.data.LoadStatus"/>
 
     </data>
 
@@ -28,9 +29,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:layout_height="445dp">
-        </androidx.viewpager2.widget.ViewPager2>
+            app:layout_constraintTop_toTopOf="parent" />
 
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -63,41 +62,48 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
-                    <TextView
-                        android:id="@+id/detailDateText"
+                    <EditText
+                        android:id="@+id/diaryTitleText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginHorizontal="20dp"
                         android:layout_marginTop="10dp"
+                        android:background="@drawable/bg_edit_button_blue"
+                        android:backgroundTint="@{viewModel.editable?@color/blue_light3_transparent:@color/transparent}"
+                        android:clickable="@{viewModel.editable?true:false}"
+                        android:focusable="@{viewModel.editable?true:false}"
+                        android:focusableInTouchMode="@{viewModel.editable?true:false}"
                         android:fontFamily="@font/gudea"
-                        android:textStyle="bold"
+                        android:imeOptions="actionDone"
                         android:text="@{viewModel.eventDetail.title}"
                         android:textAlignment="center"
                         android:textColor="@color/blue_light"
                         android:textSize="28dp"
-
-                        />
+                        android:textStyle="bold" />
 
                     <TextView
                         android:id="@+id/textForDate"
-                        android:layout_width="match_parent"
+                        android:layout_width="100dp"
                         android:layout_height="wrap_content"
-                        android:text="@{viewModel.dateLiveData}"
-                        tools:text="2021.05.27"
+                        android:layout_gravity="end|center_vertical"
                         android:layout_marginHorizontal="20dp"
                         android:layout_marginTop="10dp"
-                        android:textAlignment="textEnd"
+                        android:background="@drawable/bg_edit_button_blue"
+                        android:backgroundTint="@{viewModel.editable?@color/blue_light3_transparent:@color/transparent}"
+                        android:clickable="@{viewModel.editable?true:false}"
                         android:fontFamily="@font/gudea"
+                        android:text="@{viewModel.dateLiveData}"
+                        android:textAlignment="center"
                         android:textSize="16dp"
-                        />
+                        tools:ignore="RtlCompat"
+                        tools:text="2021.05.27" />
 
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:layout_marginVertical="8dp"
                         android:layout_marginHorizontal="20dp"
-                        android:background="@color/grey_white"
-                        >
+                        android:layout_marginVertical="8dp"
+                        android:background="@color/grey_white">
 
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -120,6 +126,7 @@
 
                         <androidx.recyclerview.widget.RecyclerView
                             android:id="@+id/detailPetHeaderRecycler"
+                            petPhotoIconAdapter="@{viewModel.petDataList}"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="34dp"
@@ -140,10 +147,9 @@
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:layout_marginVertical="8dp"
                         android:layout_marginHorizontal="20dp"
-                        android:background="@color/grey_white"
-                        >
+                        android:layout_marginVertical="8dp"
+                        android:background="@color/grey_white">
 
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -152,42 +158,52 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_marginHorizontal="15dp"
-                        android:layout_marginVertical="4dp"
-                        >
+                        android:layout_marginVertical="4dp">
 
                         <ImageView
                             android:id="@+id/detailTagIcon"
                             android:layout_width="32dp"
                             android:layout_height="32dp"
+                            android:visibility="@{viewModel.editable?View.INVISIBLE:View.VISIBLE}"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
                             app:srcCompat="@drawable/ic_round_local_offer_24_round" />
 
+                        <ImageView
+                            android:id="@+id/detailAddTagIcon"
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:clickable="@{viewModel.editable?true:false}"
+                            android:visibility="@{viewModel.editable?View.VISIBLE:View.GONE}"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:srcCompat="@drawable/ic_baseline_add_circle_outline_24_blue" />
+
                         <androidx.recyclerview.widget.RecyclerView
                             android:id="@+id/detailTagListRecycler"
+                            tagSelectorAdapter="@{viewModel.tagListLiveData}"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="34dp"
                             android:layout_marginEnd="5dp"
                             android:minHeight="30dp"
                             android:orientation="horizontal"
-                            tagSelectorAdapter="@{viewModel.tagListLiveData}"
                             app:layoutManager="com.google.android.flexbox.FlexboxLayoutManager"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toEndOf="@+id/detailTagIcon"
                             app:layout_constraintTop_toTopOf="parent"
-                            tools:listitem="@layout/item_tag_view"/>
+                            tools:listitem="@layout/item_tag_view" />
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:layout_marginVertical="8dp"
                         android:layout_marginHorizontal="20dp"
-                        android:background="@color/grey_white"
-                        >
+                        android:layout_marginVertical="8dp"
+                        android:background="@color/grey_white">
 
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -197,8 +213,7 @@
                         android:layout_height="match_parent"
                         android:layout_marginHorizontal="15dp"
                         android:layout_marginVertical="4dp"
-                        android:minHeight="40dp"
-                        >
+                        android:minHeight="40dp">
 
                         <ImageView
                             android:id="@+id/addressIcon"
@@ -215,7 +230,7 @@
                             android:layout_height="180dp"
                             android:layout_marginStart="30dp"
                             android:layout_marginEnd="5dp"
-                            android:visibility="@{viewModel.eventDetail.locationName.length()==0?View.GONE:View.VISIBLE}"
+                            android:visibility="@{viewModel.latLngToMap==null?View.GONE:View.VISIBLE}"
                             app:cardCornerRadius="8dp"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toEndOf="@+id/addressIcon"
@@ -234,29 +249,31 @@
                             <TextView
                                 android:id="@+id/addressSelectButton"
                                 android:layout_width="match_parent"
-                                android:layout_height="26dp"
-                                android:background="@color/transparent_black"
+                                android:layout_height="40dp"
+                                android:background="@color/blue_light3"
+                                android:clickable="true"
+                                android:drawableStart="@drawable/ic_baseline_search_24"
                                 android:gravity="center"
                                 android:maxLines="1"
-                                android:visibility="gone"
-                                android:text="@{viewModel.eventDetail.locationName}"
+                                android:paddingStart="20dp"
+                                android:text="@{viewModel.locationNameLiveData}"
                                 android:textAlignment="center"
-                                android:textColor="@color/grey_white"
+                                android:textColor="@color/black_sleep"
                                 android:textSize="16dp"
-                                android:textStyle="bold" />
+                                android:visibility="@{viewModel.editable?View.VISIBLE:View.GONE}" />
 
 
                         </androidx.cardview.widget.CardView>
 
 
                     </androidx.constraintlayout.widget.ConstraintLayout>
+
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:layout_marginVertical="8dp"
                         android:layout_marginHorizontal="20dp"
-                        android:background="@color/grey_white"
-                        >
+                        android:layout_marginVertical="8dp"
+                        android:background="@color/grey_white">
 
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -266,34 +283,104 @@
                         android:layout_marginHorizontal="15dp"
                         android:layout_marginVertical="4dp"
                         android:minHeight="40dp"
-                        >
+                        android:id="@+id/memoListLayout">
+
+                        <ImageView
+                            android:id="@+id/memoAddIcon"
+                            android:layout_width="36dp"
+                            android:layout_height="36dp"
+                            android:clickable="@{viewModel.editable?true:false}"
+                            android:visibility="@{viewModel.editable?View.VISIBLE:View.GONE}"
+                            app:layout_constraintBottom_toBottomOf="@id/diaryDetailMemoRecycler"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="@id/diaryDetailMemoRecycler"
+                            app:srcCompat="@drawable/ic_paw_time__ui__10" />
 
                         <ImageView
                             android:id="@+id/memoIcon"
                             android:layout_width="36dp"
                             android:layout_height="36dp"
-                            app:layout_constraintBottom_toBottomOf="parent"
+                            android:visibility="@{viewModel.editable?View.INVISIBLE:View.VISIBLE}"
+                            app:layout_constraintBottom_toBottomOf="@id/diaryDetailMemoRecycler"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="@+id/diaryDetailMemoRecycler"
-                            app:srcCompat="@drawable/ic_paw_time__ui__10" />
+                            app:layout_constraintTop_toTopOf="@id/diaryDetailMemoRecycler"
+                            app:srcCompat="@drawable/ic_baseline_sticky_note_2_24" />
 
                         <androidx.recyclerview.widget.RecyclerView
                             android:id="@+id/diaryDetailMemoRecycler"
                             tagSelectorAdapter="@{viewModel.memoListLiveData}"
                             android:layout_width="0dp"
-                            android:layout_height="240dp"
-                            android:clipToPadding="false"
-                            android:overScrollMode="never"
+                            android:layout_height="wrap_content"
                             android:layout_marginStart="30dp"
                             android:layout_marginEnd="5dp"
                             android:orientation="vertical"
                             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintStart_toEndOf="@+id/memoIcon"
+                            app:layout_constraintStart_toEndOf="@id/memoIcon"
                             app:layout_constraintTop_toTopOf="parent"
-                            tools:listitem="@layout/item_detail_memo_list"
-                            android:nestedScrollingEnabled="false"/>
+                            tools:listitem="@layout/item_detail_memo_list" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginHorizontal="20dp"
+                        android:layout_marginVertical="8dp"
+                        android:background="@color/grey_white"
+                        android:visibility="@{viewModel.editable?View.VISIBLE:View.GONE}">
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="15dp"
+                        android:layout_marginVertical="4dp"
+                        android:minHeight="40dp"
+                        android:visibility="@{viewModel.editable?View.VISIBLE:View.GONE}">
+
+                        <ImageView
+                            android:id="@+id/photoAddIcon"
+                            android:layout_width="36dp"
+                            android:layout_height="36dp"
+                            android:clickable="@{viewModel.editable?true:false}"
+                            android:visibility="@{viewModel.editable?View.VISIBLE:View.GONE}"
+                            app:layout_constraintBottom_toBottomOf="@id/diaryPhotoListRecycler"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="@id/diaryPhotoListRecycler"
+                            app:srcCompat="@drawable/ic_baseline_add_photo_alternate_24" />
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/diaryPhotoListRecycler"
+                            tagSelectorAdapter="@{viewModel.photoListLiveData}"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="18dp"
+                            android:layout_marginBottom="60dp"
+                            android:orientation="vertical"
+                            android:padding="8dp"
+                            app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toEndOf="@+id/photoAddIcon"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:spanCount="1"
+                            tools:listitem="@layout/item_detail_photo_holder" />
+
+                        <com.airbnb.lottie.LottieAnimationView
+                            android:layout_width="120dp"
+                            android:layout_height="120dp"
+                            android:visibility="@{viewModel.loadingStatus==LoadStatus.ImageUpload?View.VISIBLE:View.GONE}"
+                            app:layout_constraintBottom_toBottomOf="@id/diaryPhotoListRecycler"
+                            app:layout_constraintEnd_toEndOf="@id/diaryPhotoListRecycler"
+                            app:layout_constraintStart_toStartOf="@id/diaryPhotoListRecycler"
+                            app:layout_constraintTop_toTopOf="@id/diaryPhotoListRecycler"
+                            app:lottie_autoPlay="true"
+                            app:lottie_fileName="image_update.json"
+                            app:lottie_loop="true" />
+
 
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -308,21 +395,21 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:layout_marginTop="20dp"
-            app:layout_constraintStart_toStartOf="@+id/detailPhotoPager"
-            app:layout_constraintTop_toTopOf="@+id/detailPhotoPager"
             android:background="@drawable/bg_white_circle"
-            android:backgroundTint="@color/transparent_black">
+            android:backgroundTint="@color/transparent_black"
+            app:layout_constraintStart_toStartOf="@+id/detailPhotoPager"
+            app:layout_constraintTop_toTopOf="@+id/detailPhotoPager">
 
             <ImageView
                 android:id="@+id/detailBackButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
+                android:backgroundTint="@color/grey_white"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                android:backgroundTint="@color/grey_white"
                 app:srcCompat="@drawable/ic_baseline_navigate_before_24" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -345,10 +432,87 @@
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="16dp"
             android:clickable="true"
+            android:onClick="@{()->viewModel.clickEditButton()}"
             app:backgroundTint="@color/blue_light"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@+id/detailLayoutBottom"
             app:srcCompat="@drawable/ic_baseline_edit_24" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/detailConfirmButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="16dp"
+            android:clickable="true"
+            android:visibility="@{viewModel.editable?View.VISIBLE:View.GONE}"
+            app:backgroundTint="@color/blue_light"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/detailLayoutBottom"
+            app:srcCompat="@drawable/ic_baseline_check_24" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/detailDeleteButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:clickable="true"
+            android:visibility="@{viewModel.editable?View.VISIBLE:View.GONE}"
+            app:backgroundTint="@color/grey_medium"
+            app:layout_constraintBottom_toBottomOf="@id/detailConfirmButton"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/detailConfirmButton"
+            app:srcCompat="@drawable/ic_baseline_delete_outline_24" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/lottieLayout"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:visibility="@{viewModel.loadingStatus==LoadStatus.Done?View.GONE:View.VISIBLE}"
+            android:background="@color/white_transparent">
+
+
+            <com.airbnb.lottie.LottieAnimationView
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:visibility="@{viewModel.loadingStatus==LoadStatus.Delete?View.VISIBLE:View.GONE}"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:lottie_autoPlay="true"
+                app:lottie_fileName="delete_done.json"
+                app:lottie_loop="true" />
+
+            <com.airbnb.lottie.LottieAnimationView
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:visibility="@{viewModel.loadingStatus==LoadStatus.Upload?View.VISIBLE:View.GONE}"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:lottie_autoPlay="true"
+                app:lottie_fileName="upload_n_success.json"
+                app:lottie_loop="true" />
+
+            <com.airbnb.lottie.LottieAnimationView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="@{viewModel.loadingStatus==LoadStatus.DoneUpdate?View.VISIBLE:View.GONE}"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:lottie_autoPlay="true"
+                app:lottie_fileName="paw_loading.json"
+                app:lottie_loop="true" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.constraintlayout.motion.widget.MotionLayout>
 </layout>

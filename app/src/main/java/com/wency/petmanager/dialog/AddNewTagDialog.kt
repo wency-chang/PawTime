@@ -42,7 +42,6 @@ class AddNewTagDialog(val listener: AddNewTagListener, val tagList: MutableList<
                 Toast.makeText(context, "Add Tag", Toast.LENGTH_SHORT).show()
                 dismiss()
             }
-
         }
         binding.enterTagCancelButton.setOnClickListener {
             dismiss()

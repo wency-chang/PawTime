@@ -198,7 +198,7 @@ class DiaryCreateFragment: Fragment(), AddMemoDialog.MemoDialogListener, AddNewT
 
     }
 
-    override fun getMemo(memo: String) {
+    override fun getMemo(memo: String, position: Int?) {
         viewModel.memoList.value?.let {
             it.add(1, memo)
             binding.memoRecycler.adapter?.notifyDataSetChanged()

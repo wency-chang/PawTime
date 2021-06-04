@@ -285,9 +285,7 @@ object RemoteDataSource : DataSource {
                 .update(PET_TAG_LIST, FieldValue.arrayUnion(tag))
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
-                        task.result?.let { document ->
                             continuation.resume(Result.Success(true))
-                        }
 
                     } else {
                         task.exception?.let {

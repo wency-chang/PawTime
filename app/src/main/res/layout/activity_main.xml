@@ -102,10 +102,12 @@
                     android:id="@+id/drawerLogoutButton"
                     android:background="@color/transparent"
                     android:gravity="center"
+                    android:clickable="true"
                     android:drawableStart="@drawable/ic_baseline_logout_24"
                     android:paddingStart="3dp"
                     android:drawablePadding="2dp"
                     android:text="LOGOUT"
+                    android:onClick="@{()->viewModel.logOut()}"
                     android:textAlignment="inherit"
                     android:textColor="@color/blue_light2"/>
             </LinearLayout>

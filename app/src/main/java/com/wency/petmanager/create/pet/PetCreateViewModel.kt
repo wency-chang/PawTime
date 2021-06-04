@@ -55,7 +55,7 @@ class PetCreateViewModel(val repository: Repository, val userInfoProfile: UserIn
     val petCoverLink : LiveData<MutableList<String>>
         get() = _petCoverLink
 
-    val _categoryPhotos = MutableLiveData<MutableList<String>>(mutableListOf(ADD_HOLDER_STRING))
+    private val _categoryPhotos = MutableLiveData<MutableList<String>>(mutableListOf(ADD_HOLDER_STRING))
     val categoryPhotos: LiveData<MutableList<String>>
         get() = _categoryPhotos
 
@@ -133,18 +133,14 @@ class PetCreateViewModel(val repository: Repository, val userInfoProfile: UserIn
             uploadImage(listOf(petHeader.value!!), HEADER_UPLOAD)
 
             if (categoryPhotos.value?.size!! > 1 ){
-                Log.d("categoryPhotos","${categoryPhotos.value}")
                 val list = categoryPhotos.value
                 list?.removeAt(0)
-                Log.d("categoryPhotos","${list}")
                 uploadImage(list!!.toMutableList(), COVER_UPLOAD)
             }
-
-
     }
 
     fun createUpdateData(){
-        Log.d("debug", "create update data 1 ${petName.value}")
+
         coroutineScope.async {
             petName.value?.let {
                 val dataForUpdate = Pet(
@@ -200,6 +196,8 @@ class PetCreateViewModel(val repository: Repository, val userInfoProfile: UserIn
 
     private fun uploadImage(listUri: List<String>, folder: String){
 
+        Log.d("debug","upload image")
+
         coroutineScope.launch {
             for (uri in listUri) {
                 when (val result = repository.updateImage(Uri.parse(uri), folder)) {
@@ -216,7 +214,6 @@ class PetCreateViewModel(val repository: Repository, val userInfoProfile: UserIn
                             }
                             COVER_UPLOAD -> {
                                 result.data?.let {
-                                    Log.d("cover success","$it")
                                     _petCoverLink.value?.add(it)
                                     _petCoverLink.value = _petCoverLink.value
                                 }
@@ -242,11 +239,13 @@ class PetCreateViewModel(val repository: Repository, val userInfoProfile: UserIn
     }
 
     private fun updateToFirebase(pet: Pet){
+        Log.d("debug","update to firebase")
         coroutineScope.launch {
             when (val result = repository.createPet(pet)){
                 is Result.Success -> {
                     Toast.makeText(ManagerApplication.instance, "Update Success", Toast.LENGTH_SHORT).show()
                     updateToUserPetList(result.data)
+                    Log.d("debug","update success")
                 }
                 is Result.Fail -> Toast.makeText(ManagerApplication.instance, "Update Failed, Try Again", Toast.LENGTH_SHORT).show()
                 is Result.Error -> throw Exception(result.exception)
@@ -255,6 +254,7 @@ class PetCreateViewModel(val repository: Repository, val userInfoProfile: UserIn
     }
 
     private fun updateToUserPetList(petId: String){
+        Log.d("debug","update to user")
         coroutineScope.launch {
             when (val result = repository.addNewPetIdToUser(petId, userInfoProfile.userId)){
                 is Result.Success -> backHome()

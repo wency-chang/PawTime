@@ -1,6 +1,8 @@
 package com.wency.petmanager.detail
 
 import android.app.AlertDialog
+import android.app.DatePickerDialog
+import android.app.TimePickerDialog
 import android.content.DialogInterface
 import android.os.Bundle
 import android.util.Log
@@ -25,12 +27,19 @@ import com.wency.petmanager.R
 import com.wency.petmanager.create.CreateEventViewModel
 import com.wency.petmanager.create.GetImageFromGallery
 import com.wency.petmanager.create.GetLocationFromMap
+import com.wency.petmanager.create.events.adapter.MemoListAdapter
 import com.wency.petmanager.data.LoadStatus
+import com.wency.petmanager.data.Pet
+import com.wency.petmanager.data.UserInfo
 import com.wency.petmanager.databinding.FragmentScheduleCreateBinding
 import com.wency.petmanager.databinding.FragmentScheduleDetailBinding
+import com.wency.petmanager.dialog.AddMemoDialog
+import com.wency.petmanager.dialog.AddNewTagDialog
 import com.wency.petmanager.ext.getVmFactory
+import com.wency.petmanager.profile.Today
+import java.util.*
 
-class ScheduleDetailFragment: Fragment(), OnMapReadyCallback {
+class ScheduleDetailFragment: Fragment(), OnMapReadyCallback, AddMemoDialog.MemoDialogListener, AddNewTagDialog.AddNewTagListener {
     lateinit var binding : FragmentScheduleDetailBinding
     val viewModel by viewModels<ScheduleDetailViewModel>() {
         getVmFactory(ScheduleDetailFragmentArgs.fromBundle(requireArguments()).eventDetail)
@@ -62,63 +71,135 @@ class ScheduleDetailFragment: Fragment(), OnMapReadyCallback {
         binding = FragmentScheduleDetailBinding.inflate(layoutInflater, container, false)
         binding.viewModel = viewModel
         binding.lifecycleOwner = this
+        val totalUserList = mutableSetOf<UserInfo>()
+        mainViewModel.friendUserList.value?.let { totalUserList.addAll(it) }
+        mainViewModel.userInfoProfile.value?.let { totalUserList.add(it) }
+        viewModel.friendListForOption = totalUserList.toList()
+        viewModel.getPetOptionData()
+
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
+//        binding.detailTagListRecycler.adapter = viewModel.editable.value?.let {
+//            Log.d("TAGLIST","bind Adapter $it, ${viewModel.currentDetailData.tagList}")
+//            DetailTagListAdapter(
+//                it , viewModel.currentDetailData.tagList.toMutableList()
+//            )
+//        }
+        viewModel.editable.observe(viewLifecycleOwner, Observer {
+            binding.scheduleDetailUserRecycler.adapter?.notifyDataSetChanged()
+            binding.scheduleDetailPetRecycler.adapter?.notifyDataSetChanged()
+            binding.detailTagListRecycler.adapter?.notifyDataSetChanged()
+            binding.schedulePhotoListRecycler.adapter?.notifyDataSetChanged()
 
-        binding.detailTagListRecycler.adapter = viewModel.editable.value?.let {
+            if (it){
+                binding.mapCardView.visibility = View.VISIBLE
+            } else {
+                if (viewModel.latLngToMap.value == null){
+                    binding.mapCardView.visibility = View.GONE
+                }
+            }
+        })
+
+
+        viewModel.petDataList.observe(viewLifecycleOwner, Observer{
+            viewModel.currentDetailData.petParticipantList?.let {seletedList->
+                viewModel.editable.value?.let { editable->
+                    binding.scheduleDetailPetRecycler.adapter = PetHeaderAdapter(
+                        seletedList.toMutableList(),
+                        viewModel.editable,
+                        PetHeaderAdapter.OnClickListener{ add, pet ->
+                            viewModel.modifyParticipantPet(add, pet)
+                        }
+                    )
+                }
+            }
+        })
+
+        binding.detailTagListRecycler.adapter = viewModel.editable?.let {
             DetailTagListAdapter(
-                it
+                it , viewModel.currentDetailData.tagList.toMutableList(), DetailTagListAdapter.OnClickListener{ add, tag ->
+                    viewModel.modifyTagList(add, tag)
+                }
             )
         }
-        viewModel.petDataList.observe(viewLifecycleOwner, Observer{
-            binding.scheduleDetailPetRecycler.adapter = PetHeaderAdapter(it)
+
+
+
+        viewModel.currentDetailData.userParticipantList?.let {selectedList->
+            binding.scheduleDetailUserRecycler.adapter = UserHeaderAdapter(
+                selectedList.toMutableList(),
+                viewModel,
+                UserHeaderAdapter.OnClickListener{ add, user ->
+                    viewModel.modifyParticipantUser(add, user)
+                }
+            )
+        }
+
+        binding.scheduleDetailMemoRecycler.adapter = DetailMemoAdapter(viewModel.editable, this,
+        DetailMemoAdapter.OnClickListener{ add, position, memo ->
+            if (add){
+                val memoDialog = AddMemoDialog(this, memo, position)
+                memoDialog.show(childFragmentManager, "MEMO")
+            } else {
+                position?.let {
+                    viewModel.removeMemo(it)
+                }
+            }
         })
 
-        viewModel.participantUserInfo.observe(viewLifecycleOwner, Observer {
-            binding.scheduleDetailUserRecycler.adapter = UserHeaderAdapter(it)
+        binding.memoAddIcon.setOnClickListener {
+            val memoDialog = AddMemoDialog(this, "", null)
+            memoDialog.show(childFragmentManager, "MEMO")
+        }
+
+        viewModel.lockStatus.value?.let {
+            updateLockStatus(it)
+        }
+        viewModel.lockStatus.observe(viewLifecycleOwner, Observer {
+            updateLockStatus(it)
         })
-
-        binding.scheduleDetailMemoRecycler.adapter = DetailMemoAdapter(viewModel.editable, this)
-
 
         val mapFragment = childFragmentManager.findFragmentById(R.id.locationScheduleMap) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
+        binding.schedulePhotoListRecycler.adapter = PhotoListAdapter(viewModel.editable, this,
+            PhotoListAdapter.OnClickListener{ add, position ->
+                    if (add){
+                        getNewPhotoActivity.launch(getImage.pickImageIntent())
+                    } else {
+                        viewModel.deletePhoto(position)
+                    }
 
-        if (!viewModel.eventDetail.photoList.isNullOrEmpty()){
-            binding.schedulePhotoListRecycler.adapter = PhotoListAdapter(viewModel.eventDetail.photoList)
+            })
+
+        binding.photoListAddIcon.setOnClickListener {
+            getNewPhotoActivity.launch(getImage.pickImageIntent())
         }
 
-        viewModel.loadingStatus.observe(viewLifecycleOwner, Observer {
-            Log.d("DELETE","observe status change $it")
 
+        viewModel.loadingStatus.observe(viewLifecycleOwner, Observer {
             when (it){
                 LoadStatus.DoneNBack -> {
-
                     mainViewModel.deleteEvent(viewModel.eventDetail)
-
-                    mainViewModel.userInfoProfile.value?.let { profile->
-                        mainViewModel.userPetList.value?.let { petList->
-                            mainViewModel.eventDetailList.value?.let{eventList->
-                                findNavController().navigate(NavHostDirections.actionGlobalToHomeFragment(
-                                    profile, petList.toTypedArray(),eventList.toTypedArray()
-                                ))
-                                viewModel.statusDone()
-                            }
-                        }
-                    }
+//                    mainViewModel.userInfoProfile.value?.let { profile->
+//                        mainViewModel.userPetList.value?.let { petList->
+//                            mainViewModel.eventDetailList.value?.let{eventList->
+//                                findNavController().navigate(NavHostDirections.actionGlobalToHomeFragment(
+//                                    profile, petList.toTypedArray(),eventList.toTypedArray()
+//                                ))
+//                                viewModel.statusDone()
+//                            }
+//                        }
+//                    }
 
                 }
                 LoadStatus.DoneUpdate -> {
-                    viewModel.statusDone()
+                    mainViewModel.updateEvent(viewModel.currentDetailData)
+//                    mainViewModel.getEventDetailList()
                 }
-
-
-
-
             }
         })
 
@@ -140,7 +221,43 @@ class ScheduleDetailFragment: Fragment(), OnMapReadyCallback {
         }
 
 
+        viewModel.memoListLiveData.observe(viewLifecycleOwner, Observer {
+            val memoAdapter = binding.scheduleDetailMemoRecycler.adapter
+            memoAdapter?.notifyDataSetChanged()
+        })
 
+        binding.scheduleDateTextView.setOnClickListener {
+            val calendar = Calendar.getInstance()
+            calendar.time = viewModel.currentDetailData.date.toDate()
+            DatePickerDialog(requireContext(), R.style.datePickDialog,
+                { _, pickYear, pickMonth, pickDayOfMonth ->
+                    calendar.set(pickYear, pickMonth, pickDayOfMonth)
+                    viewModel.getNewDate(calendar.time)
+                }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH))
+                .show()
+        }
+
+        binding.scheduleTimeTextView.setOnClickListener {
+            val calendar = Calendar.getInstance()
+            viewModel.currentDetailData.time?.let {
+                calendar.time = it.toDate()
+            }
+            val timePicker = TimePickerDialog(requireContext(), R.style.datePickDialog,  TimePickerDialog.OnTimeSetListener { view, hourOfDay, minute ->
+                calendar.set(calendar.get(Calendar.YEAR),  calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH), hourOfDay, minute)
+                viewModel.getNewTime(calendar.time)
+            }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), false)
+            timePicker.show()
+        }
+
+        binding.detailTagAddIcon.setOnClickListener {
+            val newTagDialog = AddNewTagDialog(this, viewModel.tagOptionList)
+            newTagDialog.show(childFragmentManager, "TAG")
+        }
+
+        binding.scheduleConfirmButton.setOnClickListener {
+            viewModel.currentDetailData.title = binding.detailScheduleTitle.text.toString()
+            viewModel.clickEditButton()
+        }
 
     }
 
@@ -151,7 +268,6 @@ class ScheduleDetailFragment: Fragment(), OnMapReadyCallback {
             it?.let {
                 presentMap()
             }
-
         })
     }
 
@@ -167,7 +283,22 @@ class ScheduleDetailFragment: Fragment(), OnMapReadyCallback {
 
             googleMap.moveCamera(CameraUpdateFactory.newLatLng(it))
         }
+    }
 
+    override fun getTag(tag: String) {
+        viewModel.addNewTagOption(tag)
+    }
+
+    override fun getMemo(memo: String, position: Int?) {
+        viewModel.addMemo(memo, position)
+    }
+
+    private fun updateLockStatus(lock: Boolean){
+        if (lock){
+            binding.scheduleEditButton.visibility = View.GONE
+        } else {
+            binding.scheduleEditButton.visibility = View.VISIBLE
+        }
     }
 
 }

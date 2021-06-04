@@ -22,5 +22,7 @@ data class Event(
     var locationLatLng: String? = null,
     var complete: Boolean = false,
     var tagList: List<String> = mutableListOf(),
-    var notification: Timestamp? = null
+    var notification: Timestamp? = null,
+    var private : Boolean = false
+
 ): Parcelable

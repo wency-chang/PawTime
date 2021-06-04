@@ -1,50 +1,50 @@
 package com.wency.petmanager.detail
 
+import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.wency.petmanager.create.events.adapter.TagListAdapter
 import com.wency.petmanager.databinding.ItemDetailPhotoHolderBinding
 
-class PhotoListAdapter(val photoList: List<String>): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+class PhotoListAdapter(val editable: LiveData<Boolean>,
+                       val lifecycleOwner: LifecycleOwner,
+                       private val onClickListener: OnClickListener):
+    ListAdapter<String, PhotoListAdapter.PhotoViewHolder>(TagListAdapter.DiffCallback) {
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PhotoViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
-        return when(viewType) {
-            TYPE_PHOTO -> PhotoViewHolder(ItemDetailPhotoHolderBinding.inflate(layoutInflater, parent, false))
-            else -> throw ClassCastException("Unknown viewType $viewType")
-        }
+        return PhotoViewHolder(ItemDetailPhotoHolderBinding.inflate(layoutInflater, parent, false))
     }
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        when (holder){
-            is PhotoViewHolder -> {
-                holder.bind(photoList[position])
-            }
-
-        }
-    }
-
-    override fun getItemCount(): Int {
-        return photoList.size
+    override fun onBindViewHolder(holder: PhotoViewHolder, position: Int) {
+                holder.bind(getItem(position), lifecycleOwner, this)
+                holder.cancelButton.setOnClickListener {
+                    Log.d("WTF","click position: $position")
+                    onClickListener.onClick(false, position)
+                    notifyDataSetChanged()
+                }
     }
 
     class PhotoViewHolder(val binding: ItemDetailPhotoHolderBinding) : RecyclerView.ViewHolder(binding.root){
-        fun bind(photo: String){
+        val cancelButton = binding.photoCancelButton
+
+        fun bind(photo: String, lifecycleOwner: LifecycleOwner, adapter: PhotoListAdapter){
+            binding.lifecycleOwner = lifecycleOwner
+            binding.adapter = adapter
             binding.photo = photo
             binding.executePendingBindings()
         }
 
     }
 
-    override fun getItemViewType(position: Int): Int {
-        return when (photoList[position]){
-            else -> {
-                TYPE_PHOTO
-            }
-        }
-    }
 
-    companion object{
-        const val TYPE_PHOTO = 0x00
+    class OnClickListener(val clickListener:(add: Boolean, position: Int)-> Unit){
+        fun onClick(add: Boolean, position: Int) = clickListener(add, position)
     }
 }

@@ -68,7 +68,7 @@ class HomeFragment: Fragment() {
 
         binding.petOptionRecycler.adapter = PetHeaderAdapter(viewModel, this)
         timelineRecycler.adapter = timelineAdapter
-        Log.d("friendList","TimelineAdapter : ${viewModel.friendList}")
+
         viewModel.isCreateButtonVisible.observe(viewLifecycleOwner, Observer {
             if (it){
                 binding.createScheduleEventButton.startAnimation(openAnim)
@@ -114,7 +114,7 @@ class HomeFragment: Fragment() {
 
         }
         viewModel.timeline.observe(viewLifecycleOwner, Observer {
-            Log.d("missionUpdate","timeline change")
+
             timelineAdapter.notifyDataSetChanged()
             viewModel.scrollToToday.value?.let {
                 timelineRecycler.scrollToPosition(it)
@@ -123,7 +123,6 @@ class HomeFragment: Fragment() {
 
 
         viewModel.navigateToCreateDestination.observe(viewLifecycleOwner, Observer {
-            Log.d("WHAT","navigate observe$it")
             it?.let {
                 if (it < 3){
                     mainViewModel.userInfoProfile.value?.let { userInfo->
@@ -166,17 +165,13 @@ class HomeFragment: Fragment() {
         })
 
         viewModel.evenForTimeline.observe(viewLifecycleOwner, Observer { eventForTimeline->
-            Log.d("missionUpdate","insert timeline update list")
             eventForTimeline?.let {
-
                 viewModel.createTimelineItem(it)
-
             }
         })
 
         viewModel.missionListToday.observe(viewLifecycleOwner, Observer {
             if (it.isNotEmpty()) {
-                Log.d("missionUpdate","missionListToday update")
                 viewModel.createMissionTimeItem(it)
             }
         })
@@ -184,7 +179,6 @@ class HomeFragment: Fragment() {
 
         viewModel.todayMissionListForTimeline.observe(viewLifecycleOwner, Observer {
 
-                Log.d("missionUpdate","start insertMissionToTimeline")
                 viewModel.insertMissionToTimeline()
 
         })

@@ -61,7 +61,7 @@ class MainViewModel(private val firebaseRepository: Repository) : ViewModel() {
 
     var friendListLiveData = MutableLiveData<List<String>>()
 
-    val _friendUserList = MutableLiveData<MutableList<UserInfo>>()
+    private val _friendUserList = MutableLiveData<MutableList<UserInfo>>()
     val friendUserList : LiveData<MutableList<UserInfo>>
         get() = _friendUserList
 
@@ -81,6 +81,8 @@ class MainViewModel(private val firebaseRepository: Repository) : ViewModel() {
     private val _memoryPetList = MutableLiveData<MutableList<Pet>>()
     val memoryPetList : LiveData<MutableList<Pet>>
         get() = _memoryPetList
+
+
 
 
 
@@ -357,8 +359,7 @@ class MainViewModel(private val firebaseRepository: Repository) : ViewModel() {
         _userPetList.value?.let { petList->
             for (i in petList.indices) {
                 if (petList[i].id == newPetData.id){
-                    petList.removeAt(i)
-                    petList.add(i, newPetData)
+                    petList[i] = newPetData
                 }
             }
         }
@@ -370,9 +371,36 @@ class MainViewModel(private val firebaseRepository: Repository) : ViewModel() {
     }
 
     fun deleteEvent(event: Event){
-        _eventDetailList.value?.let {
-            it.remove(event)
+
+        if (_eventDetailList.value != null){
+            _eventDetailList.value!!.remove(event)
+            _eventDetailList.value = _eventDetailList.value
         }
+
+    }
+
+    fun updateEvent(event: Event){
+        _eventDetailList.value?.let {eventList->
+            var count = 0
+
+                for (oldEvent in eventList) {
+                    if (oldEvent.eventID == event.eventID){
+                        break
+                    }
+                    count += 1
+                }
+                eventList[count] = event
+
+            _eventDetailList.value = eventList
+        }
+
+    }
+
+    fun logOut(){
+        coroutineScope.launch {
+            firebaseRepository.sinOut()
+        }
+
     }
 
 

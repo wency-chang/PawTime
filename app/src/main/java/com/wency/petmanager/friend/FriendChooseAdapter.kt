@@ -7,7 +7,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.wency.petmanager.create.events.adapter.UserListAdapter
 import com.wency.petmanager.data.UserInfo
 import com.wency.petmanager.databinding.ItemFriendListChooseHolderBinding
-import com.wency.petmanager.detail.UserHeaderAdapter
 
 class FriendChooseAdapter(val viewModel: ChooseFriendViewModel): ListAdapter<UserInfo, FriendChooseAdapter.UserChooseViewHolder >(UserListAdapter.DiffCallback) {
 

@@ -2,15 +2,19 @@ package com.wency.petmanager.detail
 
 import android.net.Uri
 import android.util.Log
+import android.view.View
+import android.widget.CheckBox
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.libraries.places.api.model.Place
+import com.google.firebase.Timestamp
 import com.wency.petmanager.create.pet.PetCreateViewModel
 import com.wency.petmanager.data.*
 import com.wency.petmanager.data.source.Repository
 import com.wency.petmanager.profile.Today
+import com.wency.petmanager.profile.UserManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -20,25 +24,25 @@ import java.io.ByteArrayOutputStream
 import java.io.ObjectInputStream
 import java.io.ObjectOutputStream
 import java.lang.Exception
+import java.util.*
 
 class ScheduleDetailViewModel(val repository: Repository, val eventDetail: Event) : ViewModel() {
 
     private var viewModelJob = Job()
     private val coroutineScope = CoroutineScope(viewModelJob + Dispatchers.Main)
 
-
+// edit data for update
     val currentDetailData = eventDetail.copy()
 
-
-    val _petDataList = MutableLiveData<MutableList<Pet>>()
-
+//  live data show on screen
+    private val _petDataList = MutableLiveData<MutableList<Pet>>()
     val petDataList: LiveData<MutableList<Pet>>
         get() = _petDataList
 
-    var latLngToMap: MutableLiveData<LatLng?> = MutableLiveData(null)
+    val latLngToMap: MutableLiveData<LatLng?> = MutableLiveData(null)
+    val locationNameLiveData = MutableLiveData<String>(eventDetail.locationName)
 
-
-    private val _tagListLiveData = MutableLiveData<MutableList<String>>()
+    private val _tagListLiveData = MutableLiveData<MutableList<String>>(eventDetail.tagList.toMutableList())
     val tagListLiveData : LiveData<MutableList<String>>
         get() = _tagListLiveData
 
@@ -58,19 +62,34 @@ class ScheduleDetailViewModel(val repository: Repository, val eventDetail: Event
     val timeLiveData : LiveData<String>
         get() = _timeLiveData
 
-    val _editable = MutableLiveData<Boolean>(false)
+    private val _photoListLiveData = MutableLiveData<MutableList<String>>()
+    val photoListLiveData : LiveData<MutableList<String>>
+        get() = _photoListLiveData
+
+//    editable switcher
+    private val _editable = MutableLiveData<Boolean>(false)
     val editable : LiveData<Boolean>
         get() = _editable
 
-    val _loadingStatus = MutableLiveData<LoadStatus>(LoadStatus.Done)
+//    loading status
+    private val _loadingStatus = MutableLiveData<LoadStatus>(LoadStatus.Done)
     val loadingStatus: LiveData<LoadStatus>
         get() = _loadingStatus
 
+//    all Friend List for participant
+    var friendListForOption = listOf<UserInfo>()
 
+//    all pet list for participant
+    val _petListForOption = mutableListOf<Pet>()
+    val petListForOption : List<Pet>
+        get() = _petListForOption
 
+//    private state
+    private val _lockStatus = MutableLiveData<Boolean>()
+    val lockStatus : LiveData<Boolean>
+        get() = _lockStatus
 
-
-
+    var tagOptionList = mutableListOf<String>()
 
 
 
@@ -89,6 +108,12 @@ class ScheduleDetailViewModel(val repository: Repository, val eventDetail: Event
             getMemoLiveData()
             Log.d("memo","get memo live data : ${memoListLiveData.value}")
         }
+        if (!eventDetail.photoList.isNullOrEmpty()){
+            getPhotoLiveData()
+        }
+
+        getAllTagOption()
+        checkLockState()
 
 
     }
@@ -117,6 +142,20 @@ class ScheduleDetailViewModel(val repository: Repository, val eventDetail: Event
         }
     }
 
+    private fun getAllTagOption(){
+        val tagList = mutableSetOf<String>()
+        petDataList.value?.let { petList->
+            petList.forEach {
+                tagList.addAll(it.tagList)
+            }
+        }
+        petListForOption.forEach {
+            tagList.addAll(it.tagList)
+        }
+        tagList.addAll(eventDetail.tagList)
+        tagOptionList = tagList.toMutableList()
+    }
+
     private fun getLatLng() {
         if (!eventDetail.locationAddress.isNullOrEmpty()) {
             val latLng = eventDetail.locationLatLng?.split(",")
@@ -134,6 +173,7 @@ class ScheduleDetailViewModel(val repository: Repository, val eventDetail: Event
 
     private fun getTagLiveData(){
         _tagListLiveData.value = eventDetail.tagList.toMutableList()
+        Log.d("TAG","TAGLIST LIVE DATA: ${tagListLiveData.value}")
     }
     private fun getMemoLiveData(){
         _memoListLiveData.value = eventDetail.memoList.toMutableList()
@@ -141,7 +181,13 @@ class ScheduleDetailViewModel(val repository: Repository, val eventDetail: Event
 
     private fun getDateLiveData(){
         _dateLiveData.value = Today.dateFormat.format(eventDetail.date.toDate())
-        _timeLiveData.value = Today.timeFormat.format(eventDetail.time?.toDate())
+        eventDetail.time?.let {
+            _timeLiveData.value = Today.timeFormat.format(it.toDate())
+        }
+    }
+
+    private fun getPhotoLiveData(){
+        _photoListLiveData.value = eventDetail.photoList.toMutableList()
     }
 
     private fun getUserData(){
@@ -154,6 +200,7 @@ class ScheduleDetailViewModel(val repository: Repository, val eventDetail: Event
                             totalList.add(result.data)
                             if (totalList.size == userList.size){
                                 _participantUserInfo.value = totalList
+                                Log.d("UserHeader","Create Live data list $totalList")
                             }
                         }
 
@@ -190,6 +237,12 @@ class ScheduleDetailViewModel(val repository: Repository, val eventDetail: Event
                             }
                         }
                     }
+                    is Result.Fail -> {
+
+                    }
+                    is Result.Error -> {
+
+                    }
                 }
 
             }
@@ -200,14 +253,82 @@ class ScheduleDetailViewModel(val repository: Repository, val eventDetail: Event
 
 
     }
+    private fun checkComplete(completeCount : Int){
+        if (completeCount == 3){
+            _loadingStatus.value = LoadStatus.DoneUpdate
+        }
 
-    fun updateSchedule(){
+    }
+
+
+    private fun updateSchedule(){
+        var completeCount = 0
         _loadingStatus.value = LoadStatus.Upload
+        val deleteList = eventDetail.petParticipantList.filter {
+            !currentDetailData.petParticipantList.contains(it)
+        }
+        val adderList = currentDetailData.petParticipantList.filter {
+            !eventDetail.petParticipantList.contains(it)
+        }
         coroutineScope.launch {
+
+            if (deleteList.isNotEmpty()){
+
+                for (delete in deleteList){
+                    var deleteCount = 0
+                    when (repository.updatePetEventList(delete, eventDetail.eventID, false)){
+                        is Result.Success -> {
+                            deleteCount += 1
+                            if (deleteCount == deleteList.size){
+                                completeCount += 1
+                                checkComplete(completeCount)
+
+                            }
+                        }
+                        is Result.Error -> {
+
+                        }
+                        is Result.Fail -> {
+
+                        }
+                    }
+                }
+            } else {
+                completeCount += 1
+            }
+
+            if (adderList.isNotEmpty()){
+                var addCount = 0
+                for (add in adderList){
+                    when (repository.updatePetEventList(add, eventDetail.eventID, true)){
+                        is Result.Success -> {
+                            addCount += 1
+                            if (addCount == adderList.size){
+                                completeCount += 1
+                                checkComplete(completeCount)
+                            }
+                        }
+                        is Result.Error -> {
+
+                        }
+                        is Result.Fail -> {
+
+                        }
+                    }
+                }
+            } else {
+                completeCount += 1
+            }
+
             when (repository.updateEvent(currentDetailData)){
                 is Result.Success-> {
-                    _loadingStatus.value = LoadStatus.DoneUpdate
+                    completeCount += 1
+                    checkComplete(completeCount)
                 }
+                is Result.Error -> {
+
+                }
+
             }
 
         }
@@ -218,30 +339,22 @@ class ScheduleDetailViewModel(val repository: Repository, val eventDetail: Event
 
     fun clickEditButton(){
         editable.value?.let {
-            if (it){
-
-
-
-
-
-            } else{
-
-            }
-
             _editable.value = _editable.value == false
-
+            if (it){
+                if (currentDetailData != eventDetail){
+                    updateSchedule()
+                }
+                removeAdderHolder()
+            } else{
+                insertAdderHolder()
+            }
         }
-
-
-
-
-
     }
 
     fun statusDone(){
         _loadingStatus.value = LoadStatus.Done
     }
-    fun <T> T.clone() : T
+    private fun <T> T.clone() : T
     {
         val byteArrayOutputStream= ByteArrayOutputStream()
         ObjectOutputStream(byteArrayOutputStream).use { outputStream ->
@@ -263,12 +376,15 @@ class ScheduleDetailViewModel(val repository: Repository, val eventDetail: Event
                 for (uri in photoList){
                     when(val result = repository.updateImage(uri, PetCreateViewModel.COVER_UPLOAD)){
                         is Result.Success -> {
-                            _loadingStatus.value = LoadStatus.Done
+
                             newList.add(result.data)
                             if (newList.size == photoList.size){
                                 val list = currentDetailData.photoList.toMutableList()
                                 list.addAll(newList)
+                                Log.d("PhotoList Updated","photoList: $list")
                                 currentDetailData.photoList = list
+                                _photoListLiveData.value = list
+                                _loadingStatus.value = LoadStatus.Done
                             }
                         }
                         is Result.Error -> {
@@ -285,9 +401,8 @@ class ScheduleDetailViewModel(val repository: Repository, val eventDetail: Event
 
         }
 
-
-
     }
+
     fun getNewLocation(location: Place){
         location.latLng?.let {
             currentDetailData?.locationLatLng = "${it.latitude},${it.longitude}"
@@ -295,13 +410,235 @@ class ScheduleDetailViewModel(val repository: Repository, val eventDetail: Event
         currentDetailData.locationName = location.name
         currentDetailData.locationAddress = location.address
         latLngToMap.value = location.latLng
+        locationNameLiveData.value = location.name
+    }
+
+    fun deletePhoto(position: Int){
+        val list = currentDetailData.photoList.toMutableList()
+        if (list.size < 2){
+            currentDetailData.photoList = mutableListOf()
+            _photoListLiveData.value = mutableListOf()
+        }else {
+            list.removeAt(position)
+            currentDetailData.photoList = list
+            _photoListLiveData.value?.removeAt(position)
+        }
+    }
+
+    private fun insertAdderHolder(){
+
+//        participant adder
+
+        if (!friendListForOption.isNullOrEmpty()){
+            val totalList = friendListForOption.toMutableList()
+            participantUserInfo.value?.let {participantList->
+                val restList = totalList.filter {
+                    !participantList.contains(it)
+                }
+                _participantUserInfo.value?.addAll(restList)
+            }
+        }
+//        participant pet
+        currentDetailData.userParticipantList?.let {
+            getPetOption(it)
+        }
+//        tag
+
+        _tagListLiveData.value = tagOptionList
+    }
+
+    fun modifyParticipantUser(add: Boolean, user: UserInfo){
+        currentDetailData.userParticipantList?.let{
+            val tempList = it.toMutableSet()
+            if (add){
+                tempList.add(user.userId)
+
+            } else {
+                tempList.remove(user.userId)
+            }
+            currentDetailData.userParticipantList = tempList.toList()
+            getPetOption(tempList.toList())
+        }
+    }
+
+    fun modifyParticipantPet(add: Boolean, pet: Pet){
+        val tempList = currentDetailData.petParticipantList.toMutableSet()
+        if (add){
+            tempList.add(pet.id)
+        } else {
+            tempList.remove(pet.id)
+        }
+        currentDetailData.petParticipantList = tempList.toList()
+    }
+
+    private fun removeAdderHolder(){
+
+//        participant adder
+
+        currentDetailData.userParticipantList?.let { participantList->
+            val list = participantUserInfo.value?.filter {
+                participantList.contains(it.userId)
+            }
+            if (list.isNullOrEmpty()){
+                _participantUserInfo.value = mutableListOf()
+            } else {
+                _participantUserInfo.value = list.toMutableList()
+            }
+
+        }
+
+//      pet participant
+
+        currentDetailData.petParticipantList?.let { petParticipantList->
+            petParticipantList.toMutableList()
+            val list = petDataList.value?.filter {
+                petParticipantList.contains(it.id)
+            }
+            if (list != null) {
+                _petDataList.value = list.toMutableList()
+            }
+        }
+//        tag
+
+        _tagListLiveData.value = currentDetailData.tagList.toMutableList()
+    }
+
+    private fun getPetOption(selectedUserId: List<String>){
+
+        if (!petListForOption.isNullOrEmpty()) {
+            val petIdList = mutableSetOf<String>()
+            participantUserInfo.value?.let { userInfoList ->
+                selectedUserId.forEach { participantId ->
+                    for (user in userInfoList){
+                        if (user.userId == participantId){
+                            user.petList?.let { petIdList.addAll(it)}
+                            break
+                        }
+                    }
+                }
+            }
+            val showPetList = petListForOption.filter {
+                petIdList.contains(it.id)
+            }
+            val petSelectedIdList = currentDetailData.petParticipantList.filter {
+                petIdList.contains(it)
+            }
+            currentDetailData.petParticipantList = petSelectedIdList
+            _petDataList.value = showPetList.toMutableList()
+        }
     }
 
 
+    fun removeMemo(position: Int){
+        val tempList = currentDetailData.memoList.toMutableList()
+        tempList.removeAt(position)
+        currentDetailData.memoList = tempList
+        memoListLiveData.value?.removeAt(position)
+
+    }
+
+    fun addMemo(memo: String, position : Int?){
+
+        if (position == null){
+            val tempList = currentDetailData.memoList.toMutableList()
+            tempList.add(memo)
+            currentDetailData.memoList = tempList
+            _memoListLiveData.value = tempList
+
+        } else {
+            val tempList = currentDetailData.memoList.toMutableList()
+            tempList[position] = memo
+            _memoListLiveData.value?.let { memoList->
+                memoList[position] = memo
+                _memoListLiveData.value = memoList
+            }
+            currentDetailData.memoList = tempList
+        }
+    }
 
 
+    fun getPetOptionData(){
+        coroutineScope.launch {
+            val petIdList = mutableSetOf<String>()
+
+            for (user in friendListForOption){
+                user.petList?.let { petIdList.addAll(it) }
+            }
+
+            val petData = mutableListOf<Pet>()
+            for (petId in petIdList){
+                when (val result = repository.getPetData(petId)){
+                    is Result.Success -> {
+
+                        result.data?.let {
+                            petData.add(it)
+                        }
+                        if (petData.size == petIdList.size){
+                            _petListForOption.addAll(petData)
+                            getAllTagOption()
+                        }
+                    }
+                    is Result.Error -> {
+                        petData.add(Pet())
+                    }
+                    is Result.Fail -> {
+                        petData.add(Pet())
+                    }
+                }
+            }
+        }
+    }
+
+    fun getNewDate(newDate: Date){
+        val dateString = Today.dateFormat.format(newDate)
+        _dateLiveData.value = dateString
+        currentDetailData.date = Timestamp(newDate)
+    }
+
+    fun getNewTime(newTime: Date){
+        val timeString = Today.timeFormat.format(newTime)
+        _timeLiveData.value = timeString
+        currentDetailData.time = Timestamp(newTime)
+    }
 
 
+    private fun checkLockState(){
+        eventDetail.userParticipantList?.let {
+            _lockStatus.value = !it.contains(UserManager.userID)
+        }
+    }
+
+
+    fun clickCompleteButton(view: View){
+        if (view is CheckBox){
+            currentDetailData.complete = view.isChecked
+        }
+    }
+
+    fun clickPrivateButton(view: View){
+        if (view is CheckBox){
+            currentDetailData.private = view.isChecked
+        }
+    }
+
+    fun addNewTagOption(tag: String){
+        if (_tagListLiveData.value.isNullOrEmpty()){
+            _tagListLiveData.value = mutableListOf(tag)
+        } else {
+            _tagListLiveData.value?.add(tag)
+        }
+
+    }
+
+    fun modifyTagList(add: Boolean, tag: String){
+        val tempList = currentDetailData.tagList.toMutableSet()
+        if (add){
+            tempList.add(tag)
+        } else {
+            tempList.remove(tag)
+        }
+        currentDetailData.tagList = tempList.toList()
+    }
 
 
 }

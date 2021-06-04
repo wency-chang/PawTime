@@ -162,14 +162,14 @@ class PetCreateFragment: Fragment() {
 
         viewModel.petHeaderLink.observe(viewLifecycleOwner, Observer {
 
-            if (it.isNotEmpty() && viewModel.petCoverLink.value?.size == viewModel.categoryPhotos.value?.size?.minus(1)){
+            if (it.isNotEmpty() && viewModel.petCoverLink.value?.size == viewModel.categoryPhotos.value?.size){
                 viewModel.createUpdateData()
             }
         })
 
         viewModel.petCoverLink.observe(viewLifecycleOwner, Observer {
 
-            if (it.isNotEmpty() && viewModel.petCoverLink.value?.size == viewModel.categoryPhotos.value?.size?.minus(1)){
+            if (it.isNotEmpty() && viewModel.petCoverLink.value?.size == viewModel.categoryPhotos.value?.size){
 
                 viewModel.createUpdateData()
             }

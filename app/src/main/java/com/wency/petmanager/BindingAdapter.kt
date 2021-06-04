@@ -3,6 +3,7 @@ package com.wency.petmanager
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
+import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import androidx.core.net.toUri
@@ -21,6 +22,7 @@ import com.wency.petmanager.home.TimeLineMainAdapter
 import com.wency.petmanager.data.UserInfo
 import com.wency.petmanager.detail.DetailMemoAdapter
 import com.wency.petmanager.detail.DetailTagListAdapter
+import com.wency.petmanager.detail.UserHeaderAdapter
 import com.wency.petmanager.friend.FriendChooseAdapter
 import com.wency.petmanager.friend.InviteListAdapter
 import com.wency.petmanager.friend.FriendGridListAdapter
@@ -127,7 +129,7 @@ fun petHeaderBindRecyclerView(recyclerView: RecyclerView, data: List<Pet>?) {
             when(this){
                 is PetHeaderAdapter -> submitList(it)
                 is FriendPetListAdapter -> submitList(it)
-
+                is com.wency.petmanager.detail.PetHeaderAdapter -> submitList(it)
             }
         }
     }
@@ -155,6 +157,7 @@ fun timelineBindRecyclerView(recyclerView: RecyclerView, data: List<TimelineItem
 fun tagOptionBindRecyclerView(recyclerView: RecyclerView, data: List<String>?) {
     data?.let {
         recyclerView.adapter?.apply {
+
             when(this){
                 is TagListAdapter -> submitList(it)
                 is MemoListAdapter -> submitList(it)
@@ -163,6 +166,7 @@ fun tagOptionBindRecyclerView(recyclerView: RecyclerView, data: List<String>?) {
                 is CoverPhotoAdapter -> submitList(it)
                 is DetailTagListAdapter -> submitList(it)
                 is DetailMemoAdapter -> submitList(it)
+                is com.wency.petmanager.detail.PhotoListAdapter -> submitList(it)
             }
         }
     }
@@ -177,6 +181,7 @@ fun userBindRecyclerView(recyclerView: RecyclerView, data: List<UserInfo>?) {
                 is InviteListAdapter -> submitList(it)
                 is FriendGridListAdapter -> submitList(it)
                 is FriendChooseAdapter -> submitList(it)
+                is UserHeaderAdapter -> submitList(it)
 
             }
         }
