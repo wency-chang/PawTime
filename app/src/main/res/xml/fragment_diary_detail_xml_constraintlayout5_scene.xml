@@ -105,10 +105,12 @@
         <Constraint
             android:id="@+id/memoListLayout">
             <PropertySet motion:visibilityMode="ignore"/>
-
         </Constraint>
 
-
+        <Constraint
+            android:id="@+id/clickableMemoCard">
+            <PropertySet motion:visibilityMode="ignore"/>
+        </Constraint>
 
     </ConstraintSet>
 
@@ -118,10 +120,12 @@
             android:id="@+id/detailLayoutBottom"
             motion:layout_constraintEnd_toEndOf="parent"
             android:layout_width="0dp"
-            android:layout_height="650dp"
+            android:layout_height="0dp"
+            android:layout_marginBottom="8dp"
             motion:layout_constraintBottom_toBottomOf="parent"
-            motion:layout_constraintStart_toStartOf="parent" >
-
+            motion:layout_constraintStart_toStartOf="parent"
+            motion:layout_constraintHorizontal_bias="0.0"
+            motion:layout_constraintTop_toBottomOf="@+id/backButtonLayout">
             <PropertySet motion:visibilityMode="ignore"/>
         </Constraint>
 
@@ -155,6 +159,10 @@
 
         </Constraint>
 
+        <Constraint
+            android:id="@+id/clickableMemoCard">
+            <PropertySet motion:visibilityMode="ignore"/>
+        </Constraint>
 
     </ConstraintSet>
 

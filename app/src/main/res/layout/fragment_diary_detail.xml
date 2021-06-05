@@ -47,9 +47,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_marginStart="20dp"
-                android:layout_marginTop="20dp"
                 android:layout_marginEnd="20dp"
-                android:layout_marginBottom="20dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="1.0"
@@ -60,43 +58,72 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:layout_marginVertical="20dp">
 
-                    <EditText
-                        android:id="@+id/diaryTitleText"
+                    <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginHorizontal="20dp"
-                        android:layout_marginTop="10dp"
-                        android:background="@drawable/bg_edit_button_blue"
-                        android:backgroundTint="@{viewModel.editable?@color/blue_light3_transparent:@color/transparent}"
-                        android:clickable="@{viewModel.editable?true:false}"
-                        android:focusable="@{viewModel.editable?true:false}"
-                        android:focusableInTouchMode="@{viewModel.editable?true:false}"
-                        android:fontFamily="@font/gudea"
-                        android:imeOptions="actionDone"
-                        android:text="@{viewModel.eventDetail.title}"
-                        android:textAlignment="center"
-                        android:textColor="@color/blue_light"
-                        android:textSize="28dp"
-                        android:textStyle="bold" />
+                        android:layout_height="match_parent">
 
-                    <TextView
-                        android:id="@+id/textForDate"
-                        android:layout_width="100dp"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="end|center_vertical"
-                        android:layout_marginHorizontal="20dp"
-                        android:layout_marginTop="10dp"
-                        android:background="@drawable/bg_edit_button_blue"
-                        android:backgroundTint="@{viewModel.editable?@color/blue_light3_transparent:@color/transparent}"
-                        android:clickable="@{viewModel.editable?true:false}"
-                        android:fontFamily="@font/gudea"
-                        android:text="@{viewModel.dateLiveData}"
-                        android:textAlignment="center"
-                        android:textSize="16dp"
-                        tools:ignore="RtlCompat"
-                        tools:text="2021.05.27" />
+                        <EditText
+                            android:id="@+id/diaryTitleText"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginHorizontal="20dp"
+                            android:layout_marginStart="30dp"
+                            android:layout_marginTop="10dp"
+                            android:layout_marginEnd="30dp"
+                            android:background="@drawable/bg_edit_button_blue"
+                            android:backgroundTint="@{viewModel.editable?@color/blue_light3_transparent:@color/transparent}"
+                            android:clickable="@{viewModel.editable?true:false}"
+                            android:focusable="@{viewModel.editable?true:false}"
+                            android:focusableInTouchMode="@{viewModel.editable?true:false}"
+                            android:fontFamily="@font/gudea"
+                            android:imeOptions="actionDone"
+                            android:text="@{viewModel.eventDetail.title}"
+                            android:textAlignment="center"
+                            android:textColor="@color/blue_light"
+                            android:textSize="28dp"
+                            android:textStyle="bold"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <TextView
+                            android:id="@+id/textForDate"
+                            android:layout_width="100dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="end|center_vertical"
+                            android:layout_marginTop="10dp"
+                            android:background="@drawable/bg_edit_button_blue"
+                            android:backgroundTint="@{viewModel.editable?@color/blue_light3_transparent:@color/transparent}"
+                            android:clickable="@{viewModel.editable?true:false}"
+                            android:fontFamily="@font/gudea"
+                            android:text="@{viewModel.dateLiveData}"
+                            android:textAlignment="center"
+                            android:textSize="16dp"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="@+id/diaryTitleText"
+                            app:layout_constraintTop_toBottomOf="@+id/diaryTitleText"
+                            tools:ignore="RtlCompat"
+                            tools:text="2021.05.27" />
+
+                        <CheckBox
+                            android:id="@+id/completeCheckButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:button="@drawable/sc_event_complete_button_diary"
+                            android:checked="@{viewModel.eventDetail.complete}"
+                            android:onClick="@{viewModel.clickCompleteButton}"
+                            android:text=""
+                            android:clickable="@{viewModel.editable?true:false}"
+                            android:visibility="@{viewModel.eventDetail.complete?View.VISIBLE:View.GONE}"
+                            app:layout_constraintBottom_toBottomOf="@id/textForDate"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toEndOf="@+id/textForDate"
+                            app:layout_constraintTop_toTopOf="@id/textForDate" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
 
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"

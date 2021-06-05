@@ -144,6 +144,8 @@ class MainActivity : AppCompatActivity() {
             LayoutInflater.from(this), binding.drawerProfile, false
         )
 
+
+
         bindingNavHeader.lifecycleOwner = this
         bindingNavHeader.viewModel = viewModel
         binding.drawerNavView.addHeaderView(bindingNavHeader.root)
@@ -152,6 +154,8 @@ class MainActivity : AppCompatActivity() {
         badge.lifecycleOwner = this
         badge.mainViewModel = viewModel
         binding.drawerNavView.menu.findItem(R.id.friendListFragment).actionView = badge.root
+
+
 
     }
 

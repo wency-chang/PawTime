@@ -90,12 +90,14 @@ class DiaryDetailFragment: Fragment(), OnMapReadyCallback, AddMemoDialog.MemoDia
         val photoPager = binding.detailPhotoPager
         val petRecycler = binding.detailPetHeaderRecycler
         val tagRecycler = binding.detailTagListRecycler
+        val memoRecycler = binding.diaryDetailMemoRecycler
 
 
         viewModel.editable.observe(viewLifecycleOwner, Observer {
             photoPager.adapter?.notifyDataSetChanged()
             petRecycler.adapter?.notifyDataSetChanged()
             tagRecycler.adapter?.notifyDataSetChanged()
+            memoRecycler.adapter?.notifyDataSetChanged()
 
             if (it){
                 binding.mapCardView.visibility = View.VISIBLE
@@ -141,7 +143,7 @@ class DiaryDetailFragment: Fragment(), OnMapReadyCallback, AddMemoDialog.MemoDia
 //            )
 //        }
 
-        binding.diaryDetailMemoRecycler.adapter = DetailMemoAdapter(viewModel.editable, this,
+        memoRecycler.adapter = DetailMemoAdapter(viewModel.editable, this,
             DetailMemoAdapter.OnClickListener{ add, position, memo ->
                 if (add){
                     val memoDialog = AddMemoDialog(this, memo, position)

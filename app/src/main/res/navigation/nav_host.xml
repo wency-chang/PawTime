@@ -198,6 +198,11 @@
         app:popUpToInclusive="true"
         />
 
+    <action
+        android:id="@+id/action_global_to_friend_fragment"
+        app:destination="@id/friendListFragment"
+        />
+
 
 
 </navigation>

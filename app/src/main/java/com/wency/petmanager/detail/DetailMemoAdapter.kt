@@ -34,7 +34,7 @@ class DetailMemoAdapter(val editable: LiveData<Boolean>,
         holder.memoText.setOnClickListener {
             onClickListener.onClick(true, position, getItem(position))
         }
-        holder.bind(getItem(position), lifecycleOwner, this)
+        editable.value?.let { holder.bind(getItem(position), it, this) }
     }
 
     class MemoHolder(val binding: ItemDetailMemoListBinding): RecyclerView.ViewHolder(binding.root){
@@ -42,19 +42,20 @@ class DetailMemoAdapter(val editable: LiveData<Boolean>,
         val cancelButton = binding.memoCancelButton
 
 
-        fun bind(memo: String, lifecycleOwner: LifecycleOwner, adapter: DetailMemoAdapter){
-            if (memo.isEmpty()){
+        fun bind(memo: String, editable: Boolean, adapter: DetailMemoAdapter){
+
+            if (editable){
+                cancelButton.visibility = View.VISIBLE
+            } else {
                 cancelButton.visibility = View.GONE
 
-                binding.clickableMemoCard.visibility = View.INVISIBLE
-            } else {
-                cancelButton.visibility = View.VISIBLE
-
-                binding.clickableMemoCard.visibility = View.VISIBLE
             }
+            binding.editable = editable
+
             binding.memo = memo
-            binding.lifecycleOwner = lifecycleOwner
-            binding.adapter = adapter
+            binding.clickableMemoCard.visibility = View.VISIBLE
+            binding.memoTextEdit.visibility = View.VISIBLE
+
             binding.executePendingBindings()
         }
     }

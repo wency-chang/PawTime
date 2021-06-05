@@ -519,6 +519,7 @@
                 android:focusableInTouchMode="@{viewModel.editable?true:false}"
                 android:imeOptions="actionDone"
                 android:maxWidth="260dp"
+                android:maxLines="2"
                 android:text="@{viewModel.eventDetail.title}"
                 android:textColor="@color/white"
                 android:textSize="28dp"

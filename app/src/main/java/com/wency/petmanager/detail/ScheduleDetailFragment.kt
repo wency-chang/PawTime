@@ -93,6 +93,7 @@ class ScheduleDetailFragment: Fragment(), OnMapReadyCallback, AddMemoDialog.Memo
             binding.scheduleDetailPetRecycler.adapter?.notifyDataSetChanged()
             binding.detailTagListRecycler.adapter?.notifyDataSetChanged()
             binding.schedulePhotoListRecycler.adapter?.notifyDataSetChanged()
+            binding.scheduleDetailMemoRecycler.adapter?.notifyDataSetChanged()
 
             if (it){
                 binding.mapCardView.visibility = View.VISIBLE

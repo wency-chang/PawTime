@@ -2,6 +2,8 @@ package com.wency.petmanager.detail
 
 import android.net.Uri
 import android.util.Log
+import android.view.View
+import android.widget.CheckBox
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -11,6 +13,7 @@ import com.google.firebase.Timestamp
 import com.wency.petmanager.create.pet.PetCreateViewModel
 import com.wency.petmanager.data.*
 import com.wency.petmanager.data.source.Repository
+import com.wency.petmanager.home.HomeViewModel
 import com.wency.petmanager.profile.Today
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -67,6 +70,10 @@ class DiaryDetailViewModel(val repository: Repository, val eventDetail: Event) :
         get() = _petListForOption
 
     var tagOptionList = mutableListOf<String>()
+
+    companion object{
+        const val TYPE_SCHEDULE = HomeViewModel.EVENT_TYPE_SCHEDULE
+    }
 
 
 
@@ -450,6 +457,12 @@ class DiaryDetailViewModel(val repository: Repository, val eventDetail: Event) :
         val dateString = Today.dateFormat.format(newDate)
         _dateLiveData.value = dateString
         currentDetailData.date = Timestamp(newDate)
+    }
+
+    fun clickCompleteButton(view: View){
+        if (view is CheckBox){
+            currentDetailData.complete = view.isChecked
+        }
     }
 
 

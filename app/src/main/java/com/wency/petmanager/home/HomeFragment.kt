@@ -156,7 +156,14 @@ class HomeFragment: Fragment() {
             it?.let {
                 when (it.type){
                     HomeViewModel.EVENT_TYPE_DIARY -> findNavController().navigate(NavHostDirections.actionGlobalToDiaryDetailFragment(it))
-                    HomeViewModel.EVENT_TYPE_SCHEDULE -> findNavController().navigate(NavHostDirections.actionGlobalToScheduleDetail(it))
+                    HomeViewModel.EVENT_TYPE_SCHEDULE -> {
+                        if (it.complete && it.photoList.isNotEmpty()){
+                            findNavController().navigate(NavHostDirections.actionGlobalToDiaryDetailFragment(it))
+                        } else {
+                            findNavController().navigate(NavHostDirections.actionGlobalToScheduleDetail(it))
+                        }
+                    }
+
                 }
 
                 viewModel.onNavigated()
