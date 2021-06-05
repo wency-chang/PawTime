@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.wency.petmanager.data.*
 import com.wency.petmanager.data.source.Repository
 import com.wency.petmanager.network.LoadApiStatus
@@ -82,6 +83,12 @@ class MainViewModel(private val firebaseRepository: Repository) : ViewModel() {
     val memoryPetList : LiveData<MutableList<Pet>>
         get() = _memoryPetList
 
+    val googleSignInClient =
+        UserManager.gso?.let { GoogleSignIn.getClient(ManagerApplication.instance, it) }
+
+    private val _signOut = MutableLiveData<Boolean>(false)
+    val signOut : LiveData<Boolean>
+        get() = _signOut
 
 
 
@@ -398,9 +405,20 @@ class MainViewModel(private val firebaseRepository: Repository) : ViewModel() {
 
     fun logOut(){
         coroutineScope.launch {
-            firebaseRepository.sinOut()
+            when(firebaseRepository.sinOut()){
+                is Result.Success -> {
+                    googleSignInClient?.signOut()
+                    _signOut.value = true
+                }
+            }
+
         }
 
+
+    }
+
+    fun signOuted(){
+        _signOut.value = false
     }
 
 

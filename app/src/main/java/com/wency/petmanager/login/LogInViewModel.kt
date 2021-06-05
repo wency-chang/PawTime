@@ -40,7 +40,7 @@ class LogInViewModel(val repository: Repository): ViewModel() {
     }
 
 
-    fun handleSignInResult(completedTask: Task<GoogleSignInAccount>){
+    private fun handleSignInResult(completedTask: Task<GoogleSignInAccount>){
         try{
             val account = completedTask.getResult(ApiException::class.java)
             account.idToken?.let { firebaseAuthWithGoogle(it) }
@@ -51,7 +51,7 @@ class LogInViewModel(val repository: Repository): ViewModel() {
 
     }
 
-    fun firebaseAuthWithGoogle(idToken: String){
+    private fun firebaseAuthWithGoogle(idToken: String){
         coroutineScope.launch {
             when (val result = repository.signInWithGoogle(idToken)){
                 is Result.Success -> {

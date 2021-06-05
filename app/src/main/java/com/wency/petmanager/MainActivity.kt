@@ -35,6 +35,8 @@ class MainActivity : AppCompatActivity() {
         setUpDrawer()
         hideSystemUI()
 
+        val navController = findNavController(R.id.navHostNavigation)
+
 
 
 //        google place initialize
@@ -86,11 +88,11 @@ class MainActivity : AppCompatActivity() {
 
 
         viewModel.eventIdList.observe(this, Observer {
-            Log.d("debugg","start to find event list")
+
             if (it.isNullOrEmpty()){
                 viewModel.userInfoProfile.value?.let { userProfile->
                     viewModel.userPetList.value?.let { petList->
-                        findNavController(R.id.navHostNavigation)
+                        navController
                             .navigate(NavHostDirections.actionGlobalToHomeFragment(
                             userProfile, petList.toTypedArray(), null)
                         )
@@ -103,12 +105,12 @@ class MainActivity : AppCompatActivity() {
         })
 
         viewModel.eventDetailList.observe(this, Observer {
-            Log.d("debugg","start to get event Detail list")
+
             if (it.size > 0){
                 viewModel.getTagList()
                 viewModel.userInfoProfile.value?.let { userProfile->
                     viewModel.userPetList.value?.let { petList->
-                        findNavController(R.id.navHostNavigation)
+                        navController
                             .navigate(NavHostDirections.actionGlobalToHomeFragment(
                                 userProfile, petList.toTypedArray(), it.toTypedArray())
                             )
@@ -116,6 +118,14 @@ class MainActivity : AppCompatActivity() {
                 }
             }
 
+        })
+
+        viewModel.signOut.observe(this, Observer {
+            if (it){
+                binding.drawerProfile.close()
+                navController.navigate(NavHostDirections.actionGlobalToLoginFragment())
+                viewModel.signOuted()
+            }
         })
 
 

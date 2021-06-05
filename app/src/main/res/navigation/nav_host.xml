@@ -191,6 +191,12 @@
         app:popUpTo="@id/loadingFragment"
         app:popUpToInclusive="true"
         />
+    <action
+        android:id="@+id/action_global_to_login_fragment"
+        app:destination="@id/logInFragment"
+        app:popUpTo="@id/logInFragment"
+        app:popUpToInclusive="true"
+        />
 
 
 
