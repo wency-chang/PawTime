@@ -147,5 +147,33 @@ class DefaultRepository(private val remoteDataSource: DataSource
         return remoteDataSource.updatePetEventList(petId, eventId, add)
     }
 
+    override suspend fun updateEventNotification(
+        userId: String,
+        eventNotification: EventNotification
+    ): Result<Boolean> {
+        return remoteDataSource.updateEventNotification(userId, eventNotification)
+    }
+
+    override suspend fun updateUserInfo(userId: String, userInfo: UserInfo): Result<Boolean> {
+        return remoteDataSource.updateUserInfo(userId, userInfo)
+    }
+
+    override suspend fun deleteNotification(userId: String, eventId: String): Result<Boolean> {
+        return remoteDataSource.deleteNotification(userId, eventId)
+    }
+
+
+    override suspend fun addNotificationDeleteToUser(
+        userId: String,
+        eventNotification: EventNotification
+    ): Result<Boolean> {
+        return remoteDataSource.addNotificationDeleteToUser(userId, eventNotification)
+    }
+
+
+    override suspend fun getAllNotificationAlreadyUpdated(userId: String): Result<List<EventNotification>> {
+        return remoteDataSource.getAllNotificationAlreadyUpdated(userId)
+    }
+
 
 }

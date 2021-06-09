@@ -129,14 +129,12 @@ class PetCreateViewModel(val repository: Repository, val userInfoProfile: UserIn
     }
 
     private fun updateImageToFirebase(){
-
-            uploadImage(listOf(petHeader.value!!), HEADER_UPLOAD)
-
-            if (categoryPhotos.value?.size!! > 1 ){
-                val list = categoryPhotos.value
-                list?.removeAt(0)
-                uploadImage(list!!.toMutableList(), COVER_UPLOAD)
-            }
+        val list = categoryPhotos.value
+        list?.removeAt(0)
+        if (categoryPhotos.value?.size!! > 0 ){
+            uploadImage(list!!.toMutableList(), COVER_UPLOAD)
+        }
+        uploadImage(listOf(petHeader.value!!), HEADER_UPLOAD)
     }
 
     fun createUpdateData(){

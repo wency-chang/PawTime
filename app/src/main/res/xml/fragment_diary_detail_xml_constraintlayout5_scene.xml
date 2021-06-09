@@ -46,6 +46,7 @@
                motion:motionTarget="@+id/detailEditButton"
                motion:framePosition="80"
                android:scaleY="0.3" />
+
        </KeyFrameSet>
         <OnSwipe motion:touchAnchorId="@+id/detailLayoutBottom"
             motion:touchAnchorSide="top"

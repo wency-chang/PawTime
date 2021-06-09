@@ -249,7 +249,7 @@
                     style="@style/dialog_text_button"
                     android:layout_width="0dp"
                     android:layout_marginTop="10dp"
-                    android:text="NONE"
+                    android:text="@{viewModel.notificationString}"
                     app:layout_constraintEnd_toEndOf="@+id/timeSelectButton"
                     app:layout_constraintStart_toStartOf="@+id/timeSelectButton"
                     app:layout_constraintTop_toBottomOf="@+id/notificationIcon" />
@@ -354,8 +354,8 @@
                     app:layout_constraintStart_toStartOf="@+id/setNotification"
                     app:layout_constraintTop_toBottomOf="@+id/locationIcon" />
 
-                <TextView
-                    android:id="@+id/imageView4"
+                <CheckBox
+                    android:id="@+id/notificationSetting"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     app:layout_constraintBottom_toBottomOf="@+id/selectPeopleText"
@@ -363,7 +363,8 @@
                     app:layout_constraintTop_toTopOf="@+id/selectPeopleText"
                     app:layout_constraintVertical_bias="0.0"
                     android:clickable="true"
-                    android:background="@drawable/selection_schedule_notification"
+                    android:checked="@={viewModel.informSetting}"
+                    android:button="@drawable/selection_schedule_notification"
                     android:visibility="@{viewModel.notificationAvailable?View.VISIBLE:View.GONE}"/>
 
 

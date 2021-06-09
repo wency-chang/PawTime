@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="dialog"
+            type="com.wency.petmanager.dialog.NotificationDialog" />
+
+    </data>
+
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/transparent_black">
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:cardCornerRadius="6dp">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/remindText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginTop="20dp"
+                    android:text="Remind me..."
+                    android:textSize="22dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <NumberPicker
+                    android:id="@+id/dayBefore"
+                    android:layout_width="wrap_content"
+                    android:layout_height="50dp"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="30dp"
+                    android:scaleX="1.5"
+                    android:scaleY="1.5"
+                    android:scrollbarSize="40dp"
+                    android:theme="@style/NotificationPickerStyle"
+                    app:layout_constraintEnd_toStartOf="@+id/hourBefore"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/remindText" />
+
+                <NumberPicker
+                    android:id="@+id/hourBefore"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:theme="@style/NotificationPickerStyle"
+                    android:scaleX="1.5"
+                    android:scaleY="1.5"
+                    app:layout_constraintBottom_toBottomOf="@+id/dayBefore"
+                    app:layout_constraintEnd_toStartOf="@+id/minuteBefore"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/dayBefore"
+                    app:layout_constraintTop_toTopOf="@+id/dayBefore" />
+
+                <NumberPicker
+                    android:id="@+id/minuteBefore"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_marginEnd="20dp"
+                    android:theme="@style/NotificationPickerStyle"
+                    android:scaleX="1.5"
+                    android:scaleY="1.5"
+                    app:layout_constraintBottom_toBottomOf="@+id/hourBefore"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/hourBefore"
+                    app:layout_constraintTop_toTopOf="@+id/hourBefore" />
+
+
+                <Button
+                    android:id="@+id/notificationConfirmButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:background="@color/transparent"
+                    android:text="OK"
+                    android:textColor="@color/blue_light"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/beforeText" />
+
+                <Button
+                    android:id="@+id/notificationCancelButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@color/transparent"
+                    android:text="Cancel"
+                    android:textColor="@color/blue_light"
+                    android:onClick="@{()->dialog.dismiss()}"
+                    app:layout_constraintEnd_toStartOf="@+id/notificationConfirmButton"
+                    app:layout_constraintTop_toTopOf="@+id/notificationConfirmButton" />
+
+                <TextView
+                    android:id="@+id/dayText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="22dp"
+                    android:text="DAYS"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="@+id/dayBefore"
+                    app:layout_constraintStart_toStartOf="@+id/dayBefore"
+                    app:layout_constraintTop_toBottomOf="@+id/dayBefore" />
+
+                <TextView
+                    android:id="@+id/hourText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="HOURS"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="@+id/dayText"
+                    app:layout_constraintEnd_toEndOf="@+id/hourBefore"
+                    app:layout_constraintStart_toStartOf="@+id/hourBefore"
+                    app:layout_constraintTop_toTopOf="@+id/dayText" />
+
+                <TextView
+                    android:id="@+id/minuteText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="MINUTES"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="@+id/hourText"
+                    app:layout_constraintEnd_toEndOf="@+id/minuteBefore"
+                    app:layout_constraintStart_toStartOf="@+id/minuteBefore"
+                    app:layout_constraintTop_toTopOf="@+id/hourText" />
+
+                <TextView
+                    android:id="@+id/beforeText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginEnd="20dp"
+                    android:text="Before"
+                    android:textSize="18dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/minuteText" />
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+        </androidx.cardview.widget.CardView>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

@@ -1,15 +1,26 @@
 package com.wency.petmanager
 
+import android.app.AlarmManager
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.work.*
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.wency.petmanager.data.*
 import com.wency.petmanager.data.source.Repository
+import com.wency.petmanager.data.source.remote.RemoteDataSource
 import com.wency.petmanager.network.LoadApiStatus
+import com.wency.petmanager.notification.NotificationReceiver
+import com.wency.petmanager.profile.Today
 import com.wency.petmanager.profile.UserManager
+import com.wency.petmanager.work.EventNotificationWork
 import kotlinx.coroutines.*
+import java.util.concurrent.TimeUnit
 
 class MainViewModel(private val firebaseRepository: Repository) : ViewModel() {
 
@@ -90,6 +101,9 @@ class MainViewModel(private val firebaseRepository: Repository) : ViewModel() {
     val signOut : LiveData<Boolean>
         get() = _signOut
 
+    private val _navigateToScheduleDetail = MutableLiveData<Event?>(null)
+    val navigateToScheduleDetail: LiveData<Event?>
+        get() = _navigateToScheduleDetail
 
 
 
@@ -408,7 +422,7 @@ class MainViewModel(private val firebaseRepository: Repository) : ViewModel() {
             when(firebaseRepository.sinOut()){
                 is Result.Success -> {
                     googleSignInClient?.signOut()
-                    _signOut.value = true
+                    clearWork()
                 }
             }
 
@@ -419,6 +433,134 @@ class MainViewModel(private val firebaseRepository: Repository) : ViewModel() {
 
     fun signOuted(){
         _signOut.value = false
+    }
+
+    fun getEventDetailToSchedule(id: String){
+        coroutineScope.launch {
+            when(val result = firebaseRepository.getEvents(id)){
+                is Result.Success -> {
+                    if (result.data != null){
+                        _navigateToScheduleDetail.value = result.data
+                    }
+                }
+            }
+        }
+    }
+
+    fun doneNavigated(){
+        _navigateToScheduleDetail.value = null
+    }
+
+
+    fun assignWorksForMission(){
+        val alarmManager = ManagerApplication.instance.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val intent = Intent(ManagerApplication.instance, NotificationReceiver::class.java)
+        intent.putExtra(NotificationReceiver.PURPOSE, NotificationReceiver.PURPOSE_MISSION_NOTIFICATION)
+        val pendingIntent = PendingIntent.getBroadcast(ManagerApplication.instance, NotificationReceiver.MISSION_REQUEST_CODE, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+        val time = Today.dateNTimeFormat.parse("${Today.todayString} 21:30")
+        alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, time.time, AlarmManager.INTERVAL_DAY, pendingIntent)
+    }
+
+    fun assignWorkForEventCheck(){
+        val constrains = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .build()
+
+        val checkNotificationWorkRequest: WorkRequest = PeriodicWorkRequestBuilder<EventNotificationWork>(1, TimeUnit.HOURS)
+            .setConstraints(constrains)
+            .build()
+
+        WorkManager.getInstance(ManagerApplication.instance).enqueue(checkNotificationWorkRequest)
+    }
+
+    fun getNewHeaderPhoto(uri: Uri){
+        coroutineScope.launch {
+
+            when(val result = firebaseRepository.updateImage(uri, USER_PROFILE_PHOTO)){
+                is Result.Success -> {
+
+                    _userProfile.value?.let {
+                        it.userPhoto = result.data
+                        when (firebaseRepository.updateUserInfo(it.userId, it)){
+                            is Result.Success -> {
+                                _userProfile.value = it
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+    }
+
+    companion object{
+        const val USER_PROFILE_PHOTO = "USER/PROFILE"
+    }
+
+    private fun clearWork(){
+        val alarmManager = ManagerApplication.instance.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+
+        WorkManager.getInstance(ManagerApplication.instance).cancelAllWork()
+
+        coroutineScope.launch {
+            UserManager.userID?.let {
+                when (val result = firebaseRepository.getAllNotificationAlreadyUpdated(it)){
+                    is Result.Success -> {
+                        if (result.data.isEmpty()){
+                            clearWorkSuccess()
+                        } else {
+                            var count = 0
+                            result.data.forEach{eventNotion->
+                                eventNotion.alarmTime?.let {alarm->
+                                    val intent = createAlarmIntent(eventNotion)
+                                    val pendingIntent = PendingIntent.getBroadcast(
+                                        ManagerApplication.instance,
+                                        alarm.toDate().time.toInt(),
+                                        intent,
+                                        PendingIntent.FLAG_UPDATE_CURRENT
+                                    )
+                                    alarmManager.cancel(pendingIntent)
+                                    count += 1
+                                    if (count == result.data.size){
+                                        clearWorkSuccess()
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    else -> {
+                        Log.d("PawTime","get data failed")
+                        clearWorkSuccess()
+                    }
+                }
+            }
+
+        }
+
+
+
+
+    }
+
+    private fun clearWorkSuccess(){
+        UserManager.userID = null
+        _signOut.value = true
+    }
+
+    private fun createAlarmIntent(eventNotification: EventNotification): Intent{
+        val intent = Intent(ManagerApplication.instance, NotificationReceiver::class.java)
+        intent.apply {
+            putExtra(NotificationReceiver.PURPOSE,
+                NotificationReceiver.PURPOSE_EVENT_NOTIFICATION
+            )
+            putExtra(EventNotificationWork.EVENT_LOCATION_NAME, eventNotification.locationName)
+            putExtra(EventNotificationWork.EVENT_LOCATION, eventNotification.locationLatLng)
+            putExtra(EventNotificationWork.EVENT_TITLE, eventNotification.eventTitle)
+            putExtra(EventNotificationWork.EVENT_ID, eventNotification.eventId)
+            putExtra(EventNotificationWork.EVENT_TIME, Today.dateNTimeFormat.format(eventNotification.alarmTime?.toDate()))
+        }
+        return intent
+
     }
 
 

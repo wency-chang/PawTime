@@ -17,7 +17,7 @@ import kotlinx.coroutines.launch
 class CreateEventViewModel(
     val repository: Repository,
     val myPetList: Array<Pet>,
-    val selectedList: Array<String>
+    private val selectedList: Array<String>
 ) : ViewModel() {
 
     val navigateDestination = MutableLiveData<Int>(0)

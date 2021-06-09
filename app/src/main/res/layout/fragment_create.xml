@@ -197,24 +197,38 @@
             app:layout_constraintEnd_toEndOf="@+id/cardView"
             app:layout_constraintStart_toStartOf="@+id/cardView" />
 
-
-        <com.airbnb.lottie.LottieAnimationView
-            android:id="@+id/loadingAnimation"
-            android:background="@color/white_transparent"
-            app:layout_constraintBottom_toBottomOf="parent"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:layout_height="match_parent"
-            android:layout_width="match_parent"
-            app:lottie_autoPlay="true"
-            app:lottie_loop="true"
-            app:lottie_fileName="upload_to_cloud.json"
-            android:visibility="@{viewModel.loadingStatus?View.VISIBLE:View.GONE}"
-            >
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:background="@color/white_transparent"
+            android:visibility="@{viewModel.loadingStatus?View.VISIBLE:View.GONE}">
+
+            <com.airbnb.lottie.LottieAnimationView
+                android:id="@+id/loadingAnimation"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_height="180dp"
+                android:layout_width="wrap_content"
+                app:lottie_autoPlay="true"
+                app:lottie_loop="true"
+                app:lottie_fileName="upload_to_cloud.json"
+                >
 
 
-        </com.airbnb.lottie.LottieAnimationView>
+            </com.airbnb.lottie.LottieAnimationView>
+
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

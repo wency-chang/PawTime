@@ -24,6 +24,7 @@ data class MissionToday(
     val title: String,
     val petID: String,
     val petPhoto: String,
+    val petName: String,
     val complete: Boolean = false,
     var completeUserId: String,
     var completeUserName: String,

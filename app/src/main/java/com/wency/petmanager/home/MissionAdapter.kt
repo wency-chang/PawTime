@@ -40,17 +40,17 @@ class MissionAdapter(private val mission: List<MissionToday>, val viewModel: Hom
         val mission = mission[position]
         if (mission.complete){
             holder.bindUserPhoto(mission.completeUserPhoto)
-            if (mission.completeUserId == viewModel.userInfoProfile.userId){
+            if (mission.completeUserId == viewModel.userInfoProfile?.userId){
                 holder.bindEdit(true)
             } else {
                 holder.bindEdit(false)
             }
         } else{
             holder.bindEdit(true)
-            if (viewModel.userInfoProfile.userPhoto.isNullOrEmpty()){
+            if (viewModel.userInfoProfile?.userPhoto.isNullOrEmpty()){
                 holder.bindUserPhoto(UserManager.userDefaultPhoto)
             } else {
-                holder.bindUserPhoto(viewModel.userInfoProfile.userPhoto!!)
+                holder.bindUserPhoto(viewModel.userInfoProfile?.userPhoto!!)
             }
 
         }
@@ -74,7 +74,7 @@ class MissionAdapter(private val mission: List<MissionToday>, val viewModel: Hom
             }
         }
         holder.completeUserPhoto.setOnClickListener {
-            if (mission.completeUserId == viewModel.userInfoProfile.userId) {
+            if (mission.completeUserId == viewModel.userInfoProfile?.userId) {
 
                 viewModel.changeMissionStatus(mission.petID, mission.missionId, false)
                 holder.completeUserPhoto.apply {

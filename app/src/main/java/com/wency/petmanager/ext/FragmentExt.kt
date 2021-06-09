@@ -23,7 +23,7 @@ fun Fragment.getVmFactory(petList: Array<Pet>, selectedList: Array<String>): Cre
     return CreateEventViewModelFactory(repository, petList, selectedList)
 }
 
-fun Fragment.getVmFactory(userInfoProfile: UserInfo, petList: Array<Pet>?, eventList: Array<Event>?): HomeViewModelFactory {
+fun Fragment.getVmFactory(userInfoProfile: UserInfo?, petList: Array<Pet>?, eventList: Array<Event>?): HomeViewModelFactory {
     val repository = (requireContext().applicationContext as ManagerApplication).repository
     return HomeViewModelFactory(repository, userInfoProfile, petList, eventList)
 }

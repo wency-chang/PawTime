@@ -107,7 +107,7 @@
             android:clickable="@{viewModel.editable?true:false}"
             android:textColor="@color/blue_light"
             android:background="@null"
-            android:backgroundTint="@color/transparent"
+            android:backgroundTint="@{viewModel.editable?@color/blue_light:@color/transparent}"
             android:contextClickable="@{viewModel.editable?true:false}"
             app:layout_constraintEnd_toEndOf="@+id/petHeaderPicture"
             app:layout_constraintStart_toStartOf="@+id/petHeaderPicture"
@@ -137,16 +137,17 @@
 
         <TextView
             android:id="@+id/petOldText"
-            android:layout_width="100dp"
+            android:layout_width="70dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:text="@{viewModel.yearsOld}"
             android:textAlignment="center"
             android:textSize="26dp"
-
-            android:textColor="@color/black"
+            android:background="@drawable/bg_edit_button_blue"
+            android:backgroundTint="@{viewModel.editable?@color/blue_light_transparent:@color/transparent}"
             app:layout_constraintEnd_toStartOf="@+id/petOwnerText"
             app:layout_constraintHorizontal_bias="0.5"
+            android:textColor="@{viewModel.editable?@color/white:@color/black}"
             android:clickable="@{viewModel.editable?true:false}"
             app:layout_constraintHorizontal_chainStyle="spread"
             app:layout_constraintStart_toStartOf="parent"
@@ -154,13 +155,15 @@
 
         <TextView
             android:id="@+id/petOwnerText"
-            android:layout_width="100dp"
+            android:layout_width="70dp"
             android:layout_height="wrap_content"
             android:text="@{viewModel.ownerNumber}"
             android:textAlignment="center"
             android:textSize="26dp"
+            android:background="@drawable/bg_edit_button_blue"
+            android:backgroundTint="@{viewModel.editable?@color/blue_light_transparent:@color/transparent}"
             android:clickable="@{viewModel.editable?true:false}"
-            android:textColor="@color/black"
+            android:textColor="@{viewModel.editable?@color/white:@color/black}"
             android:onClick="@{()->viewModel.chooseOwner()}"
             app:layout_constraintBottom_toBottomOf="@+id/petOldText"
             app:layout_constraintEnd_toStartOf="@+id/petMissionText"
@@ -170,7 +173,7 @@
 
         <TextView
             android:id="@+id/petMissionText"
-            android:layout_width="100dp"
+            android:layout_width="70dp"
             android:layout_height="wrap_content"
             android:text="@{viewModel.missionListNumber}"
             android:textSize="26dp"

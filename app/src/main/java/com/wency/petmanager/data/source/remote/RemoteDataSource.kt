@@ -1,6 +1,9 @@
 package com.wency.petmanager.data.source.remote
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
+import android.provider.MediaStore
 import android.util.Log
 import android.webkit.MimeTypeMap
 import androidx.lifecycle.MutableLiveData
@@ -14,6 +17,9 @@ import com.wency.petmanager.ManagerApplication
 import com.wency.petmanager.data.*
 import com.wency.petmanager.data.source.DataSource
 import com.wency.petmanager.profile.Today
+import com.wency.petmanager.profile.UserManager
+import com.wency.petmanager.work.EventNotificationWork
+import java.io.ByteArrayOutputStream
 import java.util.*
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
@@ -40,6 +46,10 @@ object RemoteDataSource : DataSource {
     private const val PET_USER_LIST = "users"
     private const val USER_MAIL_FIELD = "email"
     private const val PET_EVENT_LIST = "eventList"
+    private const val USER_NOTIFICATION = "notificationList"
+    private const val USER_NOTIFICATION_DELETE = "notificationDeleteList"
+    private const val EVENT_COMPLETE_UPDATE = "complete"
+    private const val NOTIFICATION_ALARM = "alarmTime"
 
 
     override suspend fun getUserProfile(token: String): Result<UserInfo> =
@@ -108,6 +118,7 @@ object RemoteDataSource : DataSource {
                         }
                     }
                     if (task.result == null){
+                        Log.d("EVENT null","$id")
                         continuation.resume(Result.Success(Event()))
                     } else if (task.result.data == null) {
                         Log.d("delete Event","$id")
@@ -135,7 +146,6 @@ object RemoteDataSource : DataSource {
                 .set(event)
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
-                        Log.d("updateEventSuccess", "${task.result}")
                         continuation.resume(Result.Success(document.id))
                     } else {
                         task.exception?.let {
@@ -509,12 +519,9 @@ object RemoteDataSource : DataSource {
             .get()
             .addOnCompleteListener { task->
                 if (task.isSuccessful){
-                    Log.d("getByMail","remote result: ${task.result.documents}")
                     if (task.result.isEmpty){
-                        Log.d("getByMail","remote result empty")
                         continuation.resume(Result.Success(null))
                     } else {
-                        Log.d("getByMail","remote result not empty")
                         continuation.resume(
                             Result.Success (
                             task.result.documents[0].toObject(UserInfo::class.java)
@@ -548,11 +555,11 @@ object RemoteDataSource : DataSource {
                                             if (name == null) {
                                                 name = "UNKNOWN"
                                             }
+
                                             var mail = user.email
                                             if (mail == null) {
                                                 mail = "UNKNOWN"
                                             }
-
 
                                             val newUser = UserInfo(
                                                 user.uid,
@@ -560,6 +567,8 @@ object RemoteDataSource : DataSource {
                                                 mail,
                                                 userPhoto = user.photoUrl.toString()
                                             )
+
+                                            UserManager.userID = user.uid
 
                                             userCollection
                                                 .document(user.uid)
@@ -570,7 +579,6 @@ object RemoteDataSource : DataSource {
                                                     } else {
                                                         continuation.resume(Result.Fail(it.exception.toString()))
                                                     }
-
                                                 }
 
                                         } else {
@@ -599,22 +607,17 @@ object RemoteDataSource : DataSource {
     override suspend fun updateOwner(petId: String, userIdList: List<String>): Result<Pet> = suspendCoroutine {continuation->
         val petDocument = FirebaseFirestore.getInstance().collection(PATH_PETS).document(petId)
         val userCollection = FirebaseFirestore.getInstance().collection(PATH_USERS)
-        Log.d("UpdateOwner", "repository $petId")
+
 
         petDocument
             .update(PET_USER_LIST, FieldValue.delete())
             .addOnCompleteListener { taskDelete->
-                Log.d("UpdateOwner", "success delete")
                 if (taskDelete.isSuccessful){
-                    Log.d("UpdateOwner", "success delete")
                     petDocument.update(PET_USER_LIST, userIdList)
                         .addOnCompleteListener {taskUpdate->
-                            Log.d("UpdateOwner", "success update")
                             if (taskUpdate.isSuccessful) {
-                                Log.d("UpdateOwner", "success delete")
                                 var userUpdatedCount = 0
                                 for (userId in userIdList) {
-                                    Log.d("UpdateOwner", "repository start update to user")
                                     userCollection.document(userId)
                                         .update(USER_PET_LIST, FieldValue.arrayUnion(petId))
                                         .addOnCompleteListener {
@@ -769,7 +772,10 @@ object RemoteDataSource : DataSource {
             val fileReference = storageReference.reference.child(
                 "$folder/${System.currentTimeMillis()}.${getFileExtension(uri)}"
             )
-            fileReference.putFile(uri)
+            val bitmap = MediaStore.Images.Media.getBitmap(ManagerApplication.instance.contentResolver, uri)
+            val compressedBitmap = compressBitmap(bitmap, 65)
+
+            fileReference.putBytes(compressedBitmap)
                 .continueWithTask { task ->
                     if (!task.isSuccessful) {
                         task.exception?.let {
@@ -784,6 +790,44 @@ object RemoteDataSource : DataSource {
                     }
                 }
         }
+
+    private fun getBitmap(uri: Uri) : Bitmap?{
+        val bitmap = MediaStore.Images.Media.getBitmap(ManagerApplication.instance.contentResolver, uri)
+        var input = ManagerApplication.instance.contentResolver.openInputStream(uri)
+        val onlyBoundsOption = BitmapFactory.Options()
+        onlyBoundsOption.inJustDecodeBounds = true
+        onlyBoundsOption.inPreferredConfig = Bitmap.Config.ARGB_8888
+        BitmapFactory.decodeStream(input, null, onlyBoundsOption)
+        input?.close()
+        val originalWidth = onlyBoundsOption.outWidth
+        val originalHeight = onlyBoundsOption.outHeight
+        val height = 500f
+        val width = 500f
+        var scale = 1
+        if ((originalWidth == -1) || (originalHeight == -1)){
+            return null
+        }
+        if (originalWidth > originalHeight && originalWidth > width){
+            scale = (originalWidth/width).toInt()
+        } else if (originalWidth < originalHeight && originalHeight > height){
+            scale = (originalHeight/height).toInt()
+        }
+        val bitmapOption = BitmapFactory.Options()
+        bitmapOption.inSampleSize = scale
+        bitmapOption.inPreferredConfig = Bitmap.Config.ARGB_8888
+        input = ManagerApplication.instance.contentResolver.openInputStream(uri)
+        BitmapFactory.decodeStream(input, null, bitmapOption)
+        input?.close()
+        return bitmap
+
+    }
+    private fun compressBitmap(bitmap: Bitmap, quality:Int): ByteArray{
+        val stream = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.WEBP, quality, stream)
+        val byteArray = stream.toByteArray()
+        return byteArray
+    }
+
 
     private fun getFileExtension(uri: Uri): String? {
 
@@ -848,6 +892,209 @@ object RemoteDataSource : DataSource {
         return liveData
     }
 
+    suspend fun checkNotificationState(userId: String) : Result<List<EventNotification>> = suspendCoroutine{ continuation->
+        val userNotification = FirebaseFirestore.getInstance().collection(PATH_USERS).document(userId).collection(
+            USER_NOTIFICATION)
+        userNotification.whereEqualTo(EVENT_COMPLETE_UPDATE, false)
+            .get()
+            .addOnCompleteListener {
+                if (it.isSuccessful){
+                    val list = mutableListOf<EventNotification>()
+                    var count = 0
+                    if (it.result.isEmpty){
+                        continuation.resume(Result.Success(list))
+                    } else {
+                        for (document in it.result){
+                            list.add( document.toObject(EventNotification::class.java))
+                            count += 1
+                            if (count == it.result.size()){
+                                continuation.resume(Result.Success(list))
+                            }
+                        }
+                    }
+                }
+            }
+    }
 
+    suspend fun completeNotificationSetting(userId: String, eventId: String, delete: Boolean) : Result<Boolean> = suspendCoroutine { continuation->
+        val notification = FirebaseFirestore.getInstance().collection(PATH_USERS).document(userId).collection(
+            USER_NOTIFICATION).document(eventId)
+        if (delete){
+            notification.delete()
+                .addOnCompleteListener {
+                    if (it.isSuccessful){
+                        continuation.resume(Result.Success(true))
+                    }
+                }
+        } else {
+            notification.update(EVENT_COMPLETE_UPDATE, true)
+                .addOnCompleteListener {
+                    if (it.isSuccessful){
+                        continuation.resume(Result.Success(true))
+                    }
+                }
+        }
+    }
+
+    suspend fun getNotificationNeedToBeDeleted(userId: String): Result<List<EventNotification>> = suspendCoroutine { continuation->
+        FirebaseFirestore.getInstance()
+            .collection(PATH_USERS)
+            .document(userId)
+            .collection(USER_NOTIFICATION_DELETE)
+            .get()
+            .addOnCompleteListener {
+                val list = mutableListOf<EventNotification>()
+                if (it.isSuccessful){
+
+                    if (it.result.isEmpty){
+                        continuation.resume(Result.Success(list))
+                    } else {
+                        var count = 0
+                        for (document in it.result){
+                            list.add(document.toObject(EventNotification::class.java))
+                            count += 1
+                            if (count == it.result.size()){
+                                continuation.resume(Result.Success(list))
+                            }
+                        }
+                    }
+
+                }
+            }
+    }
+
+    suspend fun completeDeleteList(userId: String, eventId: String): Result<Boolean> = suspendCoroutine { continuation->
+        FirebaseFirestore.getInstance()
+            .collection(PATH_USERS)
+            .document(userId)
+            .collection(USER_NOTIFICATION_DELETE)
+            .document(eventId)
+            .delete()
+            .addOnCompleteListener {
+                if (it.isSuccessful){
+                    continuation.resume(Result.Success(true))
+                }
+            }
+    }
+
+    override suspend fun updateEventNotification(
+        userId: String,
+        eventNotification: EventNotification
+    ): Result<Boolean> = suspendCoroutine {continuation->
+        val userNotification = FirebaseFirestore.getInstance().collection(PATH_USERS).document(userId).collection(
+            USER_NOTIFICATION)
+
+
+        val document = if (eventNotification.type == EventNotificationWork.TYPE_EVENT_ALARM){
+            userNotification.document(eventNotification.eventId)
+        } else {
+            userNotification.document()
+        }
+        eventNotification.notificationId = document.id
+
+        document.set(eventNotification)
+            .addOnCompleteListener {
+                if (it.isSuccessful){
+                    continuation.resume(Result.Success(true))
+                }
+            }
+    }
+
+    override suspend fun updateUserInfo(userId: String, userInfo: UserInfo): Result<Boolean> = suspendCoroutine {continuation->
+        val userProfile = FirebaseFirestore.getInstance().collection(PATH_USERS).document(userId)
+        userProfile.set(userInfo)
+            .addOnCompleteListener {
+                if (it.isSuccessful){
+                    continuation.resume(Result.Success(true))
+                }
+            }
+    }
+
+    override suspend fun deleteNotification(userId: String, eventId: String): Result<Boolean> = suspendCoroutine{ continuation->
+        val notification = FirebaseFirestore.getInstance().collection(PATH_USERS).document(userId)
+            .collection(USER_NOTIFICATION)
+            .document(eventId)
+        notification.update(NOTIFICATION_ALARM, null)
+            .addOnCompleteListener {
+                if (it.isSuccessful){
+                    notification.update(EVENT_COMPLETE_UPDATE, false)
+                        .addOnCompleteListener {
+                            if (it.isSuccessful){
+                                continuation.resume(Result.Success(true))
+                            }
+                        }
+                }
+            }
+    }
+
+    override suspend fun addNotificationDeleteToUser(
+        userId: String,
+        eventNotification: EventNotification
+    ): Result<Boolean> = suspendCoroutine {  continuation->
+        val userDocument = FirebaseFirestore.getInstance().collection(PATH_USERS).document(userId)
+        userDocument.collection(USER_NOTIFICATION)
+            .document(eventNotification.eventId)
+            .get()
+            .addOnCompleteListener {
+                if (it.isSuccessful){
+                    if (it.result.data == null){
+//                        addList doesn't exist
+                        continuation.resume(Result.Success(true))
+                    } else {
+                        if (it.result[EVENT_COMPLETE_UPDATE] == false){
+//                            notification haven't updated yet
+                            userDocument.collection(USER_NOTIFICATION).document(eventNotification.eventId)
+                                .delete()
+                                .addOnCompleteListener {
+                                    if (it.isSuccessful){
+                                        continuation.resume(Result.Success(true))
+                                    } else {
+
+                                    }
+                                }
+                        } else {
+//                            notification already updated --> delete and update in delete list
+                            userDocument.collection(USER_NOTIFICATION).document(eventNotification.eventId)
+                                .delete()
+                                .addOnCompleteListener {
+                                    if (it.isSuccessful){
+                                        userDocument.collection(USER_NOTIFICATION_DELETE).document(eventNotification.eventId)
+                                            .set(eventNotification)
+                                            .addOnCompleteListener {
+                                                if (it.isSuccessful){
+                                                    continuation.resume(Result.Success(true))
+                                                }
+                                            }
+                                    }else {
+
+                                    }
+
+                                }
+                        }
+                    }
+                }
+            }
+    }
+
+    override suspend fun getAllNotificationAlreadyUpdated(userId: String): Result<List<EventNotification>> = suspendCoroutine {continuation->
+        FirebaseFirestore.getInstance().collection(PATH_USERS).document(userId).collection(
+            USER_NOTIFICATION)
+            .whereEqualTo(EVENT_COMPLETE_UPDATE, true)
+            .get()
+            .addOnCompleteListener {
+                val list = mutableListOf<EventNotification>()
+                if (it.isSuccessful){
+                    var count = 0
+
+                    for (document in it.result){
+                        list.add(document.toObject(EventNotification::class.java))
+                        count += 1
+                        if (count == it.result.size()){
+                            continuation.resume(Result.Success(list))
+                        }
+                    }
+                }
+            }
+    }
 
 }

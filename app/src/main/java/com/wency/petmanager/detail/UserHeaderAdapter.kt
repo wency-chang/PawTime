@@ -32,7 +32,7 @@ class UserHeaderAdapter(
             if (viewModel.editable.value== true){
 
                 if (selectedIdList.contains(userInfo.userId)) {
-                    if (selectedIdList.size>1){
+                    if (selectedIdList.size> 1){
                         onClickListener.onClick(false, userInfo)
                         selectedIdList.remove(userInfo.userId)
                     }

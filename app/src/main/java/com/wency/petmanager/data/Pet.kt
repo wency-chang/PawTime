@@ -17,7 +17,7 @@ data class Pet(
     var profilePhoto: String = "",
     var coverPhotos: MutableList<String>? = null,
     var birth: Timestamp? = null,
-    val users: MutableList<String> = mutableListOf(UserManager.userID),
+    val users: MutableList<String> = mutableListOf(),
     val tagList: MutableList<String> = mutableListOf(),
     val eventList: MutableList<String> = mutableListOf(),
     var weight: Long? = null,

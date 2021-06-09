@@ -17,7 +17,7 @@ import java.util.*
 
 class HomeViewModel(
     private val repository: Repository,
-    val userInfoProfile: UserInfo,
+    val userInfoProfile: UserInfo?,
     val userPetList: Array<Pet>?,
     val petEventList: Array<Event>?
 ) :
@@ -265,10 +265,13 @@ class HomeViewModel(
         if (mission.complete && !checked) {
             mission.complete = false
         } else {
-            mission.complete = true
-            mission.completeUserId = userInfoProfile.userId
-            mission.completeUserName = userInfoProfile.name
-            mission.completeUserPhoto = userInfoProfile.userPhoto.toString()
+            userInfoProfile?.let {
+                mission.complete = true
+                mission.completeUserId = it.userId
+                mission.completeUserName = it.name
+                mission.completeUserPhoto = it.userPhoto.toString()
+            }
+
 
         }
         updateMissionStatus(petId, mission)
@@ -291,6 +294,7 @@ class HomeViewModel(
                             mission.title,
                             mission.petId,
                             it[0].profilePhoto,
+                            it[0].name,
                             mission.complete,
                             mission.completeUserId,
                             mission.completeUserName,
@@ -363,19 +367,24 @@ class HomeViewModel(
                 }
 
 
-                val countDay = eventList[count].date.toDate()
+                val countDay = Today.dateNTimeFormat.parse("${Today.dateFormat.format(eventList[count].date.toDate())} 08:00")
                 val listCardHolder = mutableListOf<Event>()
                 val listPhotoHolder = mutableListOf<Event>()
 
-                while (countDay == eventList[count].date.toDate() && count < eventList.size) {
-                    if (eventList[count].type == EVENT_TYPE_SCHEDULE && eventList[count].complete
+                while (countDay == Today.dateNTimeFormat.parse("${Today.dateFormat.format(eventList[count].date.toDate())} 08:00") && count < eventList.size) {
+
+                    if (eventList[count].private && eventList[count].userParticipantList?.contains(userInfoProfile?.userId) == false){
+
+                    } else if (eventList[count].type == EVENT_TYPE_SCHEDULE && eventList[count].complete
                         && !eventList[count].photoList.isNullOrEmpty()
                     ) {
                         listPhotoHolder.add(eventList[count])
                     } else if (eventList[count].type == EVENT_TYPE_DIARY) {
                         listPhotoHolder.add(eventList[count])
+                    } else if (eventList[count] == null) {
+                        Log.d("event empty","${eventList[count]}")
                     } else {
-                        listCardHolder.add(eventList[count])
+                            listCardHolder.add(eventList[count])
                     }
                     count += 1
                     if (count == eventList.size) {
@@ -478,13 +487,10 @@ class HomeViewModel(
                         _eventForTimeline.value?.clear()
                         _eventForTimeline.value = mutableListOf()
                     } else {
-
                         _eventForTimeline.value = petEventList?.filter {
                             it.petParticipantList.contains(pet.id)
                         }?.toMutableList()
                     }
-
-
                     onStatusQuery = true
 
                     missionListToday.value?.let { todayMission->
@@ -496,11 +502,6 @@ class HomeViewModel(
 
                 }
 
-
-
-
-
-
                 _petQueryPosition.value = petPosition
             }
 //            petList.value?.let {
@@ -509,19 +510,15 @@ class HomeViewModel(
 //                }
 //            }
         } else {
-            _eventForTimeline.value = petEventList?.toMutableList()
-            onStatusQuery = false
+
             _petQueryPosition.value = null
+            _eventForTimeline.value = petEventList?.toMutableList()
+            _eventForTimeline.value = _eventForTimeline.value
+            onStatusQuery = false
+
             missionListToday.value?.let {
                 createMissionTimeItem(it)
             }
-
-
-//            petList.value.let {
-//                it?.let {
-//                    getEvents(it)
-//                }
-//            }
         }
     }
 

@@ -88,8 +88,8 @@ class PetProfileFragment: Fragment() {
         viewModel.editable.observe(viewLifecycleOwner, Observer {
             if (it){
                 viewModel.buttonString.value = PetProfileViewModel.EDITABLE
-                binding.petOwnerText.paintFlags = Paint.UNDERLINE_TEXT_FLAG
-                binding.petOldText.paintFlags = Paint.UNDERLINE_TEXT_FLAG
+//                binding.petOwnerText.paintFlags = Paint.UNDERLINE_TEXT_FLAG
+//                binding.petOldText.paintFlags = Paint.UNDERLINE_TEXT_FLAG
             } else {
                 viewModel.buttonString.value = PetProfileViewModel.UNEDITABLE
                 binding.petOwnerText.paintFlags = Paint.LINEAR_TEXT_FLAG

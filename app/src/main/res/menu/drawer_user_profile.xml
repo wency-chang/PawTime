@@ -1,18 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     >
-
     <group android:id="@+id/nav_group">
-        <item android:id="@id/friendListFragment"
+        <item android:id="@+id/toFriendListButton"
             android:title="FRIENDS"
             android:actionLayout="@layout/sub_invite_badge"
             />
-        <item android:title="PROFILE"/>
+        <item android:id="@+id/toProfileButton"
+            android:title="PROFILE"/>
     </group>
-
-
-
-
-
 
 </menu>

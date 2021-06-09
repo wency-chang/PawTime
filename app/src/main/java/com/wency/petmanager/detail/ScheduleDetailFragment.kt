@@ -27,6 +27,7 @@ import com.wency.petmanager.R
 import com.wency.petmanager.create.CreateEventViewModel
 import com.wency.petmanager.create.GetImageFromGallery
 import com.wency.petmanager.create.GetLocationFromMap
+import com.wency.petmanager.create.events.ScheduleCreateViewModel
 import com.wency.petmanager.create.events.adapter.MemoListAdapter
 import com.wency.petmanager.data.LoadStatus
 import com.wency.petmanager.data.Pet
@@ -35,11 +36,12 @@ import com.wency.petmanager.databinding.FragmentScheduleCreateBinding
 import com.wency.petmanager.databinding.FragmentScheduleDetailBinding
 import com.wency.petmanager.dialog.AddMemoDialog
 import com.wency.petmanager.dialog.AddNewTagDialog
+import com.wency.petmanager.dialog.NotificationDialog
 import com.wency.petmanager.ext.getVmFactory
 import com.wency.petmanager.profile.Today
 import java.util.*
 
-class ScheduleDetailFragment: Fragment(), OnMapReadyCallback, AddMemoDialog.MemoDialogListener, AddNewTagDialog.AddNewTagListener {
+class ScheduleDetailFragment: Fragment(), OnMapReadyCallback, AddMemoDialog.MemoDialogListener, AddNewTagDialog.AddNewTagListener, NotificationDialog.NotificationListener {
     lateinit var binding : FragmentScheduleDetailBinding
     val viewModel by viewModels<ScheduleDetailViewModel>() {
         getVmFactory(ScheduleDetailFragmentArgs.fromBundle(requireArguments()).eventDetail)
@@ -260,6 +262,16 @@ class ScheduleDetailFragment: Fragment(), OnMapReadyCallback, AddMemoDialog.Memo
             viewModel.clickEditButton()
         }
 
+        binding.notificationModify.setOnClickListener {
+            val notificationDialog = NotificationDialog(
+                viewModel.notificationTimeList[ScheduleCreateViewModel.DAY]!!,
+                viewModel.notificationTimeList[ScheduleCreateViewModel.HOUR]!!,
+                viewModel.notificationTimeList[ScheduleCreateViewModel.MINUTE]!!,
+                viewModel.currentDetailData.date.toDate(), this
+            )
+            notificationDialog.show(childFragmentManager, "Notification")
+        }
+
     }
 
     override fun onMapReady(map: GoogleMap) {
@@ -300,6 +312,10 @@ class ScheduleDetailFragment: Fragment(), OnMapReadyCallback, AddMemoDialog.Memo
         } else {
             binding.scheduleEditButton.visibility = View.VISIBLE
         }
+    }
+
+    override fun getNotification(day: Int, hour: Int, minute: Int) {
+        viewModel.updateNotificationSetting(day, hour, minute)
     }
 
 }

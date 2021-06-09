@@ -49,13 +49,13 @@ class PetProfileViewModel(val firebaseRepository: Repository, val petProfile: Pe
     val navigateToChooseFriend : LiveData<Pet?>
         get()=_navigateToChooseFriend
 
-    val _loading = MutableLiveData<Boolean>(false)
+    private val _loading = MutableLiveData<Boolean>(false)
     val loading : LiveData<Boolean>
         get() = _loading
 
     val imageUpdateStatus = MutableLiveData<Boolean>(false)
 
-    val _doneUpdate = MutableLiveData<Boolean>(false)
+    private val _doneUpdate = MutableLiveData<Boolean>(false)
     val doneUpdate : LiveData<Boolean>
         get() = _doneUpdate
 

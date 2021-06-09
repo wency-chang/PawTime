@@ -16,206 +16,235 @@
 
     </data>
 
-    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/home_refresher">
+        android:layout_height="match_parent">
 
-
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <Toolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/grey_white">
+            android:layout_height="45dp"
+            android:visibility="gone"
+            android:background="@color/blue_light"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            >
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:foregroundGravity="left"
+                android:src="@drawable/ic_paw_time_login_title"/>
+        </Toolbar>
+
+
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/home_refresher"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/toolbar"
+            >
+
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/timelinePlaceHolder"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_marginTop="90dp"
-                android:background="@drawable/ic_paw_time__ui__8_copy__1_"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/placeHolder" >
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/timelineRecycler"
-                timelineAdapter="@{viewModel.timeline}"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:background="@{viewModel.timeline.empty? @color/transparent: @color/grey_white}"
-                android:orientation="vertical"
-                android:padding="0dp"
-                android:visibility="@{viewModel.timeline.empty? View.INVISIBLE: View.VISIBLE}"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/petOptionRecycler"
-                tools:listitem="@layout/item_home_timeline_event" />
+                android:layout_height="match_parent"
+                android:background="@color/grey_white">
 
-            <LinearLayout
-                android:id="@+id/linearLayout"
-                android:layout_width="match_parent"
-                android:layout_height="102dp"
-                android:background="@drawable/ic_paw_time__ui__17"
-                android:orientation="horizontal"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/timelinePlaceHolder"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_marginTop="90dp"
+                    android:background="@drawable/ic_paw_time__ui__8_copy__1_"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/placeHolder">
 
-            </LinearLayout>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/timelineRecycler"
+                    timelineAdapter="@{viewModel.timeline}"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:background="@{viewModel.timeline.empty? @color/transparent: @color/grey_white}"
+                    android:orientation="vertical"
+                    android:padding="0dp"
+                    android:visibility="@{viewModel.timeline.empty? View.INVISIBLE: View.VISIBLE}"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/petOptionRecycler"
+                    tools:listitem="@layout/item_home_timeline_event" />
+
+                <LinearLayout
+                    android:id="@+id/linearLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="102dp"
+                    android:background="@drawable/ic_paw_time__ui__17"
+                    android:orientation="horizontal"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                </LinearLayout>
 
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/petOptionRecycler"
-                petPhotoIconAdapter="@{viewModel.petList}"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:clipToPadding="false"
-                android:orientation="horizontal"
-                android:paddingVertical="4dp"
-                android:paddingStart="16dp"
-                android:paddingEnd="100dp"
-                android:visibility="@{viewModel.petList.size() == 0? View.GONE: View.VISIBLE}"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/linearLayout"
-                tools:listitem="@layout/item_pet_header" />
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/petOptionRecycler"
+                    petPhotoIconAdapter="@{viewModel.petList}"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:clipToPadding="false"
+                    android:orientation="horizontal"
+                    android:paddingVertical="4dp"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="100dp"
+                    android:visibility="@{viewModel.petList.size() == 0? View.GONE: View.VISIBLE}"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/linearLayout"
+                    tools:listitem="@layout/item_pet_header" />
 
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/floatingButtonExpend"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="20dp"
-                android:layout_marginBottom="20dp"
-                android:backgroundTint="@color/blue_light"
-                android:contentDescription="TODO"
-                android:onClick="@{()-> viewModel.clickCreateButton()}"
-                android:visibility="@{viewModel.petList.empty? View.GONE: View.VISIBLE}"
-                android:src="@drawable/ic_baseline_add_24"
-                app:fabSize="mini"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
-
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/todayFloatingActionButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:clickable="true"
-                android:background="@color/grey_transparent"
-                android:backgroundTint="@color/grey_transparent"
-                app:fabCustomSize="50dp"
-                app:layout_constraintBottom_toBottomOf="@+id/floatingButtonExpend"
-                app:layout_constraintStart_toStartOf="parent"
-                app:srcCompat="@drawable/ic_baseline_compress_24"
-                app:elevation="0dp"
-                app:borderWidth="0dp"
-                app:pressedTranslationZ="0dp"/>
-
-            <com.google.android.material.progressindicator.CircularProgressIndicator
-                android:id="@+id/circularProgressIndicator"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:visibility="@{viewModel.petList.size() == 0? View.VISIBLE: View.GONE}"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/timelineRecycler" />
-
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/createScheduleEventButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:clickable="true"
-                android:onClick="@{()-> viewModel.clickForCreate(viewModel.PAGE_SCHEDULE_CREATE)}"
-                android:visibility="@{viewModel.isCreateButtonVisible()? View.VISIBLE : View.GONE}"
-                app:backgroundTint="@color/blue_light2"
-                app:fabSize="normal"
-                app:layout_constraintBottom_toTopOf="@+id/floatingButtonExpend"
-                app:layout_constraintEnd_toEndOf="@+id/floatingButtonExpend"
-                app:layout_constraintStart_toStartOf="@+id/floatingButtonExpend"
-                app:maxImageSize="32dp"
-                app:srcCompat="@drawable/ic_paw_time__ui__09" />
-
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/createDiaryEventButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:clickable="true"
-                android:onClick="@{()-> viewModel.clickForCreate(viewModel.PAGE_DIARY_CREATE)}"
-                android:visibility="@{viewModel.isCreateButtonVisible()? View.VISIBLE : View.GONE}"
-                app:backgroundTint="@color/blue_light2"
-                app:layout_constraintBottom_toTopOf="@+id/createScheduleEventButton"
-                app:layout_constraintEnd_toEndOf="@+id/createScheduleEventButton"
-                app:layout_constraintStart_toStartOf="@+id/createScheduleEventButton"
-                app:maxImageSize="32dp"
-                app:srcCompat="@drawable/ic_paw_time__ui__08" />
-
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/createMissionEventButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:clickable="true"
-                android:onClick="@{()-> viewModel.clickForCreate(viewModel.PAGE_MISSION_CREATE)}"
-                android:visibility="@{viewModel.isCreateButtonVisible()? View.VISIBLE : View.GONE}"
-                app:backgroundTint="@color/blue_light2"
-                app:layout_constraintBottom_toTopOf="@+id/createDiaryEventButton"
-                app:layout_constraintEnd_toEndOf="@+id/createDiaryEventButton"
-                app:layout_constraintStart_toStartOf="@+id/createDiaryEventButton"
-                app:maxImageSize="32dp"
-                app:srcCompat="@drawable/ic_paw_time__ui__07" />
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/placeHolder"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_marginTop="12dp"
-                app:layout_constraintBottom_toBottomOf="@+id/linearLayout"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="@+id/linearLayout"
-                app:layout_constraintTop_toTopOf="@+id/linearLayout">
-
-                <ImageView
-                    android:id="@+id/createPetButton"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:background="@drawable/bg_add_circle_blue"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:onClick="@{()-> viewModel.clickForCreate(viewModel.PAGE_PET_CREATE)}"
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/floatingButtonExpend"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginBottom="20dp"
+                    android:backgroundTint="@color/blue_light"
+                    android:contentDescription="TODO"
+                    android:onClick="@{()-> viewModel.clickCreateButton()}"
                     android:src="@drawable/ic_baseline_add_24"
+                    android:visibility="@{mainViewModel.userPetList.empty? View.GONE: View.VISIBLE}"
+                    app:fabSize="mini"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent" />
+
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/todayFloatingActionButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:background="@color/grey_transparent"
+                    android:backgroundTint="@color/grey_transparent"
+                    android:clickable="true"
+                    app:borderWidth="0dp"
+                    app:elevation="0dp"
+                    app:fabCustomSize="50dp"
+                    app:layout_constraintBottom_toBottomOf="@+id/floatingButtonExpend"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:pressedTranslationZ="0dp"
+                    app:srcCompat="@drawable/ic_baseline_compress_24" />
+
+                <com.google.android.material.progressindicator.CircularProgressIndicator
+                    android:id="@+id/circularProgressIndicator"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
                     android:visibility="@{viewModel.petList.size() == 0? View.VISIBLE: View.GONE}"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="@+id/timelineRecycler" />
+
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/createScheduleEventButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:clickable="true"
+                    android:onClick="@{()-> viewModel.clickForCreate(viewModel.PAGE_SCHEDULE_CREATE)}"
+                    android:visibility="@{viewModel.isCreateButtonVisible()? View.VISIBLE : View.GONE}"
+                    app:backgroundTint="@color/blue_light2"
+                    app:fabSize="normal"
+                    app:layout_constraintBottom_toTopOf="@+id/floatingButtonExpend"
+                    app:layout_constraintEnd_toEndOf="@+id/floatingButtonExpend"
+                    app:layout_constraintStart_toStartOf="@+id/floatingButtonExpend"
+                    app:maxImageSize="32dp"
+                    app:srcCompat="@drawable/ic_paw_time__ui__09" />
+
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/createDiaryEventButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:clickable="true"
+                    android:onClick="@{()-> viewModel.clickForCreate(viewModel.PAGE_DIARY_CREATE)}"
+                    android:visibility="@{viewModel.isCreateButtonVisible()? View.VISIBLE : View.GONE}"
+                    app:backgroundTint="@color/blue_light2"
+                    app:layout_constraintBottom_toTopOf="@+id/createScheduleEventButton"
+                    app:layout_constraintEnd_toEndOf="@+id/createScheduleEventButton"
+                    app:layout_constraintStart_toStartOf="@+id/createScheduleEventButton"
+                    app:maxImageSize="32dp"
+                    app:srcCompat="@drawable/ic_paw_time__ui__08" />
+
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/createMissionEventButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:clickable="true"
+                    android:onClick="@{()-> viewModel.clickForCreate(viewModel.PAGE_MISSION_CREATE)}"
+                    android:visibility="@{viewModel.isCreateButtonVisible()? View.VISIBLE : View.GONE}"
+                    app:backgroundTint="@color/blue_light2"
+                    app:layout_constraintBottom_toTopOf="@+id/createDiaryEventButton"
+                    app:layout_constraintEnd_toEndOf="@+id/createDiaryEventButton"
+                    app:layout_constraintStart_toStartOf="@+id/createDiaryEventButton"
+                    app:maxImageSize="32dp"
+                    app:srcCompat="@drawable/ic_paw_time__ui__07" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/placeHolder"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_marginTop="12dp"
+                    app:layout_constraintBottom_toBottomOf="@+id/linearLayout"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="@+id/linearLayout"
+                    app:layout_constraintTop_toTopOf="@+id/linearLayout">
+
+                    <ImageView
+                        android:id="@+id/createPetButton"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:background="@drawable/bg_add_circle_blue"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:onClick="@{()-> viewModel.clickForCreate(viewModel.PAGE_PET_CREATE)}"
+                        android:src="@drawable/ic_baseline_add_24"
+                        android:visibility="@{viewModel.petList.size() == 0? View.VISIBLE: View.GONE}"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <com.airbnb.lottie.LottieAnimationView
+                    android:id="@+id/progressBar"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/white_transparent"
+                    android:focusable="true"
+                    android:visibility="@{viewModel.refreshStatus?View.VISIBLE:View.GONE}"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:lottie_autoPlay="true"
+                    app:lottie_fileName="paw_loading.json"
+                    app:lottie_loop="true" />
+
+
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <com.airbnb.lottie.LottieAnimationView
-                android:id="@+id/progressBar"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:lottie_autoPlay="true"
-                android:focusable="true"
-                android:background="@color/white_transparent"
-                app:lottie_loop="true"
-                app:lottie_fileName="paw_loading.json"
-                android:visibility="@{viewModel.refreshStatus?View.VISIBLE:View.GONE}"/>
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

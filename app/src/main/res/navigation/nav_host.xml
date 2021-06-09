@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_host"
-    app:startDestination="@id/logInFragment">
+    app:startDestination="@id/loadingFragment">
 
     <fragment
         android:id="@+id/homeFragment"
@@ -46,10 +46,6 @@
     </fragment>
 
     <fragment
-        android:id="@+id/diaryEditFragment"
-        android:name="com.wency.petmanager.diary.DiaryEditFragment"
-        android:label="DiaryEditFragment" />
-    <fragment
         android:id="@+id/scheduleDetailFragment"
         android:name="com.wency.petmanager.detail.ScheduleDetailFragment"
         android:label="ScheduleDetailFragment" >
@@ -57,10 +53,6 @@
             android:name="eventDetail"
             app:argType="com.wency.petmanager.data.Event" />
     </fragment>
-    <fragment
-        android:id="@+id/scheduleEditFragment"
-        android:name="com.wency.petmanager.schedule.ScheduleEditFragment"
-        android:label="ScheduleEditFragment" />
     <fragment
         android:id="@+id/createEventFragment"
         android:name="com.wency.petmanager.create.CreateEventFragment"
@@ -143,6 +135,11 @@
             app:popUpToInclusive="true"
             app:popUpTo="@id/petProfileFragment"/>
     </fragment>
+
+    <fragment
+        android:id="@+id/policyFragment"
+        android:name="com.wency.petmanager.login.PolicyFragment"
+        android:label="PolicyFragment" />
     <action
         android:id="@+id/action_global_to_choose_friend"
         app:destination="@id/chooseFriendFragment"
@@ -181,7 +178,7 @@
     <action
         android:id="@+id/action_global_to_home_fragment"
         app:destination="@id/homeFragment"
-        app:popUpTo="@id/homeFragment"
+        app:popUpTo="@id/nav_host"
         app:popUpToInclusive="true"
         />
 
@@ -190,6 +187,7 @@
         app:destination="@id/loadingFragment"
         app:popUpTo="@id/loadingFragment"
         app:popUpToInclusive="true"
+        app:launchSingleTop="true"
         />
     <action
         android:id="@+id/action_global_to_login_fragment"
@@ -201,6 +199,13 @@
     <action
         android:id="@+id/action_global_to_friend_fragment"
         app:destination="@id/friendListFragment"
+        />
+
+    <action
+        android:id="@+id/action_global_to_policy_fragment"
+        app:destination="@id/policyFragment"
+        app:popUpTo="@id/logInFragment"
+        app:popUpToInclusive="true"
         />
 
 

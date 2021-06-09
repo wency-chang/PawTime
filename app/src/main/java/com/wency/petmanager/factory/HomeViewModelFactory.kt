@@ -12,7 +12,7 @@ import com.wency.petmanager.home.HomeViewModel
 @Suppress("UNCHECKED_CAST")
 class HomeViewModelFactory(
     private val firebaseRepository: Repository,
-    private val userInfoProfile: UserInfo,
+    private val userInfoProfile: UserInfo?,
     private val userPetList: Array<Pet>?,
     private val eventList: Array<Event>?
 
@@ -26,7 +26,7 @@ class HomeViewModelFactory(
                     HomeViewModel(firebaseRepository, userInfoProfile, userPetList, eventList)
 
                 isAssignableFrom(PetCreateViewModel::class.java) ->
-                    PetCreateViewModel(firebaseRepository, userInfoProfile)
+                    userInfoProfile?.let { PetCreateViewModel(firebaseRepository, it) }
 
 
                 else ->

@@ -12,12 +12,16 @@ import com.wency.petmanager.ManagerApplication
 import com.wency.petmanager.data.*
 import com.wency.petmanager.data.source.Repository
 import com.wency.petmanager.home.HomeViewModel
+import com.wency.petmanager.notification.NotificationReceiver
 import com.wency.petmanager.profile.Today
 import com.wency.petmanager.profile.UserManager
+import com.wency.petmanager.work.EventNotificationWork
 import kotlinx.coroutines.*
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.math.min
 
+@Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
 class ScheduleCreateViewModel(val repository: Repository) : ViewModel() {
 
     private val isTagExtend = MutableLiveData<Boolean>(false)
@@ -43,6 +47,8 @@ class ScheduleCreateViewModel(val repository: Repository) : ViewModel() {
 
     val checkingStatus = MutableLiveData<Boolean?>(null)
 
+
+
 //    data for update
     private var participantPet = mutableSetOf<String>()
 
@@ -51,6 +57,10 @@ class ScheduleCreateViewModel(val repository: Repository) : ViewModel() {
     private var chosenTagList = mutableSetOf<String>()
 
     val notificationAvailable = MutableLiveData<Boolean>(false)
+
+    private val _notificationString = MutableLiveData<String>("NONE")
+    val notificationString : LiveData<String>
+        get() = _notificationString
 
 
 
@@ -72,7 +82,18 @@ class ScheduleCreateViewModel(val repository: Repository) : ViewModel() {
 //    pet option for recycler list
     val petSelector = MutableLiveData<MutableList<PetSelector>>()
 
-    val me = UserInfo()
+    var notificationTime = mutableMapOf<String,Long>(DAY to 0, HOUR to 0, MINUTE to 0)
+
+    var informSetting = MutableLiveData<Boolean>(false)
+
+    var me = UserInfo()
+
+    companion object{
+        const val NONE = "NONE"
+        const val DAY = "day"
+        const val HOUR = "hour"
+        const val MINUTE = "minute"
+    }
 
 
 
@@ -86,7 +107,7 @@ class ScheduleCreateViewModel(val repository: Repository) : ViewModel() {
 
     var location : Location = Location("","", null)
 
-    val locationName = MutableLiveData("NONE")
+    val locationName = MutableLiveData(NONE)
 
     var pickDate = MutableLiveData(today)
     var pickTime = MutableLiveData(timeFormat.format(Date()))
@@ -151,16 +172,14 @@ class ScheduleCreateViewModel(val repository: Repository) : ViewModel() {
             checkingStatus.value = ( participantUser.isNotEmpty()
                     && participantPet.isNotEmpty())
         }
-
-
-
     }
 
     private fun updateSchedule(data: Event){
         coroutineScope.launch {
             when (val result = repository.createEvent(data)){
                 is Result.Success -> {
-                    updateEventIdToPet(result.data)
+                    data.eventID = result.data
+                    updateInform(data)
                 }
                 is Result.Fail -> {
                     Toast.makeText(ManagerApplication.instance, "${result.error}", Toast.LENGTH_SHORT).show()
@@ -239,7 +258,7 @@ class ScheduleCreateViewModel(val repository: Repository) : ViewModel() {
     fun createSchedule() {
 
             val dataToUpdate = Event(
-                date = Timestamp(Today.dateFormat.parse(pickDate.value)),
+                date = Timestamp(Today.dateNTimeFormat.parse("${pickDate.value} ${pickTime.value}")),
                 time = Timestamp(timeFormat.parse(pickTime.value)),
                 type = HomeViewModel.EVENT_TYPE_SCHEDULE,
                 petParticipantList = participantPet.toList(),
@@ -254,9 +273,8 @@ class ScheduleCreateViewModel(val repository: Repository) : ViewModel() {
 
                 }
             }
-        Log.d("Map","start record it ${location}")
+
             location?.let {
-                Log.d("Map","start record it ${it.locationName}")
                 dataToUpdate.locationAddress = it.locationAddress
                 dataToUpdate.locationName = it.locationName
                 dataToUpdate.locationLatLng = "${it.locationLatlng?.latitude},${it.locationLatlng?.longitude}"
@@ -269,14 +287,105 @@ class ScheduleCreateViewModel(val repository: Repository) : ViewModel() {
             if (photoListToUpdate.isNotEmpty()){
                 dataToUpdate.photoList = photoListToUpdate
             }
+            if (notificationString.value != NONE){
+                val calendar = Calendar.getInstance()
 
+                calendar.time = Today.dateNTimeFormat.parse("${pickDate.value} ${pickTime.value}")
 
+                val minusTime : Long = ((notificationTime[DAY]?.times(24) ?: 0) *60*60*1000 + (notificationTime[HOUR]?.times(60) ?: 0) *60*1000 + (notificationTime[MINUTE]?.times(60) ?:0)*1000)
+
+                val notificationDate: Date = Date((calendar.time.time - minusTime))
+
+                dataToUpdate.notification = Timestamp(notificationDate)
+            }
 
 
 //            update data to firebase
 
             updateSchedule(dataToUpdate)
 
+    }
+
+    private fun updateInform(event: Event){
+
+        val eventNotification = EventNotification(
+            eventId = event.eventID,
+            complete = false,
+            userName = me.name,
+            type = EventNotificationWork.TYPE_NEW_EVENT,
+            alarmTime = event.notification
+        )
+        event.title?.let {
+            eventNotification.eventTitle = it
+        }
+        event.locationName?.let {
+            eventNotification.locationName = it
+        }
+        event.locationLatLng?.let {
+            eventNotification.locationLatLng = it
+        }
+
+
+        if (informSetting.value == true) {
+            coroutineScope.launch {
+                var count = 0
+
+                event.userParticipantList?.forEach {
+                    if (it == UserManager.userID) {
+                        count += 1
+                        if (count == event.userParticipantList!!.size){
+                            updateAlarm(event, eventNotification)
+                        }
+                    } else {
+                        when (repository.updateEventNotification(it, eventNotification)){
+                            is Result.Success -> {
+                                count += 1
+                                if (count == event.userParticipantList!!.size){
+                                    updateAlarm(event, eventNotification)
+                                }
+                            }
+
+                        }
+
+                    }
+
+
+                }
+
+            }
+
+        } else {
+            updateAlarm(event, eventNotification)
+        }
+    }
+
+    private fun updateAlarm(event: Event, eventNotification: EventNotification){
+        eventNotification.type = EventNotificationWork.TYPE_EVENT_ALARM
+        if (event.notification == null){
+            updateEventIdToPet(event.eventID)
+        } else {
+            coroutineScope.launch {
+                var count = 0
+                event.userParticipantList?.forEach{
+                    when (repository.updateEventNotification(it, eventNotification)){
+                        is Result.Success -> {
+                            count += 1
+                            if (count == event.userParticipantList?.size){
+                                updateEventIdToPet(event.eventID)
+                            }
+                        }
+                        else -> {
+
+                        }
+                    }
+
+
+                }
+
+            }
+
+
+        }
 
     }
 
@@ -310,7 +419,6 @@ class ScheduleCreateViewModel(val repository: Repository) : ViewModel() {
     }
 
     fun updatePetSelector(petList: MutableList<Pet>?) {
-        Log.d("WHY","myPet get selector")
         petList?.let {
             val petSelectorCreate = mutableListOf<PetSelector>()
             for (pet in it){
@@ -318,7 +426,6 @@ class ScheduleCreateViewModel(val repository: Repository) : ViewModel() {
                 pet = pet))
             }
             petSelector.value = petSelectorCreate
-            Log.d("WHY","myPet get selector ${petSelector.value}")
         }
     }
 
@@ -391,5 +498,18 @@ class ScheduleCreateViewModel(val repository: Repository) : ViewModel() {
 
     }
 
+    fun getNotificationSetting(day: Int, hour: Int, minute: Int){
+        if (day == 0 && hour == 0 && minute == 0){
+            _notificationString.value = NONE
+        } else {
+            _notificationString.value = "$day days $hour : $minute before"
+            notificationTime.put(DAY, day.toLong())
+            notificationTime.put(HOUR, hour.toLong())
+            notificationTime.put(MINUTE, minute.toLong())
+        }
+
+
+
+    }
 
 }

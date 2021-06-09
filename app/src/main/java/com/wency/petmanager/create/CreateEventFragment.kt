@@ -52,7 +52,7 @@ class CreateEventFragment : Fragment() {
         )
 
         mainViewModel.tagListLiveData.value?.let {
-            Log.d("TAGLIST!!!","initiail taglist: $it")
+
             viewModel.tagListLiveData.value = it
         }
 

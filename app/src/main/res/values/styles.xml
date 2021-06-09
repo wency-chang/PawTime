@@ -19,7 +19,7 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textStyle">bold</item>
-        <item name="fontFamily">@font/acme</item>
+        <item name="fontFamily">@font/gudea</item>
     </style>
 
     <style name="dialog_text_button">
@@ -70,6 +70,14 @@
         <item name="colorAccent">@color/blue_light</item>
         <item name="colorButtonNormal">@color/blue_light2</item>
         <item name="checkedIconTint">@color/blue_light</item>
+        <item name="android:numberPickerStyle">@style/NotificationPickerStyle</item>
+    </style>
+
+    <style name="NotificationPickerStyle" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:textColorPrimary">@color/blue_light</item>
+        <item name="android:colorControlNormal">@color/transparent</item>
+        <item name="colorAccent">@color/blue_light</item>
+        <item name="android:textStyle">bold</item>
 
     </style>
 </resources>

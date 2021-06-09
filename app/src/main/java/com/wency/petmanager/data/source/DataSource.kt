@@ -73,4 +73,17 @@ interface DataSource {
 
     suspend fun updatePetEventList(petId: String, eventId: String, add: Boolean): Result<Boolean>
 
+    suspend fun updateEventNotification (userId: String, eventNotification: EventNotification) : Result<Boolean>
+
+    suspend fun updateUserInfo(userId: String, userInfo: UserInfo) : Result<Boolean>
+
+    suspend fun deleteNotification(userId: String, eventId: String) : Result<Boolean>
+
+    suspend fun addNotificationDeleteToUser(userId: String, eventNotification: EventNotification):Result<Boolean>
+
+    suspend fun getAllNotificationAlreadyUpdated (userId: String): Result<List<EventNotification>>
+
+
+
+
 }

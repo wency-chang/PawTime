@@ -10,6 +10,8 @@ apply plugin: "androidx.navigation.safeargs.kotlin"
 
 apply plugin: 'com.google.gms.google-services'
 
+apply plugin: 'com.google.firebase.crashlytics'
+
 android {
     compileSdkVersion 30
     buildToolsVersion "30.0.3"
@@ -106,6 +108,13 @@ dependencies {
     api 'com.theartofdev.edmodo:android-image-cropper:2.8.+'
 
     implementation "com.airbnb.android:lottie:3.7.0"
+
+    implementation "androidx.work:work-runtime-ktx:2.2.0"
+
+    implementation 'com.google.firebase:firebase-crashlytics'
+    implementation 'com.google.firebase:firebase-analytics'
+
+
 
 
 

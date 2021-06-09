@@ -11,8 +11,10 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import com.google.android.flexbox.*
+import com.wency.petmanager.MainViewModel
 import com.wency.petmanager.ManagerApplication
 import com.wency.petmanager.R
 import com.wency.petmanager.databinding.FragmentScheduleCreateBinding
@@ -22,15 +24,17 @@ import com.wency.petmanager.create.CreateEventViewModel
 import com.wency.petmanager.create.GetImageFromGallery
 import com.wency.petmanager.create.GetLocationFromMap
 import com.wency.petmanager.create.events.adapter.*
+import com.wency.petmanager.dialog.NotificationDialog
 import com.wency.petmanager.ext.getVmFactory
 import com.wency.petmanager.profile.Today
 import java.time.Instant
 import java.util.*
 
-class ScheduleCreateFragment: Fragment(), AddMemoDialog.MemoDialogListener, AddNewTagDialog.AddNewTagListener {
+class ScheduleCreateFragment: Fragment(), AddMemoDialog.MemoDialogListener, AddNewTagDialog.AddNewTagListener, NotificationDialog.NotificationListener {
     lateinit var binding: FragmentScheduleCreateBinding
     private val viewModel by viewModels<ScheduleCreateViewModel>(){getVmFactory()}
     private val createEventViewModel by viewModels<CreateEventViewModel> (ownerProducer = { requireParentFragment()})
+    private val mainViewModel by activityViewModels<MainViewModel>() {getVmFactory()}
     private val getImage = GetImageFromGallery()
     private val getPhotoActivity =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -84,6 +88,7 @@ class ScheduleCreateFragment: Fragment(), AddMemoDialog.MemoDialogListener, AddN
 
 //      get my pet option from createFragment
         viewModel.myPet = createEventViewModel.myPetList.toList()
+        viewModel.me = mainViewModel.userInfoProfile.value!!
 
 
 //      get user select state
@@ -243,6 +248,13 @@ class ScheduleCreateFragment: Fragment(), AddMemoDialog.MemoDialogListener, AddN
             }
         })
 
+        binding.setNotification.setOnClickListener {
+            val notificationDialog = NotificationDialog(
+                targetDate = Today.dateFormat.parse(viewModel.pickDate.value), listener = this
+            )
+            notificationDialog.show(childFragmentManager, "Notification")
+        }
+
 
     }
     override fun getMemo(memo: String, position: Int?) {
@@ -256,6 +268,10 @@ class ScheduleCreateFragment: Fragment(), AddMemoDialog.MemoDialogListener, AddN
             createEventViewModel.updateNewTag(tag, it.toList())
         }
         binding.tagRecyclerView.adapter?.notifyDataSetChanged()
+    }
+
+    override fun getNotification(day: Int, hour: Int, minute: Int) {
+        viewModel.getNotificationSetting(day, hour, minute)
     }
 
 }

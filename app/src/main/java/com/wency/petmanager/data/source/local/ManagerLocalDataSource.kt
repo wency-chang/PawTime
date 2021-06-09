@@ -145,4 +145,32 @@ class ManagerLocalDataSource(val context: Context) : com.wency.petmanager.data.s
         TODO("Not yet implemented")
     }
 
+    override suspend fun updateEventNotification(
+        userId: String,
+        eventNotification: EventNotification
+    ): Result<Boolean> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun updateUserInfo(userId: String, userInfo: UserInfo): Result<Boolean> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun deleteNotification(userId: String, eventId: String): Result<Boolean> {
+        TODO("Not yet implemented")
+    }
+
+
+    override suspend fun addNotificationDeleteToUser(
+        userId: String,
+        eventNotification: EventNotification
+    ) : Result<Boolean>{
+        TODO("Not yet implemented")
+    }
+
+
+    override suspend fun getAllNotificationAlreadyUpdated(userId: String): Result<List<EventNotification>> {
+        TODO("Not yet implemented")
+    }
+
 }

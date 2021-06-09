@@ -225,10 +225,9 @@
                     android:id="@+id/expendButton"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
-                    android:layout_marginTop="10dp"
                     android:visibility="@{needExpand? View.VISIBLE: View.GONE}"
+                    app:layout_constraintBottom_toBottomOf="@+id/scheduleTitle"
                     app:layout_constraintEnd_toEndOf="@+id/scheduleTitle"
-                    app:layout_constraintTop_toBottomOf="@+id/linearLayout3"
                     app:srcCompat="@drawable/ic_baseline_more_horiz_24_color" />
 
                 <LinearLayout
