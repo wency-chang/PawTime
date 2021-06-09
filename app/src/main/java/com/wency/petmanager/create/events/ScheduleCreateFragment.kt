@@ -164,7 +164,9 @@ class ScheduleCreateFragment: Fragment(), AddMemoDialog.MemoDialogListener, AddN
 
         binding.timeSelectButton.setOnClickListener {
             val timePicker = TimePickerDialog(requireContext(), R.style.datePickDialog,  TimePickerDialog.OnTimeSetListener { view, hourOfDay, minute ->
-                viewModel.pickTime.value = "$hourOfDay:$minute"
+                calendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
+                calendar.set(Calendar.MINUTE, minute)
+                viewModel.pickTime.value = Today.timeFormat12.format(calendar.time)
             }, hour, minutes, false)
             timePicker.show()
         }

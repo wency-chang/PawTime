@@ -11,6 +11,7 @@ data class EventNotification(
     var eventTitle: String = "",
     var petName: List<String> = mutableListOf(),
     var alarmTime : Timestamp? = null,
+    var eventTime : Timestamp? = null,
     var locationName : String = "",
     var locationLatLng : String = ""
 )

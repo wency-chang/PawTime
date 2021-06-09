@@ -18,6 +18,7 @@ import com.wency.petmanager.network.LoadApiStatus
 import com.wency.petmanager.notification.NotificationReceiver
 import com.wency.petmanager.profile.Today
 import com.wency.petmanager.profile.UserManager
+import com.wency.petmanager.work.EventNotificationResetWork
 import com.wency.petmanager.work.EventNotificationWork
 import kotlinx.coroutines.*
 import java.util.concurrent.TimeUnit
@@ -94,8 +95,7 @@ class MainViewModel(private val firebaseRepository: Repository) : ViewModel() {
     val memoryPetList : LiveData<MutableList<Pet>>
         get() = _memoryPetList
 
-    val googleSignInClient =
-        UserManager.gso?.let { GoogleSignIn.getClient(ManagerApplication.instance, it) }
+
 
     private val _signOut = MutableLiveData<Boolean>(false)
     val signOut : LiveData<Boolean>
@@ -418,6 +418,8 @@ class MainViewModel(private val firebaseRepository: Repository) : ViewModel() {
     }
 
     fun logOut(){
+        val googleSignInClient =
+            UserManager.gso?.let { GoogleSignIn.getClient(ManagerApplication.instance, it) }
         coroutineScope.launch {
             when(firebaseRepository.sinOut()){
                 is Result.Success -> {
@@ -457,7 +459,7 @@ class MainViewModel(private val firebaseRepository: Repository) : ViewModel() {
         val intent = Intent(ManagerApplication.instance, NotificationReceiver::class.java)
         intent.putExtra(NotificationReceiver.PURPOSE, NotificationReceiver.PURPOSE_MISSION_NOTIFICATION)
         val pendingIntent = PendingIntent.getBroadcast(ManagerApplication.instance, NotificationReceiver.MISSION_REQUEST_CODE, intent, PendingIntent.FLAG_UPDATE_CURRENT)
-        val time = Today.dateNTimeFormat.parse("${Today.todayString} 21:30")
+        val time = Today.dateNTimeFormat.parse("${Today.todayString} 21:30 PM")
         alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, time.time, AlarmManager.INTERVAL_DAY, pendingIntent)
     }
 
@@ -471,6 +473,8 @@ class MainViewModel(private val firebaseRepository: Repository) : ViewModel() {
             .build()
 
         WorkManager.getInstance(ManagerApplication.instance).enqueue(checkNotificationWorkRequest)
+
+        resetAlarm()
     }
 
     fun getNewHeaderPhoto(uri: Uri){
@@ -560,6 +564,21 @@ class MainViewModel(private val firebaseRepository: Repository) : ViewModel() {
             putExtra(EventNotificationWork.EVENT_TIME, Today.dateNTimeFormat.format(eventNotification.alarmTime?.toDate()))
         }
         return intent
+
+
+
+    }
+
+    private fun resetAlarm(){
+        val constrains = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .build()
+
+        val resetNotificationWorkRequest: WorkRequest = OneTimeWorkRequestBuilder<EventNotificationResetWork>()
+            .setConstraints(constrains)
+            .build()
+
+        WorkManager.getInstance(ManagerApplication.instance).enqueue(resetNotificationWorkRequest)
 
     }
 

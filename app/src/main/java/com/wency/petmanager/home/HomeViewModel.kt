@@ -230,7 +230,7 @@ class HomeViewModel(
         mission.completeUserId = ""
         mission.completeUserName = ""
         mission.completeUserPhoto = ""
-        mission.recordDate = Timestamp(Today.dateNTimeFormat.parse("${Today.todayString} 08:00"))
+        mission.recordDate = Timestamp(Today.dateNTimeFormat.parse("${Today.todayString} 08:00 AM"))
         updateMissionStatus(petId, mission)
     }
 
@@ -286,7 +286,7 @@ class HomeViewModel(
             }
             petPhoto?.let {
                 if (mission.recordDate ==
-                    Timestamp(Today.dateNTimeFormat.parse("${Today.todayString} 08:00"))
+                    Timestamp(Today.dateNTimeFormat.parse("${Today.todayString} 08:00 AM"))
                 ) {
                     list.add(
                         MissionToday(
@@ -367,11 +367,11 @@ class HomeViewModel(
                 }
 
 
-                val countDay = Today.dateNTimeFormat.parse("${Today.dateFormat.format(eventList[count].date.toDate())} 08:00")
+                val countDay = Today.dateNTimeFormat.parse("${Today.dateFormat.format(eventList[count].date.toDate())} 08:00 AM")
                 val listCardHolder = mutableListOf<Event>()
                 val listPhotoHolder = mutableListOf<Event>()
 
-                while (countDay == Today.dateNTimeFormat.parse("${Today.dateFormat.format(eventList[count].date.toDate())} 08:00") && count < eventList.size) {
+                while (countDay == Today.dateNTimeFormat.parse("${Today.dateFormat.format(eventList[count].date.toDate())} 08:00 AM") && count < eventList.size) {
 
                     if (eventList[count].private && eventList[count].userParticipantList?.contains(userInfoProfile?.userId) == false){
 

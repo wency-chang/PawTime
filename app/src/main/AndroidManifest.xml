@@ -45,7 +45,8 @@
 
         <activity android:name=".MainActivity"
             android:windowSoftInputMode="stateHidden|adjustPan"
-            android:launchMode="singleTask">
+            android:launchMode="singleTop"
+            android:screenOrientation="locked">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -8,10 +8,18 @@ import android.net.Uri
 import android.util.Log
 import androidx.work.*
 import com.wency.petmanager.R
+import com.wency.petmanager.data.source.remote.RemoteDataSource
+import com.wency.petmanager.profile.UserManager
 import com.wency.petmanager.work.EventNotificationWork
 import com.wency.petmanager.work.MissionRemindWork
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 class NotificationReceiver: BroadcastReceiver() {
+    private var workJob = Job()
+    private val coroutineScope = CoroutineScope(workJob + Dispatchers.Main)
     override fun onReceive(context: Context, intent: Intent?) {
         val purpose = intent?.getIntExtra(PURPOSE, 0)
         val data = intent?.getBundleExtra(BUNDLE)
@@ -67,6 +75,18 @@ class NotificationReceiver: BroadcastReceiver() {
                 channel.enableVibration(true)
                 manager.createNotificationChannel(channel)
                 manager.notify(EVENT_ALARM_REQUEST_CODE, builder.build())
+
+                UserManager.userID?.let {
+                    coroutineScope.launch {
+                        eventId?.let { eventId->
+                            RemoteDataSource.deleteNotification(it, eventId)
+                        }
+                    }
+
+                }
+
+
+
             }
 
 

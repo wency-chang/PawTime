@@ -103,14 +103,14 @@ class ScheduleCreateViewModel(val repository: Repository) : ViewModel() {
         createTagList()
     }
     @SuppressLint("SimpleDateFormat")
-    val timeFormat = SimpleDateFormat("hh:mm")
+    val timeFormat = SimpleDateFormat("hh:mm a")
 
     var location : Location = Location("","", null)
 
     val locationName = MutableLiveData(NONE)
 
     var pickDate = MutableLiveData(today)
-    var pickTime = MutableLiveData(timeFormat.format(Date()))
+    var pickTime = MutableLiveData(Today.timeFormat12.format(Date()))
 
     fun cancelPhoto(position: Int){
         photoList.value?.let {
@@ -259,7 +259,7 @@ class ScheduleCreateViewModel(val repository: Repository) : ViewModel() {
 
             val dataToUpdate = Event(
                 date = Timestamp(Today.dateNTimeFormat.parse("${pickDate.value} ${pickTime.value}")),
-                time = Timestamp(timeFormat.parse(pickTime.value)),
+                time = Timestamp(Today.timeFormat12.parse(pickTime.value)),
                 type = HomeViewModel.EVENT_TYPE_SCHEDULE,
                 petParticipantList = participantPet.toList(),
                 userParticipantList = participantUser.toList(),
@@ -313,7 +313,8 @@ class ScheduleCreateViewModel(val repository: Repository) : ViewModel() {
             complete = false,
             userName = me.name,
             type = EventNotificationWork.TYPE_NEW_EVENT,
-            alarmTime = event.notification
+            alarmTime = event.notification,
+            eventTime = event.date
         )
         event.title?.let {
             eventNotification.eventTitle = it

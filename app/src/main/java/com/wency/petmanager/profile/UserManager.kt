@@ -50,14 +50,13 @@ object Today{
     val dateFormat = SimpleDateFormat("yyyy.MM.dd")
     val todayString = dateFormat.format(today)
     @SuppressLint("SimpleDateFormat")
-    val timeFormat = SimpleDateFormat("hh:mm")
 
     val timeFormat12 = SimpleDateFormat("hh:mm a")
 
     @SuppressLint("SimpleDateFormat")
-    val dateNTimeFormat = SimpleDateFormat("yyyy.MM.dd hh:mm")
+    val dateNTimeFormat = SimpleDateFormat("yyyy.MM.dd hh:mm a")
 
-    val timeStamp8am = Timestamp(dateNTimeFormat.parse("$todayString 8:00"))
+    val timeStamp8am = Timestamp(dateNTimeFormat.parse("$todayString 8:00 AM"))
 
     val dayOfWeekFormat = SimpleDateFormat("E")
     val monthFormat = SimpleDateFormat("MMM")

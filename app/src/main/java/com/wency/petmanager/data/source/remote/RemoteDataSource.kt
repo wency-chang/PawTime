@@ -50,6 +50,7 @@ object RemoteDataSource : DataSource {
     private const val USER_NOTIFICATION_DELETE = "notificationDeleteList"
     private const val EVENT_COMPLETE_UPDATE = "complete"
     private const val NOTIFICATION_ALARM = "alarmTime"
+    private const val NOTIFICATION_EVENT_TIME = "eventTime"
 
 
     override suspend fun getUserProfile(token: String): Result<UserInfo> =
@@ -237,7 +238,7 @@ object RemoteDataSource : DataSource {
     override suspend fun getTodayMission(petID: String): Result<List<MissionGroup>> =
         suspendCoroutine { continuation ->
             val missionList = mutableListOf<MissionGroup>()
-            val today = Timestamp(Today.dateNTimeFormat.parse("${Today.todayString} 08:00"))
+            val today = Timestamp(Today.dateNTimeFormat.parse("${Today.todayString} 08:00 AM"))
             FirebaseFirestore.getInstance().collection(PATH_PETS)
                 .document(petID)
                 .collection(PATH_PET_MISSION_LIST)
@@ -855,7 +856,7 @@ object RemoteDataSource : DataSource {
 
 
     override fun getTodayMissionLiveData(petList: List<Pet>): MutableLiveData<List<MissionGroup>> {
-        val today = Timestamp(Today.dateNTimeFormat.parse("${Today.todayString} 08:00"))
+        val today = Timestamp(Today.dateNTimeFormat.parse("${Today.todayString} 08:00 AM"))
         val liveData = MutableLiveData<List<MissionGroup>>()
         val petMissionList = mutableMapOf<String, List<MissionGroup>>()
         val firebasePet = FirebaseFirestore.getInstance().collection(PATH_PETS)
@@ -1011,18 +1012,13 @@ object RemoteDataSource : DataSource {
     }
 
     override suspend fun deleteNotification(userId: String, eventId: String): Result<Boolean> = suspendCoroutine{ continuation->
-        val notification = FirebaseFirestore.getInstance().collection(PATH_USERS).document(userId)
+        FirebaseFirestore.getInstance().collection(PATH_USERS).document(userId)
             .collection(USER_NOTIFICATION)
             .document(eventId)
-        notification.update(NOTIFICATION_ALARM, null)
+            .delete()
             .addOnCompleteListener {
                 if (it.isSuccessful){
-                    notification.update(EVENT_COMPLETE_UPDATE, false)
-                        .addOnCompleteListener {
-                            if (it.isSuccessful){
-                                continuation.resume(Result.Success(true))
-                            }
-                        }
+                    continuation.resume(Result.Success(true))
                 }
             }
     }

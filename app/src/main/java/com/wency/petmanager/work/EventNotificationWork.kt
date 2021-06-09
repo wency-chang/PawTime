@@ -84,7 +84,10 @@ class EventNotificationWork(val context: Context, workerParameters: WorkerParame
             putExtra(EVENT_LOCATION, eventNotification.locationLatLng)
             putExtra(EVENT_TITLE, eventNotification.eventTitle)
             putExtra(EVENT_ID, eventNotification.eventId)
-            putExtra(EVENT_TIME, Today.notificationFormat.format(eventNotification.alarmTime?.toDate()))
+            eventNotification.eventTime?.let {
+                putExtra(EVENT_TIME, Today.notificationFormat.format(it.toDate()))
+            }
+
         }
         return intent
 

@@ -199,7 +199,7 @@ class ScheduleDetailViewModel(val repository: Repository, val eventDetail: Event
     private fun getDateLiveData() {
         _dateLiveData.value = Today.dateFormat.format(eventDetail.date.toDate())
         eventDetail.time?.let {
-            _timeLiveData.value = Today.timeFormat.format(it.toDate())
+            _timeLiveData.value = Today.timeFormat12.format(it.toDate())
         }
     }
 
@@ -302,9 +302,10 @@ class ScheduleDetailViewModel(val repository: Repository, val eventDetail: Event
     private fun deleteNotification() {
         coroutineScope.launch {
             eventDetail.userParticipantList?.let {
+                val oldNotification = getEventNotification(eventDetail)
                 var count = 0
                 for (user in it) {
-                    when (repository.deleteNotification(user, eventDetail.eventID)) {
+                    when (repository.addNotificationDeleteToUser(user, oldNotification)) {
                         is Result.Success -> {
                             count += 1
                             if (count == it.size) {
@@ -470,7 +471,8 @@ class ScheduleDetailViewModel(val repository: Repository, val eventDetail: Event
                 false,
                 it,
                 EventNotificationWork.TYPE_EVENT_ALARM,
-                alarmTime = event.notification
+                alarmTime = event.notification,
+                eventTime = event.date
             )
         }
 
@@ -750,7 +752,7 @@ class ScheduleDetailViewModel(val repository: Repository, val eventDetail: Event
     }
 
     fun getNewTime(newTime: Date) {
-        val timeString = Today.timeFormat.format(newTime)
+        val timeString = Today.timeFormat12.format(newTime)
         _timeLiveData.value = timeString
         currentDetailData.time = Timestamp(newTime)
         val newDateInDate =

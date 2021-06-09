@@ -123,7 +123,7 @@
                     android:contentDescription="TODO"
                     android:onClick="@{()-> viewModel.clickCreateButton()}"
                     android:src="@drawable/ic_baseline_add_24"
-                    android:visibility="@{mainViewModel.userPetList.empty? View.GONE: View.VISIBLE}"
+                    android:visibility="@{viewModel.petList.size() == 0? View.GONE: View.VISIBLE}"
                     app:fabSize="mini"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent" />

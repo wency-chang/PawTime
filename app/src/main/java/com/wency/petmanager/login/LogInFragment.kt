@@ -1,6 +1,7 @@
 package com.wency.petmanager.login
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -52,6 +53,7 @@ class LogInFragment: Fragment() {
 
         com.wency.petmanager.profile.UserManager.gso = gso
         val googleSignInClient = GoogleSignIn.getClient(requireActivity(), gso)
+
 
 
 
