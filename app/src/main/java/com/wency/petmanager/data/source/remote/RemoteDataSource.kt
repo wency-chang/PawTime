@@ -1,7 +1,6 @@
 package com.wency.petmanager.data.source.remote
 
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.net.Uri
 import android.provider.MediaStore
 import android.util.Log
@@ -78,7 +77,6 @@ object RemoteDataSource : DataSource {
 
 
     override suspend fun getPetData(id: String): Result<Pet> = suspendCoroutine { continuation ->
-
         FirebaseFirestore.getInstance()
             .collection(PATH_PETS)
             .document(id)
@@ -88,10 +86,8 @@ object RemoteDataSource : DataSource {
                     task.result?.let { document ->
 
                         document.toObject(Pet::class.java)?.let {
-
                             continuation.resume(Result.Success(it))
                         }
-                        val pet = document.toObject(Pet::class.java)
 
                     }
                 } else {
@@ -119,10 +115,8 @@ object RemoteDataSource : DataSource {
                         }
                     }
                     if (task.result == null){
-                        Log.d("EVENT null","$id")
                         continuation.resume(Result.Success(Event()))
                     } else if (task.result.data == null) {
-                        Log.d("delete Event","$id")
                         continuation.resume(Result.Success(Event()))
                     }
 
@@ -201,7 +195,6 @@ object RemoteDataSource : DataSource {
                 .update(PATH_PET_EVENT_LIST, FieldValue.arrayUnion(eventID))
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
-                        Log.d("updateEventSuccess", "${task.result}")
                         continuation.resume(Result.Success(true))
                     } else {
                         task.exception?.let {
@@ -222,7 +215,6 @@ object RemoteDataSource : DataSource {
             .set(pet)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    Log.d("updateEventSuccess", "${task.result}")
                     continuation.resume(Result.Success(document.id))
                 } else {
                     task.exception?.let {
@@ -288,6 +280,7 @@ object RemoteDataSource : DataSource {
                 }
         }
 
+
     override suspend fun addNewTag(petID: String, tag: String): Result<Boolean> =
         suspendCoroutine { continuation ->
 
@@ -307,6 +300,7 @@ object RemoteDataSource : DataSource {
                     }
                 }
         }
+
 
     override suspend fun addNewPetIdToUser(petId: String, userID: String): Result<Boolean> =
         suspendCoroutine { continuation ->
@@ -328,29 +322,6 @@ object RemoteDataSource : DataSource {
                 }
         }
 
-    override suspend fun addOwner(petID: String, ownerID: String): Result<Boolean> =
-        suspendCoroutine {continuation->
-            Log.d("Choose Owner","Remote update to firebase $petID, $ownerID")
-            val fireStore = FirebaseFirestore.getInstance()
-            fireStore
-                .collection(PATH_USERS)
-                .document(ownerID)
-                .update(USER_PET_LIST, FieldValue.arrayUnion(petID))
-                .addOnCompleteListener {
-                    if (it.isSuccessful){
-                        Log.d("Choose Owner","Owner update success")
-                        fireStore.collection(PATH_PETS)
-                            .document(petID)
-                            .update(PET_USER_LIST, FieldValue.arrayUnion(ownerID))
-                            .addOnCompleteListener {
-                                if (it.isSuccessful){
-                                    Log.d("Choose Owner","Pet update success")
-                                    continuation.resume(Result.Success(true))
-                                }
-                            }
-                    }
-                }
-        }
 
     override suspend fun checkInviteList(searchId: String, ownerId: String): Result<Boolean> =
         suspendCoroutine { continuation ->
@@ -377,10 +348,10 @@ object RemoteDataSource : DataSource {
 
     override suspend fun acceptFriend(userId: String, friendId: String): Result<Boolean> =
         suspendCoroutine { continuation ->
-            val firestore = FirebaseFirestore.getInstance().collection(PATH_USERS)
-            val userDocument = firestore.document(userId)
+            val fireStore = FirebaseFirestore.getInstance().collection(PATH_USERS)
+            val userDocument = fireStore.document(userId)
             val userInviteList = userDocument.collection((USER_INVITE_LIST))
-            val friendDocument = firestore.document(friendId)
+            val friendDocument = fireStore.document(friendId)
 
             userDocument.update(USER_FRIEND_LIST_FIELD, FieldValue.arrayUnion(friendId))
                 .addOnCompleteListener {
@@ -602,15 +573,13 @@ object RemoteDataSource : DataSource {
 
     override suspend fun sinOut(): Result<Boolean> {
         FirebaseAuth.getInstance().signOut()
-        Log.d("LOGOUT","firebase logOut ")
+
         return Result.Success(true)
     }
 
     override suspend fun updateOwner(petId: String, userIdList: List<String>): Result<Pet> = suspendCoroutine {continuation->
         val petDocument = FirebaseFirestore.getInstance().collection(PATH_PETS).document(petId)
         val userCollection = FirebaseFirestore.getInstance().collection(PATH_USERS)
-
-
         petDocument
             .update(PET_USER_LIST, FieldValue.delete())
             .addOnCompleteListener { taskDelete->
@@ -625,8 +594,7 @@ object RemoteDataSource : DataSource {
                                         .addOnCompleteListener {
                                             if (it.isSuccessful) {
                                                 userUpdatedCount += 1
-                                                if (userUpdatedCount == userIdList.size) {
-                                                    petDocument
+                                                if (userUpdatedCount == userIdList.size) {                                                    petDocument
                                                         .get()
                                                         .addOnCompleteListener { petTask ->
                                                             if (petTask.isSuccessful) {
@@ -639,24 +607,32 @@ object RemoteDataSource : DataSource {
                                                                         )
                                                                     )
                                                                 }
+                                                            } else {
+                                                                continuation.resume(Result.Fail(petTask.exception.toString()))
                                                             }
+
                                                         }
                                                 }
+                                            } else {
+                                                continuation.resume(Result.Fail(it.exception.toString()))
                                             }
+
                                         }
 
 
                                 }
+                            } else {
+                                continuation.resume(Result.Fail(taskUpdate.exception.toString()))
+
                             }
-
-
-
 
                         }
 
-
+                } else {
+                    continuation.resume(Result.Fail(taskDelete.exception.toString()))
 
                 }
+
             }
     }
 
@@ -670,6 +646,7 @@ object RemoteDataSource : DataSource {
                     if (task.isSuccessful){
                         continuation.resume(Result.Success(true))
                     } else {
+                        continuation.resume(Result.Fail(task.exception.toString()))
                         Log.d("UpdateOwner","fail update ${task.result}")
                     }
 
@@ -681,6 +658,7 @@ object RemoteDataSource : DataSource {
                         continuation.resume(Result.Success(true))
                     }
                     else {
+                        continuation.resume(Result.Fail(task.exception.toString()))
                         Log.d("UpdateOwner","fail update ${task.result}")
                     }
                 }
@@ -693,6 +671,8 @@ object RemoteDataSource : DataSource {
             .addOnCompleteListener { task->
                 if (task.isSuccessful){
                     continuation.resume(Result.Success(true))
+                } else {
+                    continuation.resume(Result.Fail(task.exception.toString()))
                 }
             }
 
@@ -704,6 +684,8 @@ object RemoteDataSource : DataSource {
             .addOnCompleteListener {
                 if (it.isSuccessful){
                     continuation.resume(Result.Success(true))
+                } else {
+                    continuation.resume(Result.Fail(it.exception.toString()))
                 }
             }
     }
@@ -720,6 +702,8 @@ object RemoteDataSource : DataSource {
                 .addOnCompleteListener {
                     if (it.isSuccessful){
                         continuation.resume(Result.Success(true))
+                    } else {
+                        continuation.resume(Result.Fail(it.exception.toString()))
                     }
                 }
 
@@ -728,6 +712,8 @@ object RemoteDataSource : DataSource {
                 .addOnCompleteListener {
                     if (it.isSuccessful){
                         continuation.resume(Result.Success(true))
+                    } else {
+                        continuation.resume(Result.Fail(it.exception.toString()))
                     }
                 }
         }
@@ -763,6 +749,8 @@ object RemoteDataSource : DataSource {
             .addOnCompleteListener {
                 if (it.isSuccessful){
                     continuation.resume(Result.Success(true))
+                } else {
+                    continuation.resume(Result.Fail(it.exception.toString()))
                 }
             }
     }
@@ -779,13 +767,11 @@ object RemoteDataSource : DataSource {
                     compressBitmap(bitmap, 40) } else {
                         compressBitmap(bitmap, 70)
                     }
-
-
                     fileReference.putBytes(compressedBitmap)
                         .continueWithTask { task ->
                             if (!task.isSuccessful) {
                                 task.exception?.let {
-                                    throw it
+                                    continuation.resume(Result.Error(it))
                                 }
                             }
                             fileReference.downloadUrl
@@ -793,46 +779,22 @@ object RemoteDataSource : DataSource {
                         .addOnCompleteListener { task ->
                             if (task.isSuccessful) {
                                 continuation.resume(Result.Success(task.result.toString()))
+                            } else {
+                                task.exception?.let { Result.Error(it) }?.let {
+                                    continuation.resume(
+                                        it
+                                    )
+                                }
                             }
                         }
 
         }
 
-    private fun getBitmap(uri: Uri) : Bitmap?{
-        val bitmap = MediaStore.Images.Media.getBitmap(ManagerApplication.instance.contentResolver, uri)
-        var input = ManagerApplication.instance.contentResolver.openInputStream(uri)
-        val onlyBoundsOption = BitmapFactory.Options()
-        onlyBoundsOption.inJustDecodeBounds = true
-        onlyBoundsOption.inPreferredConfig = Bitmap.Config.ARGB_8888
-        BitmapFactory.decodeStream(input, null, onlyBoundsOption)
-        input?.close()
-        val originalWidth = onlyBoundsOption.outWidth
-        val originalHeight = onlyBoundsOption.outHeight
-        val height = 500f
-        val width = 500f
-        var scale = 1
-        if ((originalWidth == -1) || (originalHeight == -1)){
-            return null
-        }
-        if (originalWidth > originalHeight && originalWidth > width){
-            scale = (originalWidth/width).toInt()
-        } else if (originalWidth < originalHeight && originalHeight > height){
-            scale = (originalHeight/height).toInt()
-        }
-        val bitmapOption = BitmapFactory.Options()
-        bitmapOption.inSampleSize = scale
-        bitmapOption.inPreferredConfig = Bitmap.Config.ARGB_8888
-        input = ManagerApplication.instance.contentResolver.openInputStream(uri)
-        BitmapFactory.decodeStream(input, null, bitmapOption)
-        input?.close()
-        return bitmap
 
-    }
     private fun compressBitmap(bitmap: Bitmap, quality:Int): ByteArray{
         val stream = ByteArrayOutputStream()
         bitmap.compress(Bitmap.CompressFormat.WEBP, quality, stream)
-        val byteArray = stream.toByteArray()
-        return byteArray
+        return stream.toByteArray()
     }
 
 
@@ -850,6 +812,8 @@ object RemoteDataSource : DataSource {
             .addOnCompleteListener {
                 if (it.isSuccessful){
                     continuation.resume(Result.Success(true))
+                } else {
+                    continuation.resume(Result.Fail(it.exception.toString()))
                 }
             }
 

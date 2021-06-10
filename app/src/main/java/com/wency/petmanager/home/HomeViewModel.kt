@@ -131,13 +131,13 @@ class HomeViewModel(
 
 
 //  tag query
-    private val _tagQueryList = MutableLiveData<MutableList<String>>()
-    val tagQueryList : LiveData<MutableList<String>>
+    private val _tagQueryList = MutableLiveData<MutableSet<String>>()
+    val tagQueryList : LiveData<MutableSet<String>>
         get() = _tagQueryList
 
-    private val _tagExtend = MutableLiveData<Boolean>(false)
-    val tagExtend: LiveData<Boolean>
-        get() = _tagExtend
+    val _tagExpand = MutableLiveData<Boolean>(false)
+    val tagExpand: LiveData<Boolean>
+        get() = _tagExpand
 
     //  about floating button
     fun initButtonStatus() {
@@ -210,13 +210,13 @@ class HomeViewModel(
                 tagList.addAll(event.tagList)
             }
         }
-        if (userPetList != null) {
-            for (pet in userPetList) {
-                tagList.addAll(pet.tagList)
-            }
-        }
+//        if (userPetList != null) {
+//            for (pet in userPetList) {
+//                tagList.addAll(pet.tagList)
+//            }
+//        }
         _tagList.value = tagList.toList()
-        _tagQueryList.value = tagList.toMutableList()
+        _tagQueryList.value = tagList.toMutableSet()
     }
 
     fun getMissionToday(missionList: List<MissionGroup>){
@@ -469,12 +469,13 @@ class HomeViewModel(
     }
 
     fun queryByPet(petPosition: Int, isQuery: Boolean) {
+
         if (isQuery) {
             petList.value?.let { totalPetList ->
                 totalPetList[petPosition]?.let { pet ->
 
+
                     if (pet.eventList.isNullOrEmpty()){
-                        _eventForTimeline.value?.clear()
                         _eventForTimeline.value = mutableListOf()
                     } else {
                         _eventForTimeline.value = petEventList?.filter {
@@ -488,7 +489,6 @@ class HomeViewModel(
                             it.petId == pet.id
                         })
                     }
-
 
                 }
 
@@ -507,28 +507,30 @@ class HomeViewModel(
         }
     }
 
-    fun clickQuery(tag: String){
+    fun clickQuery(tag: String, add: Boolean){
 
-        if (tagQueryList.value.isNullOrEmpty()){
-            _tagQueryList.value = mutableListOf(tag)
+        if (add){
+            _tagQueryList.value?.add(tag)
+            _tagQueryList.value = _tagQueryList.value
         } else {
-            tagQueryList.value?.let {
-                if (it.contains(tag)){
-                    _tagQueryList.value?.remove(tag)
-                } else {
-                    _tagQueryList.value?.add(tag)
-                }
-            }
+            _tagQueryList.value?.remove(tag)
+            _tagQueryList.value = _tagQueryList.value
         }
 
     }
 
     fun queryByTag() {
+
         resetTimeline()
-        if (tagQueryList.value != tagList.value){
+        if (tagQueryList.value?.size != tagList.value?.size){
             val list = mutableSetOf<Event>()
             if (tagQueryList.value.isNullOrEmpty()) {
-                _eventForTimeline.value = petEventList?.toMutableList()
+
+                    evenForTimeline.value?.let { eventList ->
+                        list.addAll(eventList.filter { event ->
+                            event.tagList.isEmpty()
+                        })
+                    }
             } else {
                 tagQueryList.value?.forEach {
                     evenForTimeline.value?.let { eventList ->
@@ -537,8 +539,16 @@ class HomeViewModel(
                         })
                     }
                 }
-                _eventForTimeline.value = list.toMutableList()
+
             }
+            _eventForTimeline.value = list.toMutableList()
+        } else {
+            if (petQueryPosition.value == null) {
+                _eventForTimeline.value = petEventList?.toMutableList()
+            } else {
+                queryByPet(petQueryPosition.value!!, true)
+            }
+
         }
     }
 
@@ -550,37 +560,18 @@ class HomeViewModel(
         }
     }
 
-    fun extendTagQuery(){
-        _tagExtend.value = _tagExtend.value == false
+
+
+    fun clearTagQuery(selectedAll: Boolean){
+        if (selectedAll){
+            _tagQueryList.value = tagList.value?.toMutableSet()
+        } else {
+            _tagQueryList.value = mutableSetOf()
+        }
     }
 
-
-    private fun getAllFriendUsers(idList: List<String>) {
-        val resultList = mutableListOf<UserInfo>()
-
-        coroutineScope.launch {
-            for (id in idList) {
-                when (val result = repository.getUserProfile(id)) {
-                    is Result.Success -> {
-                        resultList.add(result.data)
-                        if (resultList.size == idList.size) {
-                            friendList = resultList
-                        }
-                    }
-                    is Result.Error -> {
-                        _error.value = result.exception.toString()
-                    }
-                    is Result.Fail -> {
-                        _error.value = result.error
-                    }
-                    else -> {
-                        _error.value =
-                            ManagerApplication.instance.getString(R.string.error_message)
-
-                    }
-                }
-            }
-        }
+    fun closeTagQuery(){
+        _tagExpand.value = false
     }
 
 

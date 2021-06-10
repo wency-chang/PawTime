@@ -26,6 +26,7 @@ import com.wency.petmanager.friend.FriendChooseAdapter
 import com.wency.petmanager.friend.InviteListAdapter
 import com.wency.petmanager.friend.FriendGridListAdapter
 import com.wency.petmanager.friend.FriendPetListAdapter
+import com.wency.petmanager.home.adapter.TagQueryAdapter
 import com.wency.petmanager.network.LoadApiStatus
 import com.wency.petmanager.profile.CoverPhotoAdapter
 
@@ -166,6 +167,7 @@ fun tagOptionBindRecyclerView(recyclerView: RecyclerView, data: List<String>?) {
                 is DetailTagListAdapter -> submitList(it)
                 is DetailMemoAdapter -> submitList(it)
                 is com.wency.petmanager.detail.PhotoListAdapter -> submitList(it)
+                is TagQueryAdapter -> submitList(it)
             }
         }
     }

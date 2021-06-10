@@ -110,9 +110,9 @@ dependencies {
     implementation "com.airbnb.android:lottie:3.7.0"
 
     implementation "androidx.work:work-runtime-ktx:2.2.0"
-
-    implementation 'com.google.firebase:firebase-crashlytics'
-    implementation 'com.google.firebase:firebase-analytics'
+//
+//    implementation 'com.google.firebase:firebase-crashlytics'
+//    implementation 'com.google.firebase:firebase-analytics'
 
 
 

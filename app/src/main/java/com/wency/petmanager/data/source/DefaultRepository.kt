@@ -82,11 +82,6 @@ class DefaultRepository(private val remoteDataSource: DataSource
         return remoteDataSource.createPet(pet)
     }
 
-
-    override suspend fun addOwner(petID: String, ownerID: String): Result<Boolean> {
-        return remoteDataSource.addOwner(petID, ownerID)
-    }
-
     override suspend fun checkInviteList(searchId: String, ownerId: String): Result<Boolean> {
         return remoteDataSource.checkInviteList(searchId, ownerId)
     }

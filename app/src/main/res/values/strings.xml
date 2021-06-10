@@ -12,8 +12,8 @@
         <item>Every Two Months</item>
         <item>Every Year</item>
     </string-array>
-    <string name="API_KEY">AIzaSyAO06rZuucB71fOxSuwBvwpUHEnIov0lxQ</string>
-    <string name="MAP_KEY">AIzaSyDwgBoFGWVuEJWggUc-FcUnzP-i_-PnBf8</string>
+    <string name="API_KEY">AIzaSyDgQ3B62BF3BDH50SyMMG9cLr7MP7DmGZk</string>
+    <string name="MAP_KEY">AIzaSyDgQ3B62BF3BDH50SyMMG9cLr7MP7DmGZk</string>
     <string name="USER_PHOTO_HOLDER">https://pbs.twimg.com/profile_images/1128713017569316865/ITPoN3di_400x400.jpg</string>
     <string name="PRIVACY_POLICY"><h1>Privacy Policy</h1><p>Last updated: June 08, 2021</p>
 <p>This Privacy Policy describes Our policies and procedures on the collection, use and disclosure of Your information when You use the Service and tells You about Your privacy rights and how the law protects You.</p>

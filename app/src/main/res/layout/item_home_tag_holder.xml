@@ -20,6 +20,7 @@
         <com.google.android.material.chip.Chip
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:id="@+id/homeTagQueryChip"
             style="@style/HomeQueryTagChipStyle"
             app:chipCornerRadius="15dp"
             android:paddingVertical="0dp"

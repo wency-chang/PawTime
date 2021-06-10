@@ -46,6 +46,10 @@ class MainActivity : AppCompatActivity() {
         setUpDrawer()
         hideSystemUI()
 
+        window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+        val window = window
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+
 
         val navController = findNavController(R.id.navHostNavigation)
 

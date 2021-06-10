@@ -80,11 +80,6 @@ class ManagerLocalDataSource(val context: Context) : com.wency.petmanager.data.s
         TODO("Not yet implemented")
     }
 
-
-    override suspend fun addOwner(petID: String, ownerID: String): Result<Boolean> {
-        TODO("Not yet implemented")
-    }
-
     override suspend fun checkInviteList(searchId: String, ownerId: String): Result<Boolean> {
         TODO("Not yet implemented")
     }

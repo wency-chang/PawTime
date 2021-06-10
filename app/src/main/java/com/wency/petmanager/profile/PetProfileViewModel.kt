@@ -99,8 +99,6 @@ class PetProfileViewModel(val firebaseRepository: Repository, val petProfile: Pe
             }
 
             if (it){
-                Log.d("updateData", "new $petDataBeUpdate old $petProfile")
-
                 if (petDataBeUpdate != petProfile || petDataBeUpdate.coverPhotos != petProfile.coverPhotos){
                     _loading.value = true
                     updateData()
@@ -124,10 +122,12 @@ class PetProfileViewModel(val firebaseRepository: Repository, val petProfile: Pe
                         _doneUpdate.value = true
                     }
                     is Result.Fail -> {
-
+                        _loading.value = false
+                        _doneUpdate.value = true
                     }
                     is Result.Error -> {
-
+                        _loading.value = false
+                        _doneUpdate.value = true
                     }
                 }
             }

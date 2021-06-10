@@ -43,8 +43,6 @@ interface DataSource {
 
     suspend fun createPet (pet: Pet) : Result<String>
 
-    suspend fun addOwner (petID: String, ownerID: String) : Result<Boolean>
-
     suspend fun checkInviteList (searchId: String, ownerId: String) : Result<Boolean>
 
     suspend fun acceptFriend (userId: String, friendId: String) : Result<Boolean>

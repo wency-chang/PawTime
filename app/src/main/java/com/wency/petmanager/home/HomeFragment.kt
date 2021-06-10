@@ -1,5 +1,6 @@
 package com.wency.petmanager.home
 
+import android.icu.lang.UCharacter
 import android.os.Bundle
 import android.util.Log
 import android.view.*
@@ -11,7 +12,9 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.OrientationHelper
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.wency.petmanager.MainViewModel
 import com.wency.petmanager.NavHostDirections
 import com.wency.petmanager.R
@@ -19,6 +22,7 @@ import com.wency.petmanager.create.GetImageFromGallery
 import com.wency.petmanager.databinding.FragmentHomeBinding
 import com.wency.petmanager.ext.getVmFactory
 import com.wency.petmanager.home.adapter.PetHeaderAdapter
+import com.wency.petmanager.home.adapter.TagQueryAdapter
 import com.wency.petmanager.home.adapter.TimeLineMainAdapter
 
 class HomeFragment : Fragment() {
@@ -107,6 +111,7 @@ class HomeFragment : Fragment() {
                                 viewModel.clickCreateButton()
                             }
                         }
+                        viewModel.closeTagQuery()
 
                     }
                     RecyclerView.SCROLL_STATE_IDLE -> {
@@ -116,6 +121,15 @@ class HomeFragment : Fragment() {
             }
         }
         )
+
+        val tagQueryRecycler = binding.tagQueryRecycler
+
+        tagQueryRecycler.adapter = TagQueryAdapter(viewModel)
+        viewModel.tagList.observe(viewLifecycleOwner, Observer {
+            val layoutManager = StaggeredGridLayoutManager((it.size/15+1)*5, OrientationHelper.HORIZONTAL)
+
+            binding.tagQueryRecycler.layoutManager = layoutManager
+        })
 
 
 
@@ -134,7 +148,9 @@ class HomeFragment : Fragment() {
         })
 
         viewModel.tagQueryList.observe(viewLifecycleOwner, Observer {
+            Log.d("Debug", "tagQueryList observe $it")
             viewModel.queryByTag()
+            tagQueryRecycler.adapter?.notifyDataSetChanged()
         })
 
         viewModel.navigateToCreateDestination.observe(viewLifecycleOwner, Observer {

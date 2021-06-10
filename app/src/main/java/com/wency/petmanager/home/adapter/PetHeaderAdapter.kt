@@ -35,6 +35,8 @@ class PetHeaderAdapter(val viewModel: HomeViewModel, private val homeFragment: H
             }
             holder.petHeader.setOnClickListener {
                 viewModel.queryByPet(position, viewModel.petQueryPosition.value != position)
+                viewModel.closeTagQuery()
+//                viewModel.clearTagQuery(true)
                 notifyDataSetChanged()
             }
             if (position == viewModel.petQueryPosition.value){

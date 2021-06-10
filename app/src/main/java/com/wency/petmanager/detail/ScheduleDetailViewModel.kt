@@ -323,6 +323,7 @@ class ScheduleDetailViewModel(val repository: Repository, val eventDetail: Event
 
 
     private fun checkComplete(completeCount: Int) {
+        Log.d("UpdateDetail","checkComplete: $completeCount")
         if (completeCount == 4) {
             _loadingStatus.value = LoadStatus.DoneUpdate
         }
@@ -427,6 +428,7 @@ class ScheduleDetailViewModel(val repository: Repository, val eventDetail: Event
                             if (currentDetailData.notification == null) {
                                 completeCount += 1
                                 checkComplete(completeCount)
+                                Log.d("UpdateDetail","delete Notification Success")
                             } else {
                                 when (repository.updateEventNotification(
                                     user,
@@ -435,6 +437,7 @@ class ScheduleDetailViewModel(val repository: Repository, val eventDetail: Event
                                     is Result.Success -> {
                                         userCount += 1
                                         if (userCount == it.size) {
+                                            Log.d("UpdateDetail","update Notification Success")
                                             completeCount += 1
                                             checkComplete(completeCount)
                                         }
@@ -455,6 +458,7 @@ class ScheduleDetailViewModel(val repository: Repository, val eventDetail: Event
 
                 }
             }
+            checkComplete(completeCount)
 
 
         }
