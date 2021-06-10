@@ -11,16 +11,15 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.wency.petmanager.MainActivity
 import com.wency.petmanager.MainViewModel
 import com.wency.petmanager.NavHostDirections
 import com.wency.petmanager.R
 import com.wency.petmanager.create.GetImageFromGallery
 import com.wency.petmanager.databinding.FragmentHomeBinding
 import com.wency.petmanager.ext.getVmFactory
-import kotlinx.android.synthetic.main.fragment_home.*
+import com.wency.petmanager.home.adapter.PetHeaderAdapter
+import com.wency.petmanager.home.adapter.TimeLineMainAdapter
 
 class HomeFragment : Fragment() {
 
@@ -48,7 +47,6 @@ class HomeFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        Log.d("debug", "HomeFragment")
 
         binding = FragmentHomeBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = viewLifecycleOwner
@@ -57,14 +55,16 @@ class HomeFragment : Fragment() {
         binding.todayFloatingActionButton.hide()
         viewModel.friendList = mainViewModel.friendList
 
-
         mainViewModel.missionListToday.observe(requireActivity(), Observer {
             if (it.isNotEmpty()) {
 
-                Log.d("mission list observed", "home fragment $it")
-
                 viewModel.createMissionTimeItem(it)
-                viewModel._missionListToday.value = it
+                viewModel.getMissionToday(it)
+            }
+        })
+        viewModel.evenForTimeline.observe(viewLifecycleOwner, Observer { eventForTimeline ->
+            eventForTimeline?.let {
+                viewModel.createTimelineItem(it)
             }
         })
 
@@ -77,8 +77,6 @@ class HomeFragment : Fragment() {
         viewModel.initButtonStatus()
         val timelineRecycler = binding.timelineRecycler
         val timelineAdapter = TimeLineMainAdapter(viewModel, mainViewModel)
-
-
 
         binding.petOptionRecycler.adapter = PetHeaderAdapter(viewModel, this)
         timelineRecycler.adapter = timelineAdapter
@@ -135,6 +133,9 @@ class HomeFragment : Fragment() {
             }
         })
 
+        viewModel.tagQueryList.observe(viewLifecycleOwner, Observer {
+            viewModel.queryByTag()
+        })
 
         viewModel.navigateToCreateDestination.observe(viewLifecycleOwner, Observer {
             it?.let {
@@ -199,11 +200,7 @@ class HomeFragment : Fragment() {
 
         })
 
-        viewModel.evenForTimeline.observe(viewLifecycleOwner, Observer { eventForTimeline ->
-            eventForTimeline?.let {
-                viewModel.createTimelineItem(it)
-            }
-        })
+
 
         viewModel.missionListToday.observe(viewLifecycleOwner, Observer {
             if (it.isNotEmpty()) {

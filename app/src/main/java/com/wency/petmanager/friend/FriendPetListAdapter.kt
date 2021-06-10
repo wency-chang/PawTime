@@ -6,8 +6,10 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.wency.petmanager.data.Pet
 import com.wency.petmanager.databinding.SubItemFriendPetListBinding
+import com.wency.petmanager.home.adapter.PetHeaderAdapter
 
-class FriendPetListAdapter: ListAdapter<Pet, FriendPetListAdapter.PetListViewHolder >(com.wency.petmanager.home.PetHeaderAdapter.DiffCallback) {
+class FriendPetListAdapter: ListAdapter<Pet, FriendPetListAdapter.PetListViewHolder >(
+    PetHeaderAdapter.DiffCallback) {
 
 
     class PetListViewHolder(val binding: SubItemFriendPetListBinding): RecyclerView.ViewHolder(binding.root){

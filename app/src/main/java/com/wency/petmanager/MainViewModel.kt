@@ -423,6 +423,7 @@ class MainViewModel(private val firebaseRepository: Repository) : ViewModel() {
         coroutineScope.launch {
             when(firebaseRepository.sinOut()){
                 is Result.Success -> {
+                    Log.d("LOGOUT","firebase logOut success googleSignInClient = $googleSignInClient")
                     googleSignInClient?.signOut()
                     clearWork()
                 }
@@ -498,7 +499,7 @@ class MainViewModel(private val firebaseRepository: Repository) : ViewModel() {
     }
 
     companion object{
-        const val USER_PROFILE_PHOTO = "USER/PROFILE"
+        const val USER_PROFILE_PHOTO = "USER/PROFILE_Header"
     }
 
     private fun clearWork(){
@@ -506,11 +507,14 @@ class MainViewModel(private val firebaseRepository: Repository) : ViewModel() {
 
         WorkManager.getInstance(ManagerApplication.instance).cancelAllWork()
 
+
         coroutineScope.launch {
             UserManager.userID?.let {
+
                 when (val result = firebaseRepository.getAllNotificationAlreadyUpdated(it)){
                     is Result.Success -> {
                         if (result.data.isEmpty()){
+
                             clearWorkSuccess()
                         } else {
                             var count = 0
@@ -524,6 +528,7 @@ class MainViewModel(private val firebaseRepository: Repository) : ViewModel() {
                                         PendingIntent.FLAG_UPDATE_CURRENT
                                     )
                                     alarmManager.cancel(pendingIntent)
+
                                     count += 1
                                     if (count == result.data.size){
                                         clearWorkSuccess()

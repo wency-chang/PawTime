@@ -18,10 +18,9 @@
             android:id="@+id/imageView3"
             android:layout_width="240dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="430dp"
+            app:layout_constraintBottom_toTopOf="@id/getStartButton"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_paw_time_login_title" />
 
         <ImageView
@@ -88,7 +87,7 @@
         <ImageView
             android:id="@+id/picture"
             android:layout_width="300dp"
-            android:layout_height="wrap_content"
+            android:layout_height="300dp"
             android:layout_marginTop="90dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

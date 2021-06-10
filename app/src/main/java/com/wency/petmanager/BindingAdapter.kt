@@ -3,7 +3,6 @@ package com.wency.petmanager
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
-import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import androidx.core.net.toUri
@@ -17,8 +16,8 @@ import com.wency.petmanager.create.pet.CategoryAdapter
 import com.wency.petmanager.data.Pet
 import com.wency.petmanager.data.PetSelector
 import com.wency.petmanager.data.TimelineItem
-import com.wency.petmanager.home.PetHeaderAdapter
-import com.wency.petmanager.home.TimeLineMainAdapter
+import com.wency.petmanager.home.adapter.PetHeaderAdapter
+import com.wency.petmanager.home.adapter.TimeLineMainAdapter
 import com.wency.petmanager.data.UserInfo
 import com.wency.petmanager.detail.DetailMemoAdapter
 import com.wency.petmanager.detail.DetailTagListAdapter

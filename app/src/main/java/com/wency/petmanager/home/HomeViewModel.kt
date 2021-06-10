@@ -19,7 +19,7 @@ class HomeViewModel(
     private val repository: Repository,
     val userInfoProfile: UserInfo?,
     val userPetList: Array<Pet>?,
-    val petEventList: Array<Event>?
+    private val petEventList: Array<Event>?
 ) :
     ViewModel() {
     companion object {
@@ -42,7 +42,7 @@ class HomeViewModel(
     val navigateToCreateDestination: LiveData<Int?>
         get() = _navigateToCreateDestination
 
-    private val _navigateToDetailDestination = MutableLiveData<Event>(null)
+    private val _navigateToDetailDestination = MutableLiveData<Event?>(null)
 
     val navigateToDetailDestination: LiveData<Event?>
         get() = _navigateToDetailDestination
@@ -56,9 +56,9 @@ class HomeViewModel(
     val isCreateButtonVisible: LiveData<Boolean>
         get() = _isCreateButtonVisible
 
-    private val _navigateToPetProfileDestination = MutableLiveData<Pet>(null)
+    private val _navigateToPetProfileDestination = MutableLiveData<Pet?>(null)
 
-    val navigateToPetProfileDestination: LiveData<Pet>
+    val navigateToPetProfileDestination: LiveData<Pet?>
         get() = _navigateToPetProfileDestination
 
 
@@ -71,12 +71,10 @@ class HomeViewModel(
     val petList: LiveData<MutableList<Pet?>>
         get() = _petList
 
-    var realPetList = mutableListOf<Pet>()
 
 //    tag List for Query
 
     private val _tagList = MutableLiveData<List<String>>()
-
     val tagList: LiveData<List<String>>
         get() = _tagList
 
@@ -98,7 +96,7 @@ class HomeViewModel(
     val refreshStatus: LiveData<Boolean>
         get() = _refreshStatus
 
-    private var _todayMissionListForTimeline = MutableLiveData<MutableList<MissionToday>>()
+    private val _todayMissionListForTimeline = MutableLiveData<MutableList<MissionToday>>()
 
     val todayMissionListForTimeline: LiveData<MutableList<MissionToday>>
         get() = _todayMissionListForTimeline
@@ -113,30 +111,33 @@ class HomeViewModel(
         get() = _timeline
 
 
-    //  Store the list for sorting before timeline data
-    private var _allEventList = mutableListOf<Event>()
-
-    private val allEventList: List<Event>
-        get() = _allEventList
-
-    private var _eventForTimeline = MutableLiveData<MutableList<Event>>()
+    private val _eventForTimeline = MutableLiveData<MutableList<Event>>()
 
     val evenForTimeline: LiveData<MutableList<Event>>
         get() = _eventForTimeline
 
     var onStatusQuery = false
 
-    private var _scrollToToday = MutableLiveData<Int>(0)
+    private val _scrollToToday = MutableLiveData<Int>(0)
 
     val scrollToToday: LiveData<Int>
         get() = _scrollToToday
 
     var friendList = mutableListOf<UserInfo>()
 
-    var _missionListToday = MutableLiveData<List<MissionGroup>>()
+    private val _missionListToday = MutableLiveData<List<MissionGroup>>()
     val missionListToday: LiveData<List<MissionGroup>>
         get() = _missionListToday
 
+
+//  tag query
+    private val _tagQueryList = MutableLiveData<MutableList<String>>()
+    val tagQueryList : LiveData<MutableList<String>>
+        get() = _tagQueryList
+
+    private val _tagExtend = MutableLiveData<Boolean>(false)
+    val tagExtend: LiveData<Boolean>
+        get() = _tagExtend
 
     //  about floating button
     fun initButtonStatus() {
@@ -193,7 +194,6 @@ class HomeViewModel(
 
     fun refresh() {
         _refreshStatus.value = true
-//        getPetData()
     }
 
     fun getPetHeaderList(petList: List<Pet>) {
@@ -202,12 +202,6 @@ class HomeViewModel(
             _petList.value?.add(null)
         }
     }
-
-//    private fun getTodayMissionLiveData(petList: MutableList<Pet>) {
-//        _missionListToday = repository.getTodayMissionLiveData(petList)
-//        _missionListToday.value = _missionListToday.value
-//        Log.d("missionList Today LiveData","${_missionListToday.value}")
-//    }
 
     private fun getTagList() {
         val tagList = mutableSetOf<String>()
@@ -222,6 +216,11 @@ class HomeViewModel(
             }
         }
         _tagList.value = tagList.toList()
+        _tagQueryList.value = tagList.toMutableList()
+    }
+
+    fun getMissionToday(missionList: List<MissionGroup>){
+        _missionListToday.value = missionList
     }
 
 
@@ -325,17 +324,8 @@ class HomeViewModel(
         }
     }
 
-
-    private fun getOrderedList(eventList: MutableList<Event>): MutableList<Event> {
-        if (!eventList.isNullOrEmpty()) {
-            eventList.sortWith(compareBy<Event> { it.date }.thenBy { it.time })
-        }
-//        store event list for certain petList
-        _allEventList = eventList
-        return eventList
-    }
-
     fun createTimelineItem(eventList: MutableList<Event>) {
+        Log.d("Bugg","eventList: $eventList")
 
 //        _scrollToToday.value = 0
         _timeline.value = mutableListOf()
@@ -350,6 +340,7 @@ class HomeViewModel(
                 it.date
             }
             do {
+                Log.d("Bugg","start timelineItem")
 
                 if (today.before(eventList[count].date.toDate()) && !isTodayAdd) {
                     listTimelineItem.add(
@@ -483,7 +474,6 @@ class HomeViewModel(
                 totalPetList[petPosition]?.let { pet ->
 
                     if (pet.eventList.isNullOrEmpty()){
-                        Log.d("PetEventList","isNullOrEmpty")
                         _eventForTimeline.value?.clear()
                         _eventForTimeline.value = mutableListOf()
                     } else {
@@ -504,16 +494,11 @@ class HomeViewModel(
 
                 _petQueryPosition.value = petPosition
             }
-//            petList.value?.let {
-//                it[petPosition]?.let {
-//                    getEvents(mutableListOf(it))
-//                }
-//            }
+
         } else {
 
             _petQueryPosition.value = null
             _eventForTimeline.value = petEventList?.toMutableList()
-            _eventForTimeline.value = _eventForTimeline.value
             onStatusQuery = false
 
             missionListToday.value?.let {
@@ -522,29 +507,52 @@ class HomeViewModel(
         }
     }
 
-    fun queryByTag() {
-        val list = mutableSetOf<Event>()
-        evenForTimeline.value?.let {
+    fun clickQuery(tag: String){
 
-
-        }
-
-    }
-
-    private fun getTag(list: MutableList<Event>): List<String> {
-        val tag = mutableSetOf<String>()
-        for (event in list) {
-            event.tagList?.let {
-                Log.d("debug tag list", "event.taglist = $it")
-                tag.addAll(it)
+        if (tagQueryList.value.isNullOrEmpty()){
+            _tagQueryList.value = mutableListOf(tag)
+        } else {
+            tagQueryList.value?.let {
+                if (it.contains(tag)){
+                    _tagQueryList.value?.remove(tag)
+                } else {
+                    _tagQueryList.value?.add(tag)
+                }
             }
         }
-        for (pet in realPetList) {
-            tag.addAll(pet.tagList)
-        }
-        return tag.toList()
+
     }
 
+    fun queryByTag() {
+        resetTimeline()
+        if (tagQueryList.value != tagList.value){
+            val list = mutableSetOf<Event>()
+            if (tagQueryList.value.isNullOrEmpty()) {
+                _eventForTimeline.value = petEventList?.toMutableList()
+            } else {
+                tagQueryList.value?.forEach {
+                    evenForTimeline.value?.let { eventList ->
+                        list.addAll(eventList.filter { event ->
+                            event.tagList.contains(it)
+                        })
+                    }
+                }
+                _eventForTimeline.value = list.toMutableList()
+            }
+        }
+    }
+
+    private fun resetTimeline(){
+        if (petQueryPosition.value == null){
+            _eventForTimeline.value = petEventList?.toMutableList()
+        } else {
+            queryByPet(petQueryPosition.value!!, true)
+        }
+    }
+
+    fun extendTagQuery(){
+        _tagExtend.value = _tagExtend.value == false
+    }
 
 
     private fun getAllFriendUsers(idList: List<String>) {
@@ -575,201 +583,11 @@ class HomeViewModel(
         }
     }
 
-    private fun getPetData() {
-        val petDataList = mutableListOf<Pet?>()
-
-        userInfoProfile!!.petList?.let { petList ->
-            Log.d("debug pet", "start petList $petList petDataList $petDataList")
-            coroutineScope.async {
-                for (petId in petList) {
-                    Log.d("debug pet get Pet data $petId", "start")
-
-                    when (val result = repository.getPetData(petId)) {
-                        is Result.Success -> {
-                            _error.value = null
-                            _status.value = LoadApiStatus.DONE
-                            petDataList.add(result.data)
-                            Log.d("debug pet", "get pet data $petDataList")
-
-                            if (petDataList.size == petList.size) {
-                                realPetList.clear()
-                                for (pet in petDataList) {
-                                    pet?.let {
-                                        realPetList.add(it)
-                                    }
-                                }
-                                petDataList.add(null)
-                                _petList.value = petDataList
-                            }
-                        }
-                        is Result.Error -> {
-                            _error.value = result.exception.toString()
-                            _status.value = LoadApiStatus.ERROR
-                            null
-                        }
-                        is Result.Fail -> {
-                            _error.value = result.error
-                            _status.value = LoadApiStatus.ERROR
-                            null
-                        }
-                        else -> {
-                            _error.value =
-                                ManagerApplication.instance.getString(R.string.error_message)
-                            _status.value = LoadApiStatus.ERROR
-                            null
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    //    get event detail from pet's event id list
-
-    fun getEvents(petList: MutableList<Pet?>) {
-        coroutineScope.async {
-//            get event list by pet in petList
-            val eventIdList = getAllEvents(petList)
-
-            Log.d("debug", "eventIdList: $eventIdList")
 
 
-            if (!eventIdList.isNullOrEmpty()) {
-                getEventDetail(eventIdList)
-            }
-//            _eventForTimeline.value = getOrderedList(eventDetailList)
-//            _tagList.value = getTag(eventDetailList)
 
-        }
-    }
-    //    sort event id list by pet event list
 
-    private fun getAllEvents(petList: MutableList<Pet?>): MutableList<String> {
-        val eventIDList = mutableSetOf<String>()
-        petList?.let { petList ->
-            for (pet in petList) {
-                pet?.let {
-                    eventIDList.addAll(it.eventList)
-                }
-            }
-        }
-        return eventIDList.toMutableList()
-    }
 
-//    fun getTodayMission(petList: MutableList<Pet?>) {
-//        val todayMissionList = mutableListOf<MissionToday>()
-//        _missionList.clear()
-//        coroutineScope.async {
-//            petList?.let {
-//                for (pet in it) {
-//                    pet?.let {
-//                        val mission = when (val result = repository.getTodayMission(pet.id)) {
-//                            is Result.Success -> {
-//                                _error.value = null
-//                                _status.value = LoadApiStatus.DONE
-//                                result.data
-//                            }
-//                            is Result.Error -> {
-//                                _error.value = result.exception.toString()
-//                                _status.value = LoadApiStatus.ERROR
-//                                null
-//                            }
-//                            is Result.Fail -> {
-//                                _error.value = result.error
-//                                _status.value = LoadApiStatus.ERROR
-//                                null
-//                            }
-//                            else -> {
-//                                _error.value =
-//                                    ManagerApplication.instance.getString(R.string.error_message)
-//                                _status.value = LoadApiStatus.ERROR
-//                                null
-//                            }
-//                        }
-//                        mission?.let {
-//                            for (item in mission) {
-//                                if (item.recordDate == Timestamp(Today.dateNTimeFormat.parse("${Today.todayString} 08:00"))) {
-//                                    todayMissionList.add(
-//                                        MissionToday(
-//                                            item.missionId,
-//                                            item.title,
-//                                            pet.id,
-//                                            pet.profilePhoto,
-//                                            item.complete,
-//                                            item.completeUserId,
-//                                            item.completeUserName,
-//                                            item.completeUserPhoto
-//                                        )
-//                                    )
-//                                    _missionList.add(item)
-//
-//                                } else {
-//
-//                                    initMission(pet.id, item)
-//                                    todayMissionList.add(
-//                                        MissionToday(
-//                                            item.missionId,
-//                                            item.title,
-//                                            pet.id,
-//                                            pet.profilePhoto,
-//                                            false,
-//                                            "",
-//                                            "",
-//                                            ""
-//                                        )
-//                                    )
-//
-//                                }
-//
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//        Log.d("get today's mission", "$todayMissionList")
-////        _todayMissionListForTimeline = todayMissionList
-//
-//    }
-
-    private fun getEventDetail(eventIdList: MutableList<String>) {
-        val eventDetailList = mutableListOf<Event>()
-        coroutineScope.launch {
-            for (eventID in eventIdList) {
-                when (val result = repository.getEvents(eventID)) {
-                    is Result.Success -> {
-                        _error.value = null
-                        eventDetailList.add(result.data)
-                        if (eventDetailList.size == eventIdList.size) {
-                            Log.d("debug", "done get event detail $eventDetailList")
-                            _eventForTimeline.value = getOrderedList(eventDetailList)
-                            _tagList.value = getTag(eventDetailList)
-                            Log.d("debug", "tagList ${tagList.value}")
-                        }
-                    }
-                    is Result.Error -> {
-                        _error.value = result.exception.toString()
-
-                        null
-                    }
-                    is Result.Fail -> {
-                        _error.value = result.error
-
-                        null
-                    }
-                    else -> {
-                        _error.value =
-                            ManagerApplication.instance.getString(R.string.error_message)
-
-                        null
-                    }
-
-                }
-
-            }
-        }
-
-    }
 
 
 }

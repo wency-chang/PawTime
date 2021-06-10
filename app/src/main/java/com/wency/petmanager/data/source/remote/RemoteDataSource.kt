@@ -602,6 +602,7 @@ object RemoteDataSource : DataSource {
 
     override suspend fun sinOut(): Result<Boolean> {
         FirebaseAuth.getInstance().signOut()
+        Log.d("LOGOUT","firebase logOut ")
         return Result.Success(true)
     }
 
@@ -774,22 +775,27 @@ object RemoteDataSource : DataSource {
                 "$folder/${System.currentTimeMillis()}.${getFileExtension(uri)}"
             )
             val bitmap = MediaStore.Images.Media.getBitmap(ManagerApplication.instance.contentResolver, uri)
-            val compressedBitmap = compressBitmap(bitmap, 65)
+            val compressedBitmap = if (folder.contains("Header")){
+                    compressBitmap(bitmap, 40) } else {
+                        compressBitmap(bitmap, 70)
+                    }
 
-            fileReference.putBytes(compressedBitmap)
-                .continueWithTask { task ->
-                    if (!task.isSuccessful) {
-                        task.exception?.let {
-                            throw it
+
+                    fileReference.putBytes(compressedBitmap)
+                        .continueWithTask { task ->
+                            if (!task.isSuccessful) {
+                                task.exception?.let {
+                                    throw it
+                                }
+                            }
+                            fileReference.downloadUrl
                         }
-                    }
-                    fileReference.downloadUrl
-                }
-                .addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        continuation.resume(Result.Success(task.result.toString()))
-                    }
-                }
+                        .addOnCompleteListener { task ->
+                            if (task.isSuccessful) {
+                                continuation.resume(Result.Success(task.result.toString()))
+                            }
+                        }
+
         }
 
     private fun getBitmap(uri: Uri) : Bitmap?{
@@ -1012,15 +1018,30 @@ object RemoteDataSource : DataSource {
     }
 
     override suspend fun deleteNotification(userId: String, eventId: String): Result<Boolean> = suspendCoroutine{ continuation->
-        FirebaseFirestore.getInstance().collection(PATH_USERS).document(userId)
+        val notification = FirebaseFirestore.getInstance().collection(PATH_USERS).document(userId)
             .collection(USER_NOTIFICATION)
             .document(eventId)
-            .delete()
-            .addOnCompleteListener {
-                if (it.isSuccessful){
-                    continuation.resume(Result.Success(true))
-                }
-            }
+                notification.get()
+                    .addOnCompleteListener {
+                        if (it.isSuccessful){
+                            val eventNotification = (it.result.toObject(EventNotification::class.java))
+                            if (eventNotification == null){
+                                continuation.resume(Result.Success(false))
+                            } else {
+                                if (eventNotification.complete){
+                                    notification.delete()
+                                        .addOnCompleteListener {
+                                            continuation.resume(Result.Success(true))
+                                        }
+                                } else {
+                                    continuation.resume(Result.Success(true))
+                                }
+                            }
+                        } else {
+                            continuation.resume(Result.Fail(it.exception.toString()))
+                        }
+                    }
+
     }
 
     override suspend fun addNotificationDeleteToUser(
@@ -1080,13 +1101,20 @@ object RemoteDataSource : DataSource {
             .addOnCompleteListener {
                 val list = mutableListOf<EventNotification>()
                 if (it.isSuccessful){
-                    var count = 0
 
-                    for (document in it.result){
-                        list.add(document.toObject(EventNotification::class.java))
-                        count += 1
-                        if (count == it.result.size()){
-                            continuation.resume(Result.Success(list))
+                    if (it.result.isEmpty){
+                        continuation.resume(Result.Success(list))
+
+                    } else {
+                        var count = 0
+
+                        for (document in it.result) {
+
+                            list.add(document.toObject(EventNotification::class.java))
+                            count += 1
+                            if (count == it.result.size()) {
+                                continuation.resume(Result.Success(list))
+                            }
                         }
                     }
                 }

@@ -1,20 +1,17 @@
 package com.wency.petmanager.detail
 
-import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.LiveData
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.wency.petmanager.data.Pet
-import com.wency.petmanager.data.UserInfo
 import com.wency.petmanager.databinding.ItemParticipantHeaderBinding
-import com.wency.petmanager.databinding.ItemPetHeaderBinding
 
 class PetHeaderAdapter(private val selectedIdList: MutableList<String>,
                        private val editable: LiveData<Boolean>,
-                       private val onClickListener: OnClickListener): ListAdapter<Pet, PetHeaderAdapter.PetHeaderViewHolder>(com.wency.petmanager.home.PetHeaderAdapter.DiffCallback) {
+                       private val onClickListener: OnClickListener): ListAdapter<Pet, PetHeaderAdapter.PetHeaderViewHolder>(
+    com.wency.petmanager.home.adapter.PetHeaderAdapter.DiffCallback) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PetHeaderViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
         return PetHeaderViewHolder(ItemParticipantHeaderBinding.inflate(

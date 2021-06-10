@@ -99,24 +99,37 @@
                         app:srcCompat="@drawable/ic_baseline_add_photo_alternate_24" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
-                <EditText
-                    android:id="@+id/nameInputText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="60dp"
-                    android:layout_marginTop="8dp"
-                    android:autoSizeMaxTextSize="32dp"
-                    android:backgroundTint="@color/transparent"
-                    android:drawableStart="@drawable/ic_paw_26dp"
-                    android:drawablePadding="20dp"
-                    android:hint="NAME"
-                    android:imeOptions="actionDone"
-                    android:singleLine="true"
-                    android:text="@={viewModel.petName}"
-                    android:textAlignment="center"
-                    android:textColor="@color/blue_light"
-                    android:textColorHint="@color/blue_light2"
-                    android:textSize="32dp" />
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <EditText
+                        android:id="@+id/nameInputText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:autoSizeMaxTextSize="32dp"
+                        android:backgroundTint="@color/transparent"
+                        android:drawableStart="@drawable/ic_paw_26dp"
+                        android:drawablePadding="20dp"
+                        android:hint="NAME"
+                        android:imeOptions="actionDone"
+                        android:singleLine="true"
+                        android:text="@={viewModel.petName}"
+                        android:textAlignment="center"
+                        android:textColor="@color/blue_light"
+                        android:textColorHint="@color/blue_light2"
+                        android:textSize="32dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.4"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+
 
                 <TextView
                     android:id="@+id/birthInputText"
@@ -187,20 +200,28 @@
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
 
-        <com.airbnb.lottie.LottieAnimationView
-            android:id="@+id/loadingAnimation"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:background="@color/white_transparent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            app:lottie_autoPlay="true"
-            app:lottie_loop="true"
-            app:lottie_fileName="upload_to_cloud.json"
-            android:visibility="@{viewModel.statusLoading?View.VISIBLE:View.GONE}"
-            />
+            android:visibility="@{viewModel.statusLoading?View.VISIBLE:View.GONE}">
+
+            <com.airbnb.lottie.LottieAnimationView
+                android:id="@+id/loadingAnimation"
+                android:background="@color/white_transparent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_height="180dp"
+                android:layout_width="wrap_content"
+                app:lottie_autoPlay="true"
+                app:lottie_loop="true"
+                app:lottie_fileName="upload_to_cloud.json"
+                />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

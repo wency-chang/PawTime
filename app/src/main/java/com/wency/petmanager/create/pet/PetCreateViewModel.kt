@@ -17,6 +17,7 @@ import com.wency.petmanager.data.Result
 import com.wency.petmanager.data.UserInfo
 import com.wency.petmanager.data.source.Repository
 import com.wency.petmanager.profile.Today
+import com.wency.petmanager.profile.UserManager
 import kotlinx.coroutines.*
 import java.lang.Exception
 import java.util.*
@@ -104,7 +105,6 @@ class PetCreateViewModel(val repository: Repository, val userInfoProfile: UserIn
 
     fun addPhoto(photoList: MutableList<String>){
         _categoryPhotos.value = photoList
-        Log.d("get photo", "$photoList")
     }
 
 
@@ -113,9 +113,6 @@ class PetCreateViewModel(val repository: Repository, val userInfoProfile: UserIn
 
     fun checkInfoComplete(){
 //        initial pet need header picture and pet name
-
-        Log.d("debug", "check info complete")
-
 
         if (!petName.value.isNullOrEmpty() && !petHeader.value.isNullOrEmpty()){
             _statusLoading.value = true
@@ -143,21 +140,10 @@ class PetCreateViewModel(val repository: Repository, val userInfoProfile: UserIn
             petName.value?.let {
                 val dataForUpdate = Pet(
                     name = it,
-                    profilePhoto = petHeaderLink.value!!
+                    profilePhoto = petHeaderLink.value!!,
+                    users = mutableListOf(UserManager.userID!!)
                 )
 
-//            if (categoryPhotos.value?.size!! > 1){
-//                for (petPhoto in categoryPhotos.value!!){
-//                    if (dataForUpdate.coverPhotos.isNullOrEmpty()){
-//                        dataForUpdate.coverPhotos = mutableListOf(uploadImage(Uri.parse(petPhoto),
-//                            COVER_UPLOAD))
-//                    } else {
-//                        dataForUpdate.coverPhotos!!.add(uploadImage(Uri.parse(petPhoto),
-//                            COVER_UPLOAD))
-//                    }
-//
-//                }
-//            }
                 if (hospitalPlace.locationName.isNotEmpty()){
                     dataForUpdate.hospitalLocationAddress = hospitalPlace.locationAddress
                     dataForUpdate.hospitalLocationLatLng = "${hospitalPlace.locationLatlng?.latitude},${hospitalPlace.locationLatlng?.longitude}"
@@ -194,8 +180,6 @@ class PetCreateViewModel(val repository: Repository, val userInfoProfile: UserIn
 
     private fun uploadImage(listUri: List<String>, folder: String){
 
-        Log.d("debug","upload image")
-
         coroutineScope.launch {
             for (uri in listUri) {
                 when (val result = repository.updateImage(Uri.parse(uri), folder)) {
@@ -205,7 +189,6 @@ class PetCreateViewModel(val repository: Repository, val userInfoProfile: UserIn
 
                                 result.data?.let {
                                     _petHeaderLink.value = it
-
                                     return@launch
                                 }
 
@@ -233,17 +216,15 @@ class PetCreateViewModel(val repository: Repository, val userInfoProfile: UserIn
 
     private fun showError(){
         Toast.makeText(ManagerApplication.instance, "Please Fill Name and Header Photo", Toast.LENGTH_SHORT).show()
-
     }
 
     private fun updateToFirebase(pet: Pet){
-        Log.d("debug","update to firebase")
+
         coroutineScope.launch {
             when (val result = repository.createPet(pet)){
                 is Result.Success -> {
                     Toast.makeText(ManagerApplication.instance, "Update Success", Toast.LENGTH_SHORT).show()
                     updateToUserPetList(result.data)
-                    Log.d("debug","update success")
                 }
                 is Result.Fail -> Toast.makeText(ManagerApplication.instance, "Update Failed, Try Again", Toast.LENGTH_SHORT).show()
                 is Result.Error -> throw Exception(result.exception)
@@ -252,9 +233,9 @@ class PetCreateViewModel(val repository: Repository, val userInfoProfile: UserIn
     }
 
     private fun updateToUserPetList(petId: String){
-        Log.d("debug","update to user")
+
         coroutineScope.launch {
-            when (val result = repository.addNewPetIdToUser(petId, userInfoProfile.userId)){
+            when (repository.addNewPetIdToUser(petId, userInfoProfile.userId)){
                 is Result.Success -> backHome()
             }
 

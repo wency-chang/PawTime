@@ -8,6 +8,14 @@
         <item name="android:textSize">12sp</item>
 
     </style>
+
+    <style name="HomeQueryTagChipStyle" parent="Widget.MaterialComponents.Chip.Choice">
+        <item name="chipBackgroundColor">@color/bg_home_tag_color</item>
+        <item name="android:textColor">@color/text_tag_chip_color</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">10sp</item>
+
+    </style>
     
     <style name="datePickDialog" parent="Theme.AppCompat.Light.Dialog">
         <item name="colorAccent">@color/blue_light</item>

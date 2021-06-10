@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "890839200580",
+    "firebase_url": "https://petmanager-7b0c9-default-rtdb.firebaseio.com",
     "project_id": "petmanager-7b0c9",
     "storage_bucket": "petmanager-7b0c9.appspot.com"
   },
@@ -13,6 +14,30 @@
         }
       },
       "oauth_client": [
+        {
+          "client_id": "890839200580-dnvj7943o4obhstggcf11uauuag66d3l.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.wency.petmanager",
+            "certificate_hash": "c88a9605f77c3ce596e17130d43f40ba05762dba"
+          }
+        },
+        {
+          "client_id": "890839200580-j9d8ss3mtjg07s088hrkkvuf0rbaohur.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.wency.petmanager",
+            "certificate_hash": "a7c92e6c7027c9cb8472596ebda2365d53ba4bcf"
+          }
+        },
+        {
+          "client_id": "890839200580-qcd0k2h3sfhqkmtp2h34u6ch471oq0r8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.wency.petmanager",
+            "certificate_hash": "7dfc7ce277057ee7b934bb9e9e6fca85a607d7eb"
+          }
+        },
         {
           "client_id": "890839200580-ne3fcka9nmta9afp9879qmfintgjua48.apps.googleusercontent.com",
           "client_type": 3

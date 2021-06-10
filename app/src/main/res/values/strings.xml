@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Paw Time</string>
+    <string name="app_name">PAW TIME</string>
     <string name="regularity">Select Regularity</string>
     <string name="error_message">Unknown Error</string>
     <string-array name="regularity">
