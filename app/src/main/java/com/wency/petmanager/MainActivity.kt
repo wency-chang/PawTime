@@ -6,13 +6,17 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.core.net.toUri
+import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.Observer
@@ -20,6 +24,7 @@ import androidx.navigation.*
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
 import com.google.android.libraries.places.api.Places
+import com.theartofdev.edmodo.cropper.CropImage
 import com.wency.petmanager.create.GetImageFromGallery
 import com.wency.petmanager.databinding.ActivityMainBinding
 import com.wency.petmanager.databinding.NavHeaderDrawerBinding
@@ -36,6 +41,8 @@ class MainActivity : AppCompatActivity() {
     val viewModel by viewModels<MainViewModel> { getVmFactory() }
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var bindingNavHeader: NavHeaderDrawerBinding
+
+
 
 
 
@@ -58,6 +65,7 @@ class MainActivity : AppCompatActivity() {
 
 //        google place initialize
         Places.initialize(this.applicationContext, UserManager.mapKey)
+        Places.createClient(this)
 
 //        get profile
         viewModel.userInfoProfile.observe(this, Observer {
@@ -193,11 +201,6 @@ class MainActivity : AppCompatActivity() {
             } else {
                 binding.drawerProfile.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
             }
-
-            if (destination.id == R.id.logInFragment){
-
-            } else {
-            }
         }
 
     }
@@ -253,7 +256,12 @@ class MainActivity : AppCompatActivity() {
         window.statusBarColor = Color.TRANSPARENT // calculateStatusColor(Color.WHITE, (int) alphaValue)
     }
 
-
-
+    override fun onBackPressed() {
+        if (binding.drawerProfile.isDrawerOpen(GravityCompat.START)){
+            binding.drawerProfile.close()
+        } else {
+            super.onBackPressed()
+        }
+    }
 
 }

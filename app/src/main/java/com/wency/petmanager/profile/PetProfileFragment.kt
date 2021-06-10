@@ -1,6 +1,8 @@
 package com.wency.petmanager.profile
 
 import android.app.DatePickerDialog
+import android.content.Context
+import android.content.Intent
 import android.graphics.Paint
 import android.net.Uri
 import android.os.Bundle
@@ -9,6 +11,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.PathInterpolator
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -16,7 +20,9 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.tabs.TabLayoutMediator
+import com.theartofdev.edmodo.cropper.CropImage
 import com.wency.petmanager.MainViewModel
+import com.wency.petmanager.ManagerApplication
 import com.wency.petmanager.NavHostDirections
 import com.wency.petmanager.R
 import com.wency.petmanager.create.CreateEventViewModel
@@ -53,10 +59,17 @@ class PetProfileFragment: Fragment() {
 
     private val getImage = GetImageFromGallery()
 
-    private val getHeaderPhotoActivity =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            viewModel.getNewProfilePhoto(Uri.parse(getImage.onActivityHeaderResult(it)))
+    private val cropActivityResultContracts = object : ActivityResultContract<Any?, Uri?>() {
+        override fun createIntent(context: Context, input: Any?): Intent {
+            return CropImage.activity().setAspectRatio(1,1).getIntent(ManagerApplication.instance)
         }
+
+        override fun parseResult(resultCode: Int, intent: Intent?): Uri? {
+            return CropImage.getActivityResult(intent)?.uri
+        }
+
+    }
+    private lateinit var cropActivityResultLauncher : ActivityResultLauncher<Any?>
 
     private val getCoverPhotoActivity =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {result->
@@ -85,6 +98,13 @@ class PetProfileFragment: Fragment() {
         TabLayoutMediator(binding.petProfileCoverTab, binding.petCoverPicture){ tab, position ->
         }.attach()
 
+        cropActivityResultLauncher = registerForActivityResult(cropActivityResultContracts){
+            it?.let {
+                viewModel.getNewProfilePhoto(it)
+            }
+
+        }
+
         viewModel.editable.observe(viewLifecycleOwner, Observer {
             if (it){
                 viewModel.buttonString.value = PetProfileViewModel.EDITABLE
@@ -98,12 +118,12 @@ class PetProfileFragment: Fragment() {
         })
 
         viewModel.navigateToChooseFriend.observe(viewLifecycleOwner, Observer {
-            Log.d("Choose Owner","observe1")
+
             if (it != null) {
                 mainViewModel.userInfoProfile.value?.let { userInfo->
-                    Log.d("Choose Owner","observe2")
+
                     viewModel.petProfile.users?.let { owners->
-                        Log.d("Choose Owner","observe3")
+
                         findNavController().navigate(NavHostDirections.actionGlobalToChooseFriend(
                             userInfo,
                             owners.toTypedArray(),
@@ -151,7 +171,7 @@ class PetProfileFragment: Fragment() {
         }
 
         binding.petHeaderPicture.setOnClickListener {
-            getHeaderPhotoActivity.launch(getImage.pickSingleImageIntent())
+            cropActivityResultLauncher.launch(null)
         }
 
         viewModel.coverPhoto.observe(viewLifecycleOwner, Observer {

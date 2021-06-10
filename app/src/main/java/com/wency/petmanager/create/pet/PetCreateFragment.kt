@@ -2,6 +2,8 @@ package com.wency.petmanager.create.pet
 
 import android.app.Activity
 import android.app.DatePickerDialog
+import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -9,6 +11,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -20,6 +24,7 @@ import com.google.android.libraries.places.api.model.Place
 import com.squareup.picasso.Picasso
 import com.theartofdev.edmodo.cropper.CropImage
 import com.wency.petmanager.MainViewModel
+import com.wency.petmanager.ManagerApplication
 import com.wency.petmanager.NavHostDirections
 import com.wency.petmanager.R
 import com.wency.petmanager.create.CreateEventViewModel
@@ -47,23 +52,14 @@ class PetCreateFragment: Fragment() {
     private val getImage = GetImageFromGallery()
     private val getCoverPhotoActivity =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {result->
-
             viewModel.categoryPhotos.value?.let {list->
                 viewModel.addPhoto(
                     getImage.onActivityResult(result, CreateEventViewModel.CASE_PICK_PHOTO, list)
                 )
-                Log.d("get cover photo", "result: $result")
+
             }
         }
-    private val getCropPhotoActivity =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
-            viewModel.petHeader.value = getImage.onActivityHeaderResult(it)
-        }
-    private val getHeaderPhotoActivity =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            viewModel.petHeader.value = getImage.onActivityHeaderResult(it)
 
-        }
     private val getLocationActivity =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
             getLocation.onActivityResult(it ,CreateEventViewModel.CASE_PICK_LOCATION)?.let {place->
@@ -75,6 +71,18 @@ class PetCreateFragment: Fragment() {
 
             }
         }
+
+    private val cropActivityResultContracts = object : ActivityResultContract<Any?, Uri?>() {
+        override fun createIntent(context: Context, input: Any?): Intent {
+            return CropImage.activity().setAspectRatio(1,1).getIntent(ManagerApplication.instance)
+        }
+
+        override fun parseResult(resultCode: Int, intent: Intent?): Uri? {
+            return CropImage.getActivityResult(intent)?.uri
+        }
+
+    }
+    private lateinit var cropActivityResultLauncher : ActivityResultLauncher<Any?>
 
 
     override fun onCreateView(
@@ -102,19 +110,19 @@ class PetCreateFragment: Fragment() {
                 }
             }
         )
+        cropActivityResultLauncher = registerForActivityResult(cropActivityResultContracts){
+            it?.let {
+                viewModel.petHeader.value = it.toString()
+            }
 
+        }
 
         binding.petDefaultImage.setOnClickListener {
-            getHeaderPhotoActivity.launch(getImage.pickSingleImageIntent())
+            cropActivityResultLauncher.launch(null)
         }
 
         viewModel.backHome.observe(viewLifecycleOwner, Observer {
             if (it){
-//                findNavController().navigate(NavHostDirections.actionGlobalToHomeFragment(
-//                    viewModel.userInfoProfile,
-//                    mainViewModel.userPetList.value?.toTypedArray(),
-//                    mainViewModel.eventDetailList.value?.toTypedArray()
-//                ))
                 mainViewModel.getUserProfile()
                 viewModel.backHome()
             }

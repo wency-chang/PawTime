@@ -83,8 +83,6 @@ class GetImageFromGallery() {
 
     fun onActivityHeaderResult(result: ActivityResult): String {
         if (result.resultCode == Activity.RESULT_OK) {
-
-
             val intent = result.data
             intent?.let {
                 return it.data.toString()

@@ -9,11 +9,14 @@
 
     </style>
 
-    <style name="HomeQueryTagChipStyle" parent="Widget.MaterialComponents.Chip.Choice">
-        <item name="chipBackgroundColor">@color/bg_home_tag_color</item>
+    <style name="HomeQueryTagChipStyle" parent="Widget.AppCompat.CompoundButton.CheckBox">
         <item name="android:textColor">@color/text_tag_chip_color</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:textSize">10sp</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:padding">0dp</item>
+        <item name="android:textAlignment">center</item>
+        <item name="android:fontFamily">@font/gudea</item>
+        <item name="chipCornerRadius">15dp</item>
 
     </style>
     

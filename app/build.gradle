@@ -104,6 +104,9 @@ dependencies {
 
     implementation 'com.google.android:flexbox:2.0.0'
 
+    
+    implementation "androidx.activity:activity-ktx:1.2.0-alpha06"
+
     implementation 'com.squareup.picasso:picasso:2.5.2'
     api 'com.theartofdev.edmodo:android-image-cropper:2.8.+'
 

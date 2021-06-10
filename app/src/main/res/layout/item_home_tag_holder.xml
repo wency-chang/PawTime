@@ -17,16 +17,16 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
 
-        <com.google.android.material.chip.Chip
-            android:layout_width="wrap_content"
+        <CheckBox
+            android:layout_width="60dp"
             android:layout_height="wrap_content"
             android:id="@+id/homeTagQueryChip"
             style="@style/HomeQueryTagChipStyle"
-            app:chipCornerRadius="15dp"
-            android:paddingVertical="0dp"
+            android:background="@drawable/sc_home_tag_background"
             android:layout_margin="2dp"
             android:text="@{tag}"
             tools:text="#tag"
+            android:button="@null"
             android:checked="@{checked}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

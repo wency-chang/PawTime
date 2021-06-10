@@ -1,10 +1,16 @@
 package com.wency.petmanager.home
 
+import android.content.Context
+import android.content.Intent
 import android.icu.lang.UCharacter
+import android.net.Uri
 import android.os.Bundle
+import android.util.LayoutDirection
 import android.util.Log
 import android.view.*
 import android.view.animation.AnimationUtils
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
@@ -15,7 +21,9 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.OrientationHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import com.theartofdev.edmodo.cropper.CropImage
 import com.wency.petmanager.MainViewModel
+import com.wency.petmanager.ManagerApplication
 import com.wency.petmanager.NavHostDirections
 import com.wency.petmanager.R
 import com.wency.petmanager.create.GetImageFromGallery
@@ -39,12 +47,17 @@ class HomeFragment : Fragment() {
 
     lateinit var binding: FragmentHomeBinding
 
-    private val getImage = GetImageFromGallery()
-
-    private val getHeaderPhotoActivity =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            mainViewModel.getNewHeaderPhoto(getImage.onActivityHeaderResult(it).toUri())
+    private val cropActivityResultContracts = object : ActivityResultContract<Any?, Uri?>() {
+        override fun createIntent(context: Context, input: Any?): Intent {
+            return CropImage.activity().setAspectRatio(1,1).getIntent(ManagerApplication.instance)
         }
+
+        override fun parseResult(resultCode: Int, intent: Intent?): Uri? {
+            return CropImage.getActivityResult(intent)?.uri
+        }
+
+    }
+    private lateinit var cropActivityResultLauncher : ActivityResultLauncher<Any?>
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -84,6 +97,13 @@ class HomeFragment : Fragment() {
 
         binding.petOptionRecycler.adapter = PetHeaderAdapter(viewModel, this)
         timelineRecycler.adapter = timelineAdapter
+
+        cropActivityResultLauncher = registerForActivityResult(cropActivityResultContracts){
+            it?.let {
+                mainViewModel.getNewHeaderPhoto(uri = it)
+            }
+
+        }
 
         viewModel.isCreateButtonVisible.observe(viewLifecycleOwner, Observer {
             if (it) {
@@ -126,9 +146,9 @@ class HomeFragment : Fragment() {
 
         tagQueryRecycler.adapter = TagQueryAdapter(viewModel)
         viewModel.tagList.observe(viewLifecycleOwner, Observer {
-            val layoutManager = StaggeredGridLayoutManager((it.size/15+1)*5, OrientationHelper.HORIZONTAL)
-
-            binding.tagQueryRecycler.layoutManager = layoutManager
+//            val layoutManager = StaggeredGridLayoutManager((it.size/15+1)*5, OrientationHelper.HORIZONTAL)
+//
+//            binding.tagQueryRecycler.layoutManager = layoutManager
         })
 
 
@@ -264,6 +284,8 @@ class HomeFragment : Fragment() {
 
 
 
+
+
     }
 
     override fun onCreateContextMenu(
@@ -277,9 +299,7 @@ class HomeFragment : Fragment() {
     override fun onContextItemSelected(item: MenuItem): Boolean {
 
         if (item.itemId == R.id.changeUserHeader) {
-            getHeaderPhotoActivity.launch(
-                getImage.pickSingleImageIntent()
-            )
+            cropActivityResultLauncher.launch(null)
         } else {
 
 
@@ -305,6 +325,7 @@ class HomeFragment : Fragment() {
         }
 
     }
+
 
 
 

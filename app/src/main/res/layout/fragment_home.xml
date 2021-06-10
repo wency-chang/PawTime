@@ -249,7 +249,9 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/tagSelectAllButton"
                         android:layoutDirection="ltr"
-                        app:layoutManager="androidx.recyclerview.widget.StaggeredGridLayoutManager"
+                        android:paddingVertical="1dp"
+                        app:spanCount="5"
+                        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
                         android:orientation="horizontal"/>
                 </androidx.constraintlayout.widget.ConstraintLayout>
 

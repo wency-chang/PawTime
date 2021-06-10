@@ -78,6 +78,8 @@ class HomeViewModel(
     val tagList: LiveData<List<String>>
         get() = _tagList
 
+    val tagRecyclerSpanCount = MutableLiveData<Int>(0)
+
 
     private val _status = MutableLiveData<LoadApiStatus>()
 
@@ -216,6 +218,7 @@ class HomeViewModel(
 //            }
 //        }
         _tagList.value = tagList.toList()
+        tagRecyclerSpanCount.value = ((tagList.size/15)+1)*5
         _tagQueryList.value = tagList.toMutableSet()
     }
 
