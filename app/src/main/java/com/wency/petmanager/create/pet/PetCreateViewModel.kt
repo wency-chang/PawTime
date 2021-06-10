@@ -23,7 +23,7 @@ import java.lang.Exception
 import java.util.*
 import kotlin.math.log
 
-class PetCreateViewModel(val repository: Repository, val userInfoProfile: UserInfo): ViewModel() {
+class PetCreateViewModel(val repository: Repository, val userInfoProfile: UserInfo) : ViewModel() {
 
 
     val petHeader = MutableLiveData<String>("")
@@ -36,11 +36,11 @@ class PetCreateViewModel(val repository: Repository, val userInfoProfile: UserIn
     val hospitalName = MutableLiveData<String>()
     val livingPlaceName = MutableLiveData<String>()
 
-    val hospitalPlace: Location = Location("","", LatLng(0.0,0.0))
-    val livingPlace: Location = Location("","", LatLng(0.0,0.0))
+    val hospitalPlace: Location = Location("", "", LatLng(0.0, 0.0))
+    val livingPlace: Location = Location("", "", LatLng(0.0, 0.0))
 
     val _statusLoading = MutableLiveData<Boolean>(false)
-    val statusLoading : LiveData<Boolean>
+    val statusLoading: LiveData<Boolean>
         get() = _statusLoading
 
 
@@ -49,22 +49,18 @@ class PetCreateViewModel(val repository: Repository, val userInfoProfile: UserIn
     val petWeight = MutableLiveData<String>()
 
     private val _petHeaderLink = MutableLiveData<String>()
-    val petHeaderLink : LiveData<String>
+    val petHeaderLink: LiveData<String>
         get() = _petHeaderLink
 
     private val _petCoverLink = MutableLiveData<MutableList<String>>(mutableListOf())
-    val petCoverLink : LiveData<MutableList<String>>
+    val petCoverLink: LiveData<MutableList<String>>
         get() = _petCoverLink
 
-    private val _categoryPhotos = MutableLiveData<MutableList<String>>(mutableListOf(ADD_HOLDER_STRING))
+    private val _categoryPhotos =
+        MutableLiveData<MutableList<String>>(mutableListOf(ADD_HOLDER_STRING))
     val categoryPhotos: LiveData<MutableList<String>>
         get() = _categoryPhotos
 
-
-
-    private val _petDataForUpdate = MutableLiveData<Pet>()
-    val petDataForUpdate : LiveData<Pet>
-        get() = _petDataForUpdate
 
     var locationCode = NO_CALLING
 
@@ -72,7 +68,7 @@ class PetCreateViewModel(val repository: Repository, val userInfoProfile: UserIn
     private val coroutineScope = CoroutineScope(viewModelJob + Dispatchers.Main)
 
 
-    companion object{
+    companion object {
         const val HEADER_UPLOAD = "Pet/Header"
         const val COVER_UPLOAD = "Pet/Cover"
         const val HOSPITAL_LOCATION = 0x00
@@ -81,8 +77,8 @@ class PetCreateViewModel(val repository: Repository, val userInfoProfile: UserIn
         const val ADD_HOLDER_STRING = "this is add holder for pet create category"
     }
 
-    fun getLocation(data: Location){
-        if (locationCode == HOSPITAL_LOCATION){
+    fun getLocation(data: Location) {
+        if (locationCode == HOSPITAL_LOCATION) {
             hospitalName.value = data.locationName
             hospitalPlace?.locationName = data.locationName
             hospitalPlace?.locationLatlng = data.locationLatlng
@@ -99,42 +95,39 @@ class PetCreateViewModel(val repository: Repository, val userInfoProfile: UserIn
 
     }
 
-    fun removePhoto(position: Int){
+    fun removePhoto(position: Int) {
         _categoryPhotos.value?.removeAt(position)
     }
 
-    fun addPhoto(photoList: MutableList<String>){
+    fun addPhoto(photoList: MutableList<String>) {
         _categoryPhotos.value = photoList
     }
 
 
-
-
-
-    fun checkInfoComplete(){
+    fun checkInfoComplete() {
 //        initial pet need header picture and pet name
 
-        if (!petName.value.isNullOrEmpty() && !petHeader.value.isNullOrEmpty()){
+        if (!petName.value.isNullOrEmpty() && !petHeader.value.isNullOrEmpty()) {
             _statusLoading.value = true
             _statusLoading.value = _statusLoading.value
             updateImageToFirebase()
 
         } else (
-              showError()
-        )
+                showError()
+                )
 
     }
 
-    private fun updateImageToFirebase(){
+    private fun updateImageToFirebase() {
         val list = categoryPhotos.value
         list?.removeAt(0)
-        if (categoryPhotos.value?.size!! > 0 ){
+        if (categoryPhotos.value?.size!! > 0) {
             uploadImage(list!!.toMutableList(), COVER_UPLOAD)
         }
         uploadImage(listOf(petHeader.value!!), HEADER_UPLOAD)
     }
 
-    fun createUpdateData(){
+    fun createUpdateData() {
 
         coroutineScope.async {
             petName.value?.let {
@@ -144,15 +137,17 @@ class PetCreateViewModel(val repository: Repository, val userInfoProfile: UserIn
                     users = mutableListOf(UserManager.userID!!)
                 )
 
-                if (hospitalPlace.locationName.isNotEmpty()){
+                if (hospitalPlace.locationName.isNotEmpty()) {
                     dataForUpdate.hospitalLocationAddress = hospitalPlace.locationAddress
-                    dataForUpdate.hospitalLocationLatLng = "${hospitalPlace.locationLatlng?.latitude},${hospitalPlace.locationLatlng?.longitude}"
+                    dataForUpdate.hospitalLocationLatLng =
+                        "${hospitalPlace.locationLatlng?.latitude},${hospitalPlace.locationLatlng?.longitude}"
                     dataForUpdate.hospitalLocationName = hospitalPlace.locationName
                 }
-                if (livingPlace.locationName.isNotEmpty()){
+                if (livingPlace.locationName.isNotEmpty()) {
                     dataForUpdate.livingLocationAddress = livingPlace.locationAddress
                     dataForUpdate.livingLocationName = livingPlace.locationName
-                    dataForUpdate.livingLocationLatLng = "${livingPlace.locationLatlng?.latitude},${livingPlace.locationLatlng?.longitude}"
+                    dataForUpdate.livingLocationLatLng =
+                        "${livingPlace.locationLatlng?.latitude},${livingPlace.locationLatlng?.longitude}"
                 }
                 birthDay.value?.let {
                     dataForUpdate.birth = Timestamp(Today.dateFormat.parse(it))
@@ -163,22 +158,15 @@ class PetCreateViewModel(val repository: Repository, val userInfoProfile: UserIn
                 petCoverLink.value?.let {
                     dataForUpdate.coverPhotos = it
                 }
-
                 updateToFirebase(dataForUpdate)
 
+            }
         }
-
-
-
-        }
-
-
-
 
 
     }
 
-    private fun uploadImage(listUri: List<String>, folder: String){
+    private fun uploadImage(listUri: List<String>, folder: String) {
 
         coroutineScope.launch {
             for (uri in listUri) {
@@ -186,7 +174,6 @@ class PetCreateViewModel(val repository: Repository, val userInfoProfile: UserIn
                     is Result.Success -> {
                         when (folder) {
                             HEADER_UPLOAD -> {
-
                                 result.data?.let {
                                     _petHeaderLink.value = it
                                     return@launch
@@ -214,28 +201,40 @@ class PetCreateViewModel(val repository: Repository, val userInfoProfile: UserIn
 
     }
 
-    private fun showError(){
-        Toast.makeText(ManagerApplication.instance, "Please Fill Name and Header Photo", Toast.LENGTH_SHORT).show()
+    private fun showError() {
+        Toast.makeText(
+            ManagerApplication.instance,
+            "Please Fill Name and Header Photo",
+            Toast.LENGTH_SHORT
+        ).show()
     }
 
-    private fun updateToFirebase(pet: Pet){
+    private fun updateToFirebase(pet: Pet) {
 
         coroutineScope.launch {
-            when (val result = repository.createPet(pet)){
+            when (val result = repository.createPet(pet)) {
                 is Result.Success -> {
-                    Toast.makeText(ManagerApplication.instance, "Update Success", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        ManagerApplication.instance,
+                        "Update Success",
+                        Toast.LENGTH_SHORT
+                    ).show()
                     updateToUserPetList(result.data)
                 }
-                is Result.Fail -> Toast.makeText(ManagerApplication.instance, "Update Failed, Try Again", Toast.LENGTH_SHORT).show()
+                is Result.Fail -> Toast.makeText(
+                    ManagerApplication.instance,
+                    "Update Failed, Try Again",
+                    Toast.LENGTH_SHORT
+                ).show()
                 is Result.Error -> throw Exception(result.exception)
             }
         }
     }
 
-    private fun updateToUserPetList(petId: String){
+    private fun updateToUserPetList(petId: String) {
 
         coroutineScope.launch {
-            when (repository.addNewPetIdToUser(petId, userInfoProfile.userId)){
+            when (repository.addNewPetIdToUser(petId, userInfoProfile.userId)) {
                 is Result.Success -> backHome()
             }
 
@@ -243,18 +242,13 @@ class PetCreateViewModel(val repository: Repository, val userInfoProfile: UserIn
     }
 
     fun backHome() {
-        _backHome.value?.let{
+        _backHome.value?.let {
             _backHome.value = !it
             _statusLoading.value = false
             _statusLoading.value = _statusLoading.value
 
         }
     }
-
-
-
-
-
 
 
 }
