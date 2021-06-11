@@ -501,7 +501,7 @@
             app:srcCompat="@drawable/ic_baseline_delete_outline_24" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/constraintLayout2"
+            android:id="@+id/memoryListTitleLayout"
             android:layout_width="match_parent"
             android:layout_height="100dp"
             android:background="@drawable/bg_detail_schedule_title"

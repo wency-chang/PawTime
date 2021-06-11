@@ -819,8 +819,18 @@ object RemoteDataSource : DataSource {
 
     }
 
-    override suspend fun deleteMission(id: String): Result<Boolean> {
-        TODO("Not yet implemented")
+    override suspend fun deleteMission(petId: String, missionId: String): Result<Boolean> = suspendCoroutine {continuation->
+        FirebaseFirestore.getInstance()
+            .collection(PATH_PETS)
+            .document(petId)
+            .collection(PATH_PET_MISSION_LIST)
+            .document(missionId)
+            .delete()
+            .addOnCompleteListener {
+                if (it.isSuccessful){
+                    continuation.resume(Result.Success(true))
+                }
+            }
     }
 
 
@@ -945,6 +955,36 @@ object RemoteDataSource : DataSource {
                 if (it.isSuccessful){
                     continuation.resume(Result.Success(true))
                 }
+            }
+    }
+
+    suspend fun deleteMissionOver(petId: String){
+        val calendar = Calendar.getInstance()
+        calendar.add(Calendar.DAY_OF_MONTH, -1)
+        val missionCollection = FirebaseFirestore.getInstance()
+            .collection(PATH_PETS)
+            .document(petId)
+            .collection(PATH_PET_MISSION_LIST)
+        missionCollection
+            .get()
+            .addOnCompleteListener {
+                if (it.isSuccessful){
+                    if (!it.result.isEmpty){
+                        for (document in it.result){
+                            val mission = document.toObject(MissionGroup::class.java)
+                            if (mission.datesTodo.last().toDate().before(calendar.time)){
+                                missionCollection
+                                    .document(mission.missionId)
+                                    .delete()
+                            }
+
+                        }
+
+                    }
+
+                }
+
+
             }
     }
 

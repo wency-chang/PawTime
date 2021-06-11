@@ -194,8 +194,7 @@ class DiaryCreateViewModel(val repository: Repository) : ViewModel() {
         photoList.value?.let {
             coroutineScope.launch {
                 for (index in 1 until it.size){
-                    updateImage(Uri.parse(it[index]), "diary_photo")
-
+                    updateImage(Uri.parse(it[index]), "DIARY/PHOTO")
                 }
 
             }

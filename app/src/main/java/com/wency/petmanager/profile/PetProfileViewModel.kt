@@ -41,6 +41,10 @@ class PetProfileViewModel(val firebaseRepository: Repository, val petProfile: Pe
 
     val buttonString = MutableLiveData<String>(UNEDITABLE)
 
+    val _navigateBackHome = MutableLiveData<Boolean>(false)
+    val navigateBackHome: LiveData<Boolean>
+        get() = _navigateBackHome
+
 
     private var viewModelJob = Job()
     private val coroutineScope = CoroutineScope(viewModelJob + Dispatchers.Main)
@@ -70,7 +74,7 @@ class PetProfileViewModel(val firebaseRepository: Repository, val petProfile: Pe
         const val UNEDITABLE = "EDIT"
     }
 
-    private fun getMission(){
+    fun getMission(){
         coroutineScope.launch {
             when (val result = firebaseRepository.getMissionList(petProfile.id)){
                 is Result.Success -> {
@@ -231,6 +235,40 @@ class PetProfileViewModel(val firebaseRepository: Repository, val petProfile: Pe
         ObjectInputStream(ByteArrayInputStream(bytes)).use { inputStream ->
             return inputStream.readObject() as T
         }
+    }
+
+    fun updateIntoMemoryMode(memoryDate: Date){
+        petNameLiveData.value?.let {
+            if (it.isNotEmpty()){
+                petDataBeUpdate?.name = it
+            }
+        }
+
+        petDataBeUpdate.memoryDate = Timestamp(memoryDate)
+        petDataBeUpdate.memoryMode = true
+
+        coroutineScope.launch {
+            petDataBeUpdate?.let {
+                when (firebaseRepository.updatePetData(petProfile.id, it)){
+                    is Result.Success -> {
+                        _navigateBackHome.value = true
+                    }
+                    is Result.Fail -> {
+
+                    }
+                    is Result.Error -> {
+
+                    }
+                }
+            }
+
+        }
+
+
+
+
+
+
     }
 
 

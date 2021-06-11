@@ -9,6 +9,7 @@ import android.util.LayoutDirection
 import android.util.Log
 import android.view.*
 import android.view.animation.AnimationUtils
+import android.widget.CompoundButton
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.result.contract.ActivityResultContracts
@@ -117,6 +118,25 @@ class HomeFragment : Fragment() {
                 binding.createMissionEventButton.startAnimation(closeAnim)
             }
         })
+
+        binding.filterButton.setOnCheckedChangeListener { buttonView, isChecked ->
+            if (isChecked){
+                binding.filterLayout.startAnimation(
+                    AnimationUtils.loadAnimation(
+                        this.context,
+                        R.anim.filter_showup
+                    )
+                )
+            } else {
+                binding.filterLayout.startAnimation(
+                    AnimationUtils.loadAnimation(
+                        this.context,
+                        R.anim.filter_close
+                    )
+                )
+            }
+
+        }
         timelineRecycler.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 when (newState) {
@@ -170,7 +190,7 @@ class HomeFragment : Fragment() {
         viewModel.tagQueryList.observe(viewLifecycleOwner, Observer {
             Log.d("Debug", "tagQueryList observe $it")
             viewModel.queryByTag()
-            tagQueryRecycler.adapter?.notifyDataSetChanged()
+
         })
 
         viewModel.navigateToCreateDestination.observe(viewLifecycleOwner, Observer {

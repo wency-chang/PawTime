@@ -47,3 +47,13 @@ fun Fragment.getVmFactory(userInfo: UserInfo, selectedList: Array<String>, fragm
     val repository = (requireContext().applicationContext as ManagerApplication).repository
     return FriendSelectViewModelFactory(repository, userInfo, selectedList, fragmentInt, petId)
 }
+
+fun Fragment.getVmFactory(petList: Array<Pet>?): MemoryListViewModelFactory {
+    val repository = (requireContext().applicationContext as ManagerApplication).repository
+    return MemoryListViewModelFactory(repository, petList)
+}
+
+fun Fragment.getVmFactory(petData: Pet, eventList: Array<Event>): MemoryViewModelFactory {
+    val repository = (requireContext().applicationContext as ManagerApplication).repository
+    return MemoryViewModelFactory(petData, eventList)
+}

@@ -197,12 +197,12 @@
                     android:id="@+id/filterButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginTop="4dp"
                     android:layout_marginEnd="8dp"
                     android:checked="@={viewModel._tagExpand}"
                     android:clickable="@{viewModel.tagList.size()==0?false:true}"
                     android:button="@drawable/sc_home_filter_button"
-                    android:background="@drawable/bg_white_circle"
+                    android:text="@null"
                     android:backgroundTint="@color/white_transparent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/linearLayout"
@@ -214,9 +214,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="6dp"
                     android:visibility="@{viewModel.tagExpand?View.VISIBLE:View.GONE}"
-                    app:layout_constraintEnd_toEndOf="@+id/filterButton"
-                    app:layout_constraintTop_toBottomOf="@+id/filterButton"
-                    android:padding="3dp">
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/filterButton">
 
                     <CheckBox
                         android:id="@+id/tagSelectAllButton"
@@ -224,35 +223,36 @@
                         android:layout_height="20dp"
                         android:button="@drawable/sc_home_filter_select_all_button"
                         android:checked="@{viewModel.tagQueryList.size()==viewModel.tagList.size()?true:false}"
+                        android:onClick="@{()-> viewModel.clearTagQuery(true)}"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
-                        android:onClick="@{()-> viewModel.clearTagQuery(true)}"/>
+                        android:layout_marginEnd="8dp"/>
 
                     <CheckBox
                         android:id="@+id/tagClearAllButton"
                         android:layout_width="20dp"
                         android:layout_height="20dp"
                         android:layout_marginEnd="4dp"
-                        android:checked="@{viewModel.tagQueryList.size()==0?true:false}"
                         android:button="@drawable/sc_home_filter_clear_button"
+                        android:checked="@{viewModel.tagQueryList.size()==0?true:false}"
+                        android:onClick="@{()-> viewModel.clearTagQuery(false)}"
                         app:layout_constraintEnd_toStartOf="@+id/tagSelectAllButton"
-                        app:layout_constraintTop_toTopOf="@id/tagSelectAllButton"
-                        android:onClick="@{()-> viewModel.clearTagQuery(false)}" />
+                        app:layout_constraintTop_toTopOf="@id/tagSelectAllButton" />
 
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/tagQueryRecycler"
+                        tagSelectorAdapter="@{viewModel.tagList}"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="3dp"
+                        android:orientation="horizontal"
+                        android:paddingVertical="2dp"
+                        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
-                        tagSelectorAdapter="@{viewModel.tagList}"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/tagSelectAllButton"
-                        android:layoutDirection="ltr"
-                        android:paddingVertical="1dp"
-                        app:spanCount="5"
-                        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-                        android:orientation="horizontal"/>
+                        app:spanCount="5" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <androidx.constraintlayout.widget.ConstraintLayout
@@ -263,7 +263,8 @@
                     app:layout_constraintBottom_toBottomOf="@+id/linearLayout"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="@+id/linearLayout"
-                    app:layout_constraintTop_toTopOf="@+id/linearLayout">
+                    app:layout_constraintTop_toTopOf="@+id/linearLayout"
+                    android:paddingHorizontal="2dp">
 
                     <ImageView
                         android:id="@+id/createPetButton"

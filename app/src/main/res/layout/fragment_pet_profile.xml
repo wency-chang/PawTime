@@ -177,7 +177,10 @@
             android:layout_height="wrap_content"
             android:text="@{viewModel.missionListNumber}"
             android:textSize="26dp"
-            android:textColor="@color/black"
+            android:background="@drawable/bg_edit_button_blue"
+            android:backgroundTint="@{viewModel.editable?@color/blue_light_transparent:@color/transparent}"
+            android:clickable="@{viewModel.editable?true:false}"
+            android:textColor="@{viewModel.editable?@color/white:@color/black}"
             android:textAlignment="center"
             app:layout_constraintBottom_toBottomOf="@+id/petOwnerText"
             app:layout_constraintEnd_toEndOf="parent"
@@ -289,5 +292,16 @@
             app:lottie_loop="true"
             android:visibility="@{viewModel.loading?View.VISIBLE:View.GONE}"
             />
+
+        <ImageView
+            android:id="@+id/memoryModeButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/petCoverPicture"
+            app:srcCompat="@drawable/ic_baseline_favorite_border_24"
+            android:visibility="@{viewModel.editable?View.VISIBLE:View.GONE}"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

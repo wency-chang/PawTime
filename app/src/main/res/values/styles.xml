@@ -10,10 +10,10 @@
     </style>
 
     <style name="HomeQueryTagChipStyle" parent="Widget.AppCompat.CompoundButton.CheckBox">
-        <item name="android:textColor">@color/text_tag_chip_color</item>
+        <item name="android:textColor">@color/text_home_query_chip_color</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textSize">15sp</item>
-        <item name="android:padding">0dp</item>
+        <item name="android:padding">5dp</item>
         <item name="android:textAlignment">center</item>
         <item name="android:fontFamily">@font/gudea</item>
         <item name="chipCornerRadius">15dp</item>
@@ -22,8 +22,15 @@
     
     <style name="datePickDialog" parent="Theme.AppCompat.Light.Dialog">
         <item name="colorAccent">@color/blue_light</item>
+        <item name="android:datePickerMode">calendar</item>
     </style>
-        
+
+    <style name="memoryDatePickDialog" parent="Theme.AppCompat.Light.Dialog">
+        <item name="colorAccent">@color/blue_light</item>
+        <item name="android:datePickerMode">spinner</item>
+    </style>
+
+
 
 
     <style name="instruction_text">

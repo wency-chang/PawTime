@@ -52,7 +52,7 @@ class ManagerLocalDataSource(val context: Context) : com.wency.petmanager.data.s
         TODO("Not yet implemented")
     }
 
-    override suspend fun deleteMission(id: String): Result<Boolean> {
+    override suspend fun deleteMission(petId: String, missionId: String): Result<Boolean> {
         TODO("Not yet implemented")
     }
 

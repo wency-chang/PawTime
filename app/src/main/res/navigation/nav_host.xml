@@ -137,6 +137,27 @@
     </fragment>
 
     <fragment
+        android:id="@+id/memoryListFragment"
+        android:name="com.wency.petmanager.memory.MemoryListFragment"
+        android:label="MemoryListFragment" >
+        <argument
+            android:name="petList"
+            app:argType="com.wency.petmanager.data.Pet[]"
+            app:nullable="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/memoryFragment"
+        android:name="com.wency.petmanager.memory.MemoryFragment"
+        android:label="MemoryFragment" >
+        <argument
+            android:name="eventList"
+            app:argType="com.wency.petmanager.data.Event[]" />
+        <argument
+            android:name="petData"
+            app:argType="com.wency.petmanager.data.Pet" />
+    </fragment>
+
+    <fragment
         android:id="@+id/policyFragment"
         android:name="com.wency.petmanager.login.PolicyFragment"
         android:label="PolicyFragment" />
@@ -207,6 +228,34 @@
         app:popUpTo="@id/logInFragment"
         app:popUpToInclusive="true"
         />
+    <action
+        android:id="@+id/action_global_to_memory_list_fragment"
+        app:destination="@id/memoryListFragment"
+        app:popUpToInclusive="true"
+        app:popUpTo="@id/memoryListFragment"/>
+
+    <action
+        android:id="@+id/action_global_to_memory_fragment"
+        app:destination="@id/memoryFragment"
+        app:popUpToInclusive="true"
+        app:popUpTo="@id/memoryFragment"/>
+    <dialog
+        android:id="@+id/missionListDialog"
+        android:name="com.wency.petmanager.dialog.MissionListDialog"
+        android:label="MissionListDialog" >
+        <argument
+            android:name="petData"
+            app:argType="com.wency.petmanager.data.Pet" />
+        <argument
+            android:name="missionList"
+            app:argType="com.wency.petmanager.data.MissionGroup[]"
+            app:nullable="true" />
+    </dialog>
+    <action
+        android:id="@+id/action_global_to_mission_list_dialog"
+        app:destination="@id/missionListDialog"
+        app:popUpToInclusive="true"
+        app:popUpTo="@id/missionListDialog"/>
 
 
 

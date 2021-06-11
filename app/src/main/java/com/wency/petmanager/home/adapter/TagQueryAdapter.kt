@@ -18,6 +18,7 @@ class TagQueryAdapter(val viewModel: HomeViewModel): ListAdapter<String, TagQuer
         fun bind(tag: String, check: Boolean){
             binding.tag = tag
             binding.checked = check
+            binding.executePendingBindings()
         }
 
     }

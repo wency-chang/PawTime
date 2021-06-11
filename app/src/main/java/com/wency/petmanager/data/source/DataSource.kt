@@ -29,7 +29,7 @@ interface DataSource {
 
     suspend fun deleteEvent (id: String) : Result<Boolean>
 
-    suspend fun deleteMission (id: String) : Result<Boolean>
+    suspend fun deleteMission (petId: String, missionId: String) : Result<Boolean>
 
     suspend fun getTodayMission (petId: String) : Result<List<MissionGroup>>
 

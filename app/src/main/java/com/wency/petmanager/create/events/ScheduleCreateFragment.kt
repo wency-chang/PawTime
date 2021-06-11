@@ -63,14 +63,14 @@ class ScheduleCreateFragment: Fragment(), AddMemoDialog.MemoDialogListener, AddN
         binding.createViewModel = createEventViewModel
 
         viewModel.selectedUser.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
-            Log.d("USER!","observe selected user change $it")
+
             viewModel.getPetOption()
             viewModel.setNotification()
 
         })
 
         viewModel.petOptions.observe(viewLifecycleOwner, androidx.lifecycle.Observer {  petOption->
-            Log.d("USER!","observe petOption change $petOption")
+
             viewModel.updatePetSelector(petOption)
 
         })

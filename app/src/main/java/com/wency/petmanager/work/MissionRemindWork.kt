@@ -34,6 +34,7 @@ class MissionRemindWork(val context: Context, workerParameters: WorkerParameters
 
     override fun doWork(): Result {
         getUserProfile()
+
         return Result.success()
     }
 
@@ -43,7 +44,16 @@ class MissionRemindWork(val context: Context, workerParameters: WorkerParameters
                 is com.wency.petmanager.data.Result.Success -> {
                     userInfo = result.data
                     userInfo.petList?.let { getMissionToday(it) }
+                    userInfo.petList?.let { deleteOverMission(it)}
                 }
+            }
+        }
+    }
+
+    private fun deleteOverMission(petList: List<String>){
+        coroutineScope.launch {
+            for (petId in petList){
+                RemoteDataSource.deleteMissionOver(petId)
             }
         }
     }

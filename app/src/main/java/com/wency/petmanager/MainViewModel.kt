@@ -67,7 +67,7 @@ class MainViewModel(private val firebaseRepository: Repository) : ViewModel() {
 //    friends include all owners and friend list
     var friendList = mutableListOf<UserInfo>()
 
-    var _missionListToday = MutableLiveData<List<MissionGroup>>()
+    private var _missionListToday = MutableLiveData<List<MissionGroup>>()
     val missionListToday: LiveData<List<MissionGroup>>
         get() = _missionListToday
 
@@ -87,7 +87,7 @@ class MainViewModel(private val firebaseRepository: Repository) : ViewModel() {
     val tagListLiveData : LiveData<MutableList<String>>
         get() = _tagListLiveData
 
-    val petDataForAll = mutableSetOf<Pet>()
+    var petDataForAll = mutableSetOf<Pet>()
 
     val badgeString = MutableLiveData<String>("")
 
@@ -159,10 +159,11 @@ class MainViewModel(private val firebaseRepository: Repository) : ViewModel() {
         val petDataList = mutableListOf<Pet?>()
 
         userInfoProfile.value?.petList?.let { petList ->
-            Log.d("debug pet", "start petList $petList petDataList $petDataList")
+
             coroutineScope.async {
+
                 for (petId in petList) {
-                    Log.d("debug pet get Pet data $petId", "start")
+
 
                     when (val result = firebaseRepository.getPetData(petId)) {
                         is Result.Success -> {
@@ -353,7 +354,9 @@ class MainViewModel(private val firebaseRepository: Repository) : ViewModel() {
             when (val result = firebaseRepository.getPetData(petId)){
                 is Result.Success -> {
                     petDataForAll.add(result.data)
-                    Log.d("petDataForAll","$petDataForAll")
+                }
+                is Result.Fail -> {
+
                 }
             }
         }
@@ -388,6 +391,7 @@ class MainViewModel(private val firebaseRepository: Repository) : ViewModel() {
         petDataForAll?.let { allPetData->
             allPetData.removeIf { it.id == newPetData.id }
             allPetData.add(newPetData)
+            petDataForAll = allPetData
         }
     }
 
@@ -586,10 +590,6 @@ class MainViewModel(private val firebaseRepository: Repository) : ViewModel() {
         WorkManager.getInstance(ManagerApplication.instance).enqueue(resetNotificationWorkRequest)
 
     }
-
-
-
-
 
 
 

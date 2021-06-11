@@ -1,16 +1,17 @@
 package com.wency.petmanager.profile
 
+import android.app.AlertDialog
 import android.app.DatePickerDialog
+import android.app.Dialog
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Paint
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.PathInterpolator
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.result.contract.ActivityResultContracts
@@ -28,8 +29,6 @@ import com.wency.petmanager.R
 import com.wency.petmanager.create.CreateEventViewModel
 import com.wency.petmanager.create.GetImageFromGallery
 import com.wency.petmanager.create.GetLocationFromMap
-import com.wency.petmanager.data.Pet
-import com.wency.petmanager.databinding.FragmentPetCreateBinding
 import com.wency.petmanager.databinding.FragmentPetProfileBinding
 import com.wency.petmanager.detail.PhotoPagerAdapter
 import com.wency.petmanager.ext.getVmFactory
@@ -188,5 +187,56 @@ class PetProfileFragment: Fragment() {
             }
         })
 
+        binding.memoryModeButton.setOnClickListener {
+            val alertDialog = AlertDialog.Builder(requireContext())
+            alertDialog.setTitle("TURN INTO MEMORY MODE")
+                .setMessage("THIS WILL TURN ${viewModel.petNameLiveData.value} INTO MEMORY MODE \n\nARE YOU SURE ABOUT THIS?")
+                .setNegativeButton("NO", DialogInterface.OnClickListener{ dialogInterface: DialogInterface, i: Int ->
+                })
+                .setPositiveButton("YES", DialogInterface.OnClickListener { dialog, which ->
+                    val calendar = Calendar.getInstance()
+                    val datePicker = DatePickerDialog(requireContext(), R.style.memoryDatePickDialog,  DatePickerDialog.OnDateSetListener { view, pickYear, pickMonth, pickDayOfMonth ->
+                        calendar.set(pickYear, pickMonth, pickDayOfMonth)
+                        viewModel.updateIntoMemoryMode(calendar.time)
+                        val memoryDoneDialog = Dialog(requireContext())
+                        memoryDoneDialog.setContentView(R.layout.dialog_turn_to_memory_mode)
+
+                        memoryDoneDialog.window?.setBackgroundDrawable(ManagerApplication.instance.getDrawable(R.color.transparent))
+                        memoryDoneDialog.show()
+                        val timer = Timer()
+                        timer.schedule(object : TimerTask (){
+                            override fun run() {
+                                memoryDoneDialog.dismiss()
+                            }
+                        }, 3000)
+
+
+                    }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH))
+                    datePicker.datePicker.maxDate = Instant.now().toEpochMilli()
+
+                    datePicker.show()
+
+                })
+                .show()
+        }
+
+        binding.petMissionText.setOnClickListener {
+
+        }
+
+        viewModel.navigateBackHome.observe(viewLifecycleOwner, Observer {
+            if (it){
+                mainViewModel.getPetData()
+
+            }
+        })
+
+
+
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.getMission()
     }
 }

@@ -27,6 +27,7 @@ import com.wency.petmanager.friend.InviteListAdapter
 import com.wency.petmanager.friend.FriendGridListAdapter
 import com.wency.petmanager.friend.FriendPetListAdapter
 import com.wency.petmanager.home.adapter.TagQueryAdapter
+import com.wency.petmanager.memory.apater.MemoryListAdapter
 import com.wency.petmanager.network.LoadApiStatus
 import com.wency.petmanager.profile.CoverPhotoAdapter
 
@@ -130,6 +131,7 @@ fun petHeaderBindRecyclerView(recyclerView: RecyclerView, data: List<Pet>?) {
                 is PetHeaderAdapter -> submitList(it)
                 is FriendPetListAdapter -> submitList(it)
                 is com.wency.petmanager.detail.PetHeaderAdapter -> submitList(it)
+                is MemoryListAdapter -> submitList(it)
             }
         }
     }

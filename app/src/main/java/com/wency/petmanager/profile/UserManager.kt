@@ -59,7 +59,7 @@ object Today{
     val timeStamp8am = Timestamp(dateNTimeFormat.parse("$todayString 8:00 AM"))
 
     val dayOfWeekFormat = SimpleDateFormat("E")
-    val monthFormat = SimpleDateFormat("MMM")
+    val birthFormat = SimpleDateFormat("yyyy.MM")
     val dayInMonthFormat = SimpleDateFormat("dd")
     val dateOnlyFormat = SimpleDateFormat("MM.dd")
     val yearOnlyFormat = SimpleDateFormat("yyyy")

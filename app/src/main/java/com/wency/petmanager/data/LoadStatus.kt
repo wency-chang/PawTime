@@ -6,5 +6,6 @@ enum class LoadStatus {
     Done,
     ImageUpload,
     DoneNBack,
-    DoneUpdate
+    DoneUpdate,
+    DownLoad
 }

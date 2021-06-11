@@ -203,6 +203,13 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+
+        binding.drawerMemoryButton.setOnClickListener {
+
+            navController.navigate(NavHostDirections.actionGlobalToMemoryListFragment(viewModel.memoryPetList.value?.toTypedArray()))
+
+        }
+
     }
 
     private fun hideSystemUI() {

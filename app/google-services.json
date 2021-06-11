@@ -23,6 +23,14 @@
           }
         },
         {
+          "client_id": "890839200580-ipshof4090l3burv6onas25op8p6ciaq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.wency.petmanager",
+            "certificate_hash": "7dfc7ce277057ee7b934bb9e9e6fca85a607d7eb"
+          }
+        },
+        {
           "client_id": "890839200580-j9d8ss3mtjg07s088hrkkvuf0rbaohur.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
@@ -31,15 +39,7 @@
           }
         },
         {
-          "client_id": "890839200580-qcd0k2h3sfhqkmtp2h34u6ch471oq0r8.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.wency.petmanager",
-            "certificate_hash": "7dfc7ce277057ee7b934bb9e9e6fca85a607d7eb"
-          }
-        },
-        {
-          "client_id": "890839200580-ne3fcka9nmta9afp9879qmfintgjua48.apps.googleusercontent.com",
+          "client_id": "890839200580-a02g5hfib1863jm1hekokmo89pgjs383.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
@@ -52,7 +52,7 @@
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "890839200580-ne3fcka9nmta9afp9879qmfintgjua48.apps.googleusercontent.com",
+              "client_id": "890839200580-a02g5hfib1863jm1hekokmo89pgjs383.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

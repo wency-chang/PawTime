@@ -18,14 +18,17 @@
         android:layout_height="wrap_content">
 
         <CheckBox
-            android:layout_width="60dp"
+            android:layout_width="65dp"
             android:layout_height="wrap_content"
             android:id="@+id/homeTagQueryChip"
             style="@style/HomeQueryTagChipStyle"
             android:background="@drawable/sc_home_tag_background"
-            android:layout_margin="2dp"
+            android:layout_margin="5dp"
+            app:layout_constraintVertical_weight="0.2"
             android:text="@{tag}"
             tools:text="#tag"
+            android:ellipsize="middle"
+            android:singleLine="true"
             android:button="@null"
             android:checked="@{checked}"
             app:layout_constraintBottom_toBottomOf="parent"
