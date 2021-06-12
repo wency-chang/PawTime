@@ -74,11 +74,10 @@ class HomeFragment : Fragment() {
         viewModel.friendList = mainViewModel.friendList
 
         mainViewModel.missionListToday.observe(requireActivity(), Observer {
-            if (it.isNotEmpty()) {
 
                 viewModel.createMissionTimeItem(it)
                 viewModel.getMissionToday(it)
-            }
+
         })
         viewModel.evenForTimeline.observe(viewLifecycleOwner, Observer { eventForTimeline ->
             eventForTimeline?.let {

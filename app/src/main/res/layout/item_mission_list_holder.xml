@@ -5,6 +5,10 @@
 
     <data>
 
+        <variable
+            name="mission"
+            type="com.wency.petmanager.data.MissionGroup" />
+
 
     </data>
 
@@ -32,6 +36,7 @@
                 android:maxWidth="100dp"
                 android:textColor="@color/blue_light"
                 android:textSize="18dp"
+                android:text="@{mission.title}"
                 android:textStyle="bold"
                 tools:text="MEDICINE" />
 
@@ -47,6 +52,7 @@
                 android:layout_marginStart="10dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
+                android:text="@{mission.regularity}"
                 tools:text="One Time" />
 
 

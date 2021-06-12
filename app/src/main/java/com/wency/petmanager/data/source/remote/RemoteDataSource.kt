@@ -851,11 +851,14 @@ object RemoteDataSource : DataSource {
                     }
                     val list = mutableListOf<MissionGroup>()
                     if (querySnapshot != null && !querySnapshot.isEmpty) {
+                        Log.d("Mission","snapshot != null")
                         for (document in querySnapshot) {
                             val missionGroup = document.toObject(MissionGroup::class.java)
                             list.add(missionGroup)
                         }
                         petMissionList.put(pet.id, list)
+                    } else {
+                        petMissionList.remove(pet.id)
                     }
 
                     val totalList = mutableListOf<MissionGroup>()
@@ -863,6 +866,7 @@ object RemoteDataSource : DataSource {
                     petMissionList.forEach { (key, value) ->
                         totalList.addAll(value)
                     }
+                    Log.d("Mission","LiveData $totalList $querySnapshot")
                     liveData.value = totalList
                 }
 

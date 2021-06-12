@@ -75,11 +75,13 @@ class PetProfileViewModel(val firebaseRepository: Repository, val petProfile: Pe
     }
 
     fun getMission(){
+        Log.d("MISSION","GET MISSION")
         coroutineScope.launch {
             when (val result = firebaseRepository.getMissionList(petProfile.id)){
                 is Result.Success -> {
                     missionList = result.data.toMutableList()
                     missionListNumber.value = missionList.size.toString()
+                    Log.d("MISSION","result : $missionList ${missionListNumber.value}")
                 }
             }
         }

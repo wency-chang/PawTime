@@ -19,6 +19,7 @@ data class MissionGroup(
     var completeUserName: String = "",
     var completeUserPhoto: String = "",
     var recordDate: Timestamp = Timestamp(Date()),
+    var regularity: String = "",
     var petId: String = ""
 ): Parcelable
 

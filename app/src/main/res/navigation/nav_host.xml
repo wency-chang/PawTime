@@ -43,6 +43,10 @@
         <argument
             android:name="petInfo"
             app:argType="com.wency.petmanager.data.Pet" />
+        <action
+            android:id="@+id/action_petProfileFragment_to_missionListDialog"
+            app:destination="@id/missionListDialog"
+            app:popUpToInclusive="true" />
     </fragment>
 
     <fragment

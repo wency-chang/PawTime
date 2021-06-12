@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.firebase.Timestamp
 import com.wency.petmanager.ManagerApplication
+import com.wency.petmanager.R
 import com.wency.petmanager.data.MissionGroup
 import com.wency.petmanager.data.Pet
 import com.wency.petmanager.data.PetSelector
@@ -80,7 +81,8 @@ class MissionCreateViewModel(val repository: Repository) : ViewModel() {
                                 startDate = Timestamp(startDate),
                                 endDate = Timestamp(endDate),
                                 datesTodo = toDoDates,
-                                recordDate = Today.timeStamp8am
+                                recordDate = Today.timeStamp8am,
+                                regularity = ManagerApplication.instance.resources.getStringArray(R.array.regularity)[selectedRegularityPosition.value!!]
                             )
 
                         }
