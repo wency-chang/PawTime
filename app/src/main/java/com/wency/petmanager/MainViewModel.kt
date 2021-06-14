@@ -574,8 +574,6 @@ class MainViewModel(private val firebaseRepository: Repository) : ViewModel() {
         }
         return intent
 
-
-
     }
 
     private fun resetAlarm(){

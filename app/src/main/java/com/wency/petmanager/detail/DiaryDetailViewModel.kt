@@ -172,6 +172,15 @@ class DiaryDetailViewModel(val repository: Repository, val eventDetail: Event) :
         Log.d("TAGFORDIARY","TAG OPTION: $tagOptionList")
     }
 
+    fun getPetListOption(memory: List<Pet>, pet: List<Pet>){
+        val list = mutableSetOf<Pet>()
+        list.addAll(memory.filter {
+            eventDetail.petParticipantList.contains(it.id)
+        })
+        list.addAll(pet)
+        _petListForOption = list.toMutableList()
+    }
+
 
 
 

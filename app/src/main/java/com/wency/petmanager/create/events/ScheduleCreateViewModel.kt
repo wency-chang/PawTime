@@ -250,7 +250,7 @@ class ScheduleCreateViewModel(val repository: Repository) : ViewModel() {
 
     fun setNotification(){
         selectedUser.value?.let {
-            notificationAvailable.value = it.size > 1 || !it.contains(UserManager.userID)
+            notificationAvailable.value = it.size > 1
         }
 
     }
@@ -479,10 +479,14 @@ class ScheduleCreateViewModel(val repository: Repository) : ViewModel() {
                         when (val result = repository.getPetData(petId)){
                             is Result.Success -> {
                                 list.add(result.data)
+                                Log.d("Pet","$list")
                                 if (list.size == petIdList.size){
                                     val optionList = myPet.toMutableSet()
 
                                     optionList.addAll(list)
+                                    optionList.removeIf {
+                                        it.memoryMode == true
+                                    }
                                     petOptions.value = optionList.toMutableList()
                                 }
                             }

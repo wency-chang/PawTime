@@ -2,6 +2,7 @@ package com.wency.petmanager.data.source
 
 import android.net.Uri
 import androidx.lifecycle.MutableLiveData
+import com.google.firebase.Timestamp
 import com.wency.petmanager.data.*
 import java.net.URI
 
@@ -80,6 +81,12 @@ interface DataSource {
     suspend fun addNotificationDeleteToUser(userId: String, eventNotification: EventNotification):Result<Boolean>
 
     suspend fun getAllNotificationAlreadyUpdated (userId: String): Result<List<EventNotification>>
+
+    suspend fun getRecordData(petId: String): Result<List<RecordDocument>>
+
+    suspend fun addNewRecord (petId: String, newRecord: RecordDocument) : Result<Boolean>
+
+    suspend fun updateRecord (petId: String, recordId: String, recordData: Map<String, Double>): Result<Boolean>
 
 
 

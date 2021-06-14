@@ -50,6 +50,9 @@ object RemoteDataSource : DataSource {
     private const val EVENT_COMPLETE_UPDATE = "complete"
     private const val NOTIFICATION_ALARM = "alarmTime"
     private const val NOTIFICATION_EVENT_TIME = "eventTime"
+    private const val PET_RECORD_COLLECTION = "recordList"
+    private const val PET_RECORD_DATA_FIELD = "recordData"
+
 
 
     override suspend fun getUserProfile(token: String): Result<UserInfo> =
@@ -1125,6 +1128,70 @@ object RemoteDataSource : DataSource {
                             }
                         }
                     }
+                }
+            }
+    }
+
+    override suspend fun getRecordData(petId: String): Result<List<RecordDocument>> = suspendCoroutine{ continuation->
+        FirebaseFirestore.getInstance()
+            .collection(PATH_PETS)
+            .document(petId)
+            .collection(PET_RECORD_COLLECTION)
+            .get()
+            .addOnCompleteListener {
+                if (it.isSuccessful){
+                    if (it.result.isEmpty){
+                        continuation.resume(Result.Success(listOf<RecordDocument>(RecordDocument())))
+                    } else {
+                        val list = mutableListOf<RecordDocument>()
+                        for (document in it.result){
+                            list.add(document.toObject(RecordDocument::class.java))
+                            if (list.size == it.result.size()){
+                                continuation.resume(Result.Success(list))
+                            }
+                        }
+                    }
+
+                } else {
+                    continuation.resume(Result.Fail(it.exception.toString()))
+                }
+            }
+    }
+
+    override suspend fun addNewRecord(petId: String, newRecord: RecordDocument): Result<Boolean> =
+        suspendCoroutine {continuation->
+        val recordDocument = FirebaseFirestore.getInstance()
+            .collection(PATH_PETS)
+            .document(petId)
+            .collection(PET_RECORD_COLLECTION)
+            .document()
+        newRecord.recordId = recordDocument.id
+        recordDocument.set(newRecord)
+            .addOnCompleteListener {
+                if (it.isSuccessful){
+                    continuation.resume(Result.Success(true))
+                } else {
+                    continuation.resume(Result.Fail(it.exception.toString()))
+                }
+            }
+    }
+
+    override suspend fun updateRecord(
+        petId: String,
+        recordId: String,
+        recordData: Map<String, Double>
+    ): Result<Boolean> = suspendCoroutine {continuation->
+        FirebaseFirestore.getInstance()
+            .collection(PATH_PETS)
+            .document(petId)
+            .collection(PET_RECORD_COLLECTION)
+            .document(recordId)
+            .update(PET_RECORD_DATA_FIELD, recordData)
+            .addOnCompleteListener {
+                if (it.isSuccessful){
+                    continuation.resume(Result.Success(true))
+                } else {
+                    continuation.resume(Result.Fail(it.exception.toString()))
                 }
             }
     }

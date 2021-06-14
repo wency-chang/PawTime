@@ -56,12 +56,12 @@ object Today{
     @SuppressLint("SimpleDateFormat")
     val dateNTimeFormat = SimpleDateFormat("yyyy.MM.dd hh:mm a")
 
-    val timeStamp8am = Timestamp(dateNTimeFormat.parse("$todayString 8:00 AM"))
+    val timeStamp8am = Timestamp(dateNTimeFormat.parse("$todayString 08:00 AM"))
 
     val dayOfWeekFormat = SimpleDateFormat("E")
     val birthFormat = SimpleDateFormat("yyyy.MM")
     val dayInMonthFormat = SimpleDateFormat("dd")
-    val dateOnlyFormat = SimpleDateFormat("MM.dd")
+    val dateOnlyFormat = SimpleDateFormat("MM/dd")
     val yearOnlyFormat = SimpleDateFormat("yyyy")
     val notificationFormat = SimpleDateFormat("MM/dd hh:mm")
 }

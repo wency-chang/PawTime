@@ -2,10 +2,7 @@ package com.wency.petmanager.ext
 
 import androidx.fragment.app.Fragment
 import com.wency.petmanager.ManagerApplication
-import com.wency.petmanager.data.Event
-import com.wency.petmanager.data.MissionGroup
-import com.wency.petmanager.data.Pet
-import com.wency.petmanager.data.UserInfo
+import com.wency.petmanager.data.*
 import com.wency.petmanager.factory.*
 
 
@@ -62,4 +59,9 @@ fun Fragment.getVmFactory(petData: Pet, eventList: Array<Event>): MemoryViewMode
 fun Fragment.getVmFactory(missionList: Array<MissionGroup>?, petData: Pet ): MissionListViewModelFactory {
     val repository = (requireContext().applicationContext as ManagerApplication).repository
     return MissionListViewModelFactory( repository, missionList, petData)
+}
+
+fun Fragment.getVmFactory(petData: Pet, recordDocument: RecordDocument ): RecordViewModelFactory {
+    val repository = (requireContext().applicationContext as ManagerApplication).repository
+    return RecordViewModelFactory(repository, petData, recordDocument)
 }

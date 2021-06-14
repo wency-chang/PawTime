@@ -3,6 +3,7 @@ package com.wency.petmanager.data.source.local
 import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.MutableLiveData
+import com.google.firebase.Timestamp
 import com.wency.petmanager.data.*
 import java.net.URI
 
@@ -165,6 +166,22 @@ class ManagerLocalDataSource(val context: Context) : com.wency.petmanager.data.s
 
 
     override suspend fun getAllNotificationAlreadyUpdated(userId: String): Result<List<EventNotification>> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun getRecordData(petId: String): Result<List<RecordDocument>> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun addNewRecord(petId: String, newRecord: RecordDocument): Result<Boolean> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun updateRecord(
+        petId: String,
+        recordId: String,
+        recordData: Map<String, Double>
+    ): Result<Boolean> {
         TODO("Not yet implemented")
     }
 

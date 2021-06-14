@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+        <variable
+            name="viewModel"
+            type="com.wency.petmanager.profile.record.RecordListViewModel" />
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/grey_white">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraintLayout2"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:background="@color/blue_light"/>
+
+        <ImageView
+            android:id="@+id/recordListPetHeader"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:background="@drawable/bg_white_circle"
+            android:padding="4dp"
+            android:backgroundTint="@color/blue_light2"
+            imageUrlCircle="@{viewModel.petProfile.profilePhoto}"
+            app:layout_constraintBottom_toBottomOf="@+id/constraintLayout2"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/constraintLayout2"
+            tools:srcCompat="@tools:sample/avatars" />
+
+        <TextView
+            android:id="@+id/recordPetName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:fontFamily="@font/gudea"
+            android:textColor="@color/blue_light"
+            android:textSize="28dp"
+            android:textStyle="bold"
+            android:text="@{viewModel.petProfile.name}"
+            app:layout_constraintEnd_toEndOf="@+id/recordListPetHeader"
+            app:layout_constraintStart_toStartOf="@+id/recordListPetHeader"
+            app:layout_constraintTop_toBottomOf="@+id/recordListPetHeader"
+            tools:text="YOGA" />
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/recordPetName"
+            >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" >
+                <androidx.recyclerview.widget.RecyclerView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    android:orientation="vertical"
+                    recordDocumentAdapter="@{viewModel.recordListLiveData}"
+                    android:id="@+id/petRecordListRecycler"
+                    tools:listitem="@layout/item_record_list"/>
+                <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/addNewRecordButton"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginBottom="30dp"
+                    android:layout_gravity="center_horizontal"
+                    android:src="@drawable/ic_baseline_add_24_grey"
+                    android:background="@drawable/bg_white_circle"
+                    android:backgroundTint="@color/white"/>
+
+
+
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

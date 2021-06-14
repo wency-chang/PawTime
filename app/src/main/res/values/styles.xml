@@ -25,8 +25,14 @@
         <item name="android:datePickerMode">calendar</item>
     </style>
 
-    <style name="memoryDatePickDialog" parent="Theme.AppCompat.Light.Dialog">
+    <style name="memoryDatePickDialog" parent="Theme.MaterialComponents.Light.Dialog.MinWidth">
         <item name="colorAccent">@color/blue_light</item>
+        <item name="android:datePickerMode">spinner</item>
+        <item name="android:datePickerStyle">@style/pickDateSpinner</item>
+        
+    </style>
+
+    <style name="pickDateSpinner" parent="Widget.MaterialComponents.TimePicker">
         <item name="android:datePickerMode">spinner</item>
     </style>
 

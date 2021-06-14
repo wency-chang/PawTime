@@ -260,7 +260,74 @@
         app:destination="@id/missionListDialog"
         app:popUpToInclusive="true"
         app:popUpTo="@id/missionListDialog"/>
+    <dialog
+        android:id="@+id/recordDialog"
+        android:name="com.wency.petmanager.dialog.record.RecordDialog"
+        android:label="RecordDialog" >
+        <argument
+            android:name="recordDocument"
+            app:argType="com.wency.petmanager.data.RecordDocument" />
+        <argument
+            android:name="petData"
+            app:argType="com.wency.petmanager.data.Pet" />
+    </dialog>
+    <dialog
+        android:id="@+id/newRecordDialog"
+        android:name="com.wency.petmanager.dialog.record.NewRecordDialog"
+        android:label="NewRecordDialog" >
+        <argument
+            android:name="petData"
+            app:argType="com.wency.petmanager.data.Pet" />
+    </dialog>
+    <fragment
+        android:id="@+id/recordListFragment"
+        android:name="com.wency.petmanager.profile.record.RecordListFragment"
+        android:label="RecordListFragment" >
+        <action
+            android:id="@+id/action_recordListFragment_to_recordDialog"
+            app:destination="@id/recordDialog"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_recordListFragment_to_newRecordDialog"
+            app:destination="@id/newRecordDialog"
+            app:popUpToInclusive="true" />
+        <argument
+            android:name="petData"
+            app:argType="com.wency.petmanager.data.Pet" />
+        <action
+            android:id="@+id/action_recordListFragment_to_recordChartFragment"
+            app:destination="@id/recordChartFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
 
+    <action
+        android:id="@+id/action_global_to_record_list_fragment"
+        app:destination="@id/recordListFragment"
+        app:popUpToInclusive="true"
+        app:popUpTo="@id/recordListFragment"/>
+
+    <action
+        android:id="@+id/action_global_to_record_new_dialog"
+        app:destination="@id/newRecordDialog"
+        app:popUpToInclusive="true"
+        app:popUpTo="@id/newRecordDialog"/>
+
+    <action
+        android:id="@+id/action_global_to_record_dialog"
+        app:destination="@id/recordDialog"
+        app:popUpToInclusive="true"
+        app:popUpTo="@id/recordDialog"/>
+    <fragment
+        android:id="@+id/recordChartFragment"
+        android:name="com.wency.petmanager.profile.record.RecordChartFragment"
+        android:label="RecordChartFragment" >
+        <argument
+            android:name="recordDocument"
+            app:argType="com.wency.petmanager.data.RecordDocument" />
+        <argument
+            android:name="petData"
+            app:argType="com.wency.petmanager.data.Pet" />
+    </fragment>
 
 
 </navigation>

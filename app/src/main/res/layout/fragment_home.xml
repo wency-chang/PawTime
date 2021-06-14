@@ -285,7 +285,7 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <com.airbnb.lottie.LottieAnimationView
-                    android:id="@+id/progressBar"
+                    android:id="@+id/homeProgressBar"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="@color/white_transparent"
@@ -298,6 +298,20 @@
                     app:lottie_autoPlay="true"
                     app:lottie_fileName="paw_loading.json"
                     app:lottie_loop="true" />
+
+                <com.airbnb.lottie.LottieAnimationView
+                    android:id="@+id/hintArrowDown"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_marginBottom="8dp"
+                    android:visibility="@{mainViewModel.eventIdList.size()==0?View.VISIBLE:View.GONE}"
+                    app:layout_constraintBottom_toTopOf="@+id/floatingButtonExpend"
+                    app:layout_constraintEnd_toEndOf="@+id/floatingButtonExpend"
+                    app:layout_constraintStart_toStartOf="@+id/floatingButtonExpend"
+                    app:lottie_autoPlay="true"
+                    app:lottie_fileName="arrow_hint_down.json"
+                    app:lottie_loop="false" />
+
 
 
             </androidx.constraintlayout.widget.ConstraintLayout>

@@ -118,8 +118,9 @@ class HomeFragment : Fragment() {
             }
         })
 
-        binding.filterButton.setOnCheckedChangeListener { buttonView, isChecked ->
-            if (isChecked){
+
+        viewModel.tagExpand.observe(viewLifecycleOwner, Observer {
+            if (it){
                 binding.filterLayout.startAnimation(
                     AnimationUtils.loadAnimation(
                         this.context,
@@ -134,8 +135,7 @@ class HomeFragment : Fragment() {
                     )
                 )
             }
-
-        }
+        })
         timelineRecycler.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 when (newState) {
@@ -150,7 +150,12 @@ class HomeFragment : Fragment() {
                                 viewModel.clickCreateButton()
                             }
                         }
-                        viewModel.closeTagQuery()
+                        viewModel.tagExpand.value?.let {
+                            if (it){
+                                viewModel.closeTagQuery()
+                            }
+                        }
+
 
                     }
                     RecyclerView.SCROLL_STATE_IDLE -> {

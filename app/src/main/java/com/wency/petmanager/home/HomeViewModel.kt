@@ -228,6 +228,7 @@ class HomeViewModel(
 
 
     private fun initMission(petId: String, mission: MissionGroup) {
+        Log.d("MISSION","INIT MISSION")
         mission.complete = false
         mission.completeUserId = ""
         mission.completeUserName = ""
@@ -237,6 +238,7 @@ class HomeViewModel(
     }
 
     private fun updateMissionStatus(petId: String, mission: MissionGroup) {
+        Log.d("MISSION","UPDATE MISSION : $mission")
         coroutineScope.launch {
             when (val result = repository.updateMission(petId, mission)) {
                 is Result.Success -> {
@@ -305,6 +307,7 @@ class HomeViewModel(
                     )
 
                 } else {
+                    Log.d("MISSION","RECORD DATED NOT TODAY")
                     initMission(it[0].id, mission)
                 }
             }
@@ -574,7 +577,9 @@ class HomeViewModel(
     }
 
     fun closeTagQuery(){
-        _tagExpand.value = false
+        if (tagExpand.value==true) {
+            _tagExpand.value = false
+        }
     }
 
 

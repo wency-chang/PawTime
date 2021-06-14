@@ -13,6 +13,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.DatePicker
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.result.contract.ActivityResultContracts
@@ -191,7 +192,7 @@ class PetProfileFragment: Fragment() {
         binding.memoryModeButton.setOnClickListener {
             val alertDialog = AlertDialog.Builder(requireContext())
             alertDialog.setTitle("TURN INTO MEMORY MODE")
-                .setMessage("THIS WILL TURN ${viewModel.petNameLiveData.value} INTO MEMORY MODE \n\nARE YOU SURE ABOUT THIS?")
+                .setMessage("THIS WILL TURN ${viewModel.petNameLiveData.value} INTO MEMORY MODE")
                 .setNegativeButton("NO", DialogInterface.OnClickListener{ dialogInterface: DialogInterface, i: Int ->
                 })
                 .setPositiveButton("YES", DialogInterface.OnClickListener { dialog, which ->
@@ -215,6 +216,8 @@ class PetProfileFragment: Fragment() {
                     }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH))
                     datePicker.datePicker.maxDate = Instant.now().toEpochMilli()
 
+
+
                     datePicker.show()
 
                 })
@@ -222,7 +225,7 @@ class PetProfileFragment: Fragment() {
         }
 
         binding.petMissionText.setOnClickListener {
-            findNavController().navigate(PetProfileFragmentDirections.actionPetProfileFragmentToMissionListDialog(viewModel.petDataBeUpdate, viewModel.missionList.toTypedArray()))
+            findNavController().navigate(PetProfileFragmentDirections.actionPetProfileFragmentToMissionListDialog(viewModel.petProfile, viewModel.missionList.toTypedArray()))
         }
 
         viewModel.navigateBackHome.observe(viewLifecycleOwner, Observer {
@@ -231,6 +234,10 @@ class PetProfileFragment: Fragment() {
 
             }
         })
+
+        binding.recordButton.setOnClickListener {
+            findNavController().navigate(NavHostDirections.actionGlobalToRecordListFragment(viewModel.petProfile))
+        }
 
 
 

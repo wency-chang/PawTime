@@ -28,6 +28,7 @@ import com.wency.petmanager.home.adapter.TagQueryAdapter
 import com.wency.petmanager.memory.apater.MemoryListAdapter
 import com.wency.petmanager.network.LoadApiStatus
 import com.wency.petmanager.profile.CoverPhotoAdapter
+import com.wency.petmanager.profile.record.RecordListAdapter
 
 @BindingAdapter("HomeAPIStatus")
 fun bindStatus(statusImageView: ImageView, status: LoadApiStatus?){
@@ -195,6 +196,17 @@ fun missionBindRecyclerView(recyclerView: RecyclerView, data: List<MissionGroup>
         recyclerView.adapter?.apply {
             when(this){
                 is MissionAdapter -> submitList(it)
+            }
+        }
+    }
+}
+
+@BindingAdapter("recordDocumentAdapter")
+fun recordListBindRecyclerView(recyclerView: RecyclerView, data: List<RecordDocument>?) {
+    data?.let {
+        recyclerView.adapter?.apply {
+            when(this){
+                is RecordListAdapter -> submitList(it)
             }
         }
     }

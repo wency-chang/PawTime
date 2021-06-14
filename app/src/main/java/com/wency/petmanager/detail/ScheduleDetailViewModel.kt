@@ -677,6 +677,8 @@ class ScheduleDetailViewModel(val repository: Repository, val eventDetail: Event
             }
             val showPetList = petListForOption.filter {
                 petIdList.contains(it.id)
+            }.filter {
+                !it.memoryMode || eventDetail.petParticipantList.contains(it.id)
             }
             val petSelectedIdList = currentDetailData.petParticipantList.filter {
                 petIdList.contains(it)

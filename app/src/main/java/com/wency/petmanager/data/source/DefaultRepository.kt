@@ -2,6 +2,7 @@ package com.wency.petmanager.data.source
 
 import android.net.Uri
 import androidx.lifecycle.MutableLiveData
+import com.google.firebase.Timestamp
 import com.wency.petmanager.data.*
 
 class DefaultRepository(private val remoteDataSource: DataSource
@@ -167,6 +168,25 @@ class DefaultRepository(private val remoteDataSource: DataSource
 
     override suspend fun getAllNotificationAlreadyUpdated(userId: String): Result<List<EventNotification>> {
         return remoteDataSource.getAllNotificationAlreadyUpdated(userId)
+    }
+
+    override suspend fun getRecordData(petId: String): Result<List<RecordDocument>> {
+        return remoteDataSource.getRecordData(petId)
+    }
+
+    override suspend fun addNewRecord(
+        petId: String,
+        newRecord: RecordDocument
+    ): Result<Boolean> {
+        return remoteDataSource.addNewRecord(petId, newRecord)
+    }
+
+    override suspend fun updateRecord(
+        petId: String,
+        recordId: String,
+        recordData: Map<String, Double>
+    ): Result<Boolean> {
+        return remoteDataSource.updateRecord(petId, recordId, recordData)
     }
 
 
