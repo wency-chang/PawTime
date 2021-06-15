@@ -50,6 +50,8 @@ class HomeViewModel(
     private var viewModelJob = Job()
     private val coroutineScope = CoroutineScope(viewModelJob + Dispatchers.Main)
 
+    val notifyDataSetChange = MutableLiveData<Boolean>(false)
+
 
     private val _isCreateButtonVisible = MutableLiveData<Boolean>(false)
 
@@ -517,11 +519,10 @@ class HomeViewModel(
 
         if (add){
             _tagQueryList.value?.add(tag)
-            _tagQueryList.value = _tagQueryList.value
         } else {
             _tagQueryList.value?.remove(tag)
-            _tagQueryList.value = _tagQueryList.value
         }
+        _tagQueryList.value = _tagQueryList.value
 
     }
 
@@ -574,6 +575,8 @@ class HomeViewModel(
         } else {
             _tagQueryList.value = mutableSetOf()
         }
+        _tagQueryList.value = _tagQueryList.value
+        notifyDataSetChange.value = true
     }
 
     fun closeTagQuery(){

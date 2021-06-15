@@ -51,7 +51,7 @@
                 android:layout_marginStart="16dp"
                 android:textColor="@color/white"
                 android:textSize="28dp"
-                android:text="@{viewModel.recordDocument.recordTitle}"
+                android:text="@{viewModel.titleTextLiveData}"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/recordChartHeader"

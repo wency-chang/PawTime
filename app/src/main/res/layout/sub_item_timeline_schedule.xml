@@ -57,12 +57,14 @@
 
                 <TextView
                     android:id="@+id/scheduleTime"
-                    android:layout_width="70dp"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="start"
+                    android:layout_marginEnd="70dp"
                     android:text="@{time}"
                     android:textSize="16dp"
                     android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
@@ -231,6 +233,7 @@
                     app:srcCompat="@drawable/ic_baseline_more_horiz_24_color" />
 
                 <LinearLayout
+                    android:id="@+id/linearLayout7"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
@@ -238,20 +241,20 @@
                     app:layout_constraintBottom_toBottomOf="@+id/scheduleTime"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
+
                     <ImageView
                         android:layout_width="20dp"
                         android:layout_height="20dp"
                         android:layout_gravity="center_vertical"
                         android:src="@drawable/ic_outline_location_on_24"
-                        android:visibility="@{event.locationName.length()==0?View.GONE: View.VISIBLE}"/>
+                        android:visibility="@{event.locationName.length()==0?View.GONE: View.VISIBLE}" />
 
                     <ImageView
                         android:layout_width="20dp"
                         android:layout_height="20dp"
                         android:layout_gravity="center_vertical"
                         android:src="@drawable/ic_baseline_edit_note_24"
-                        android:visibility="@{event.memoList.size()==0?View.GONE: View.VISIBLE}"/>
-
+                        android:visibility="@{event.memoList.size()==0?View.GONE: View.VISIBLE}" />
 
 
                 </LinearLayout>

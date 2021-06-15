@@ -11,8 +11,9 @@
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="350dp"
-        android:layout_height="wrap_content">
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        >
 
         <ImageView
             android:id="@+id/invitePhoto"
@@ -69,9 +70,9 @@
             app:layout_constraintTop_toTopOf="@+id/inviteConfirmButton" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/clickToDialog"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:id="@+id/clickToDialog"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@+id/inviteName"
             app:layout_constraintStart_toStartOf="@+id/invitePhoto"

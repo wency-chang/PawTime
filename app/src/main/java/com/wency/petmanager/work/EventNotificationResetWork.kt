@@ -27,7 +27,7 @@ class EventNotificationResetWork(val context: Context, workerParameters: WorkerP
         return Result.success()
     }
 
-    fun getNotificationList(){
+    private fun getNotificationList(){
         coroutineScope.launch {
             UserManager.userID?.let {
                 when (val result = RemoteDataSource.getAllNotificationAlreadyUpdated(it)){

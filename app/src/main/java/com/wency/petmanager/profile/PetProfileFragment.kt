@@ -14,6 +14,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.DatePicker
+import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.result.contract.ActivityResultContracts
@@ -164,7 +165,14 @@ class PetProfileFragment: Fragment() {
         }
 
         binding.coverPhotoCancelButton.setOnClickListener {
-            viewModel.deleteCoverPhoto(coverPager.currentItem)
+            viewModel.coverPhoto.value?.let {
+                if (it.isEmpty()){
+                    Toast.makeText(this.requireContext(), "No cover photo to delete~", Toast.LENGTH_SHORT).show()
+                } else {
+                    viewModel.deleteCoverPhoto(coverPager.currentItem)
+                }
+            }
+
         }
 
         binding.coverPhotoEditButton.setOnClickListener {

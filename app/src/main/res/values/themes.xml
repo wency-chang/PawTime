@@ -15,6 +15,7 @@
 
         <item name="colorAccent">@color/blue_light</item>
         <item name="android:textColor">@color/grey_dark</item>
+        <item name="backgroundColor">@color/white</item>
 
         <item name="materialCalendarStyle">@style/Widget.MaterialComponents.MaterialCalendar</item>
         <item name="materialCalendarFullscreenTheme">@style/ThemeOverlay.MaterialComponents.MaterialCalendar.Fullscreen</item>

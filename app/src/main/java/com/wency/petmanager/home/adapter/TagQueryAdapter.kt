@@ -36,7 +36,7 @@ class TagQueryAdapter(val viewModel: HomeViewModel): ListAdapter<String, TagQuer
             viewModel.tagQueryList.value?.contains(tag)?.let { holder.bind(tag, it) }
         }
         holder.tagChip.setOnCheckedChangeListener { _, checked: Boolean ->
-            Log.d("Debug", "Chip click $checked, tag: $tag")
+
             viewModel.clickQuery(tag, checked)
         }
     }

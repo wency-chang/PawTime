@@ -47,21 +47,22 @@ object UserManager {
 object Today{
     private val today = Date()
     @SuppressLint("SimpleDateFormat")
-    val dateFormat = SimpleDateFormat("yyyy.MM.dd")
-    val todayString = dateFormat.format(today)
+    val dateFormat = SimpleDateFormat("yyyy.MM.dd", Locale.ENGLISH)
+    val todayString = today?.let { dateFormat.format(it)}
     @SuppressLint("SimpleDateFormat")
 
-    val timeFormat12 = SimpleDateFormat("hh:mm a")
+    val timeFormat12 = SimpleDateFormat("hh:mm a", Locale.ENGLISH)
 
     @SuppressLint("SimpleDateFormat")
-    val dateNTimeFormat = SimpleDateFormat("yyyy.MM.dd hh:mm a")
+    val dateNTimeFormat = SimpleDateFormat("yyyy.MM.dd hh:mm a", Locale.ENGLISH)
 
     val timeStamp8am = Timestamp(dateNTimeFormat.parse("$todayString 08:00 AM"))
 
-    val dayOfWeekFormat = SimpleDateFormat("E")
-    val birthFormat = SimpleDateFormat("yyyy.MM")
-    val dayInMonthFormat = SimpleDateFormat("dd")
-    val dateOnlyFormat = SimpleDateFormat("MM/dd")
-    val yearOnlyFormat = SimpleDateFormat("yyyy")
-    val notificationFormat = SimpleDateFormat("MM/dd hh:mm")
+    val dayOfWeekFormat = SimpleDateFormat("E", Locale.ENGLISH)
+    val birthFormat = SimpleDateFormat("yyyy.MM", Locale.ENGLISH)
+    val dayInMonthFormat = SimpleDateFormat("dd", Locale.ENGLISH)
+    val dateOnlyFormat = SimpleDateFormat("MM/dd", Locale.ENGLISH)
+    val yearOnlyFormat = SimpleDateFormat("yyyy", Locale.ENGLISH)
+    val notificationFormat = SimpleDateFormat("MM/dd hh:mm", Locale.ENGLISH)
+    val recordDayFormat = SimpleDateFormat("MM/dd", Locale.ENGLISH)
 }

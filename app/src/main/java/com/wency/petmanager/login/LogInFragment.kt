@@ -71,8 +71,7 @@ class LogInFragment: Fragment() {
             viewModel.logInSuccess.observe(viewLifecycleOwner, Observer {
                 if (it) {
                     findNavController().navigate(NavHostDirections.actionGlobalToLoadingFragment())
-                    mainViewModel.assignWorksForMission()
-                    mainViewModel.assignWorkForEventCheck()
+                    mainViewModel.setSystemAlarm()
                 }
             })
         }

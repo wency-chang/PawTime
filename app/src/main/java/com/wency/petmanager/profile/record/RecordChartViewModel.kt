@@ -9,6 +9,7 @@ import com.wency.petmanager.data.RecordDocument
 import com.wency.petmanager.data.Records
 import com.wency.petmanager.profile.Today
 import lecho.lib.hellocharts.model.AxisValue
+import java.util.*
 
 class RecordChartViewModel(val petData: Pet, val recordDocument: RecordDocument): ViewModel() {
     private val _chartData = MutableLiveData<MutableList<Records>>()
@@ -16,7 +17,9 @@ class RecordChartViewModel(val petData: Pet, val recordDocument: RecordDocument)
         get() = _chartData
 
     val xAxis = mutableListOf<AxisValue>()
-    val yAxis = mutableListOf<Float>()
+    val yAxis = mutableListOf<AxisValue>()
+
+    val titleTextLiveData = MutableLiveData<String>("${recordDocument.recordTitle} (${recordDocument.recordUnit})")
 
     init {
         getChartLiveData()
@@ -31,14 +34,29 @@ class RecordChartViewModel(val petData: Pet, val recordDocument: RecordDocument)
             it.recordDate
         }
 
-        if (recordDocument.recordData.size > 9){
-            list.subList(list.lastIndex-9, list.lastIndex)
+        if (recordDocument.recordData.size > 7){
+            list.subList(list.lastIndex-7, list.lastIndex)
         }
 
         for (point in list.indices){
-            xAxis.add(AxisValue(point.toFloat()).setLabel(Today.dateOnlyFormat.format(list[point].recordDate)))
+            if (point == 0){
+                xAxis.add(AxisValue(point.toFloat()).setLabel(Today.recordDayFormat.format(list[point].recordDate)))
+            } else {
+                val calendar1 = Calendar.getInstance()
+                val calendar2 = Calendar.getInstance()
+                calendar1.time = list[point-1].recordDate
+                calendar2.time = list[point].recordDate
+                if (calendar1.get(Calendar.YEAR) == calendar2.get(Calendar.YEAR)){
+                    xAxis.add(AxisValue(point.toFloat()).setLabel(Today.dateOnlyFormat.format(list[point].recordDate)))
+                } else {
+                    xAxis.add(AxisValue(point.toFloat()).setLabel(Today.recordDayFormat.format(list[point].recordDate)))
+                }
+
+            }
+
+            yAxis.add(AxisValue(list[point].recordNumber.toFloat()))
         }
-        Log.d("Chart","XAix = $xAxis")
+
 
 
         _chartData.value = list

@@ -12,6 +12,7 @@ import com.wency.petmanager.data.source.remote.RemoteDataSource
 import com.wency.petmanager.profile.UserManager
 import com.wency.petmanager.work.EventNotificationWork
 import com.wency.petmanager.work.MissionRemindWork
+import com.wency.petmanager.work.SystemAlarmSetting
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -26,74 +27,86 @@ class NotificationReceiver: BroadcastReceiver() {
 
         Log.d("ALARM","Broadcast receive $purpose")
 
+        if (intent?.action == Intent.ACTION_REBOOT){
+//            get action reboot intent to reset the work
 
-        when (purpose){
-            PURPOSE_MISSION_NOTIFICATION -> {
+            val resetWork = SystemAlarmSetting()
+            resetWork.assignWorkForDailyMission()
+            resetWork.assignWorkForEventCheck()
+
+        } else {
+            when (purpose) {
+                PURPOSE_MISSION_NOTIFICATION -> {
 //                check mission state alarm receive
-                val constrains = Constraints.Builder()
-                    .setRequiredNetworkType(NetworkType.CONNECTED)
-                    .build()
+                    val constrains = Constraints.Builder()
+                        .setRequiredNetworkType(NetworkType.CONNECTED)
+                        .build()
 
-                val checkMissionWorkRequest: WorkRequest = OneTimeWorkRequestBuilder<MissionRemindWork>()
-                    .setConstraints(constrains)
-                    .build()
-                WorkManager.getInstance(context).enqueue(checkMissionWorkRequest)
-
-
-            }
-
-            else -> {
-//                event alarm receive
-                val eventId = intent?.getStringExtra(EventNotificationWork.EVENT_ID)
-                val eventTitle = intent?.getStringExtra(EventNotificationWork.EVENT_TITLE)
-                val location = intent?.getStringExtra(EventNotificationWork.EVENT_LOCATION)
-                val locationName = intent?.getStringExtra(EventNotificationWork.EVENT_LOCATION_NAME)
-                val eventTime = intent?.getStringExtra(EventNotificationWork.EVENT_TIME)
+                    val checkMissionWorkRequest: WorkRequest =
+                        OneTimeWorkRequestBuilder<MissionRemindWork>()
+                            .setConstraints(constrains)
+                            .build()
+                    WorkManager.getInstance(context).enqueue(checkMissionWorkRequest)
 
 
-                val detailEventIntent: Intent = Uri.parse("pawtime://schedule.detail").let {
-                    Intent(Intent.ACTION_VIEW, it)
                 }
-                detailEventIntent.putExtra(EVENT_ID, eventId)
-                detailEventIntent.putExtra(PURPOSE, PURPOSE_EVENT_NOTIFICATION)
-                val pendingIntent: PendingIntent =
-                    PendingIntent.getActivity(context,
-                        EVENT_ALARM_REQUEST_CODE, detailEventIntent, PendingIntent.FLAG_CANCEL_CURRENT)
-                val builder = Notification.Builder(context, "${eventId}")
 
-                builder.setContentTitle("schedule reminder. ${eventTitle}")
-                    .setSmallIcon(R.drawable.ic_paw_time__ui__06)
-                    .setContentText("${eventTime} ${eventTitle} is Starting!!  \n Click for more")
-                    .setContentIntent(pendingIntent)
-                    .setAutoCancel(true)
+                else -> {
+//                event alarm receive
+                    val eventId = intent?.getStringExtra(EventNotificationWork.EVENT_ID)
+                    val eventTitle = intent?.getStringExtra(EventNotificationWork.EVENT_TITLE)
+                    val location = intent?.getStringExtra(EventNotificationWork.EVENT_LOCATION)
+                    val locationName =
+                        intent?.getStringExtra(EventNotificationWork.EVENT_LOCATION_NAME)
+                    val eventTime = intent?.getStringExtra(EventNotificationWork.EVENT_TIME)
 
-                val manager = context.getSystemService(Service.NOTIFICATION_SERVICE) as NotificationManager
-                val channel = NotificationChannel(
-                    "${eventId}", "Paw Time Schedule Reminder", NotificationManager.IMPORTANCE_HIGH
-                )
-                channel.enableLights(true)
-                channel.enableVibration(true)
-                manager.createNotificationChannel(channel)
-                manager.notify(EVENT_ALARM_REQUEST_CODE, builder.build())
 
-                UserManager.userID?.let {
-                    coroutineScope.launch {
-                        eventId?.let { eventId->
-                            RemoteDataSource.deleteNotification(it, eventId)
+                    val detailEventIntent: Intent = Uri.parse("pawtime://schedule.detail").let {
+                        Intent(Intent.ACTION_VIEW, it)
+                    }
+                    detailEventIntent.putExtra(EVENT_ID, eventId)
+                    detailEventIntent.putExtra(PURPOSE, PURPOSE_EVENT_NOTIFICATION)
+                    val pendingIntent: PendingIntent =
+                        PendingIntent.getActivity(
+                            context,
+                            EVENT_ALARM_REQUEST_CODE,
+                            detailEventIntent,
+                            PendingIntent.FLAG_CANCEL_CURRENT
+                        )
+                    val builder = Notification.Builder(context, "${eventId}")
+
+                    builder.setContentTitle("schedule reminder. ${eventTitle}")
+                        .setSmallIcon(R.drawable.ic_paw_time__ui__06)
+                        .setContentText("${eventTime} ${eventTitle} is Starting!!  \n Click for more")
+                        .setContentIntent(pendingIntent)
+                        .setAutoCancel(true)
+
+                    val manager =
+                        context.getSystemService(Service.NOTIFICATION_SERVICE) as NotificationManager
+                    val channel = NotificationChannel(
+                        "${eventId}",
+                        "Paw Time Schedule Reminder",
+                        NotificationManager.IMPORTANCE_HIGH
+                    )
+                    channel.enableLights(true)
+                    channel.enableVibration(true)
+                    manager.createNotificationChannel(channel)
+                    manager.notify(EVENT_ALARM_REQUEST_CODE, builder.build())
+
+                    UserManager.userID?.let {
+                        coroutineScope.launch {
+                            eventId?.let { eventId ->
+                                RemoteDataSource.deleteNotification(it, eventId)
+                            }
                         }
+
                     }
 
+
                 }
-
-
-
             }
-
-
-
-
-
         }
+
 
     }
 

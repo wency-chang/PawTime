@@ -39,14 +39,21 @@ class MissionRemindWork(val context: Context, workerParameters: WorkerParameters
     }
 
     private fun getUserProfile(){
+
         coroutineScope.launch {
-            when(val result = RemoteDataSource.getUserProfile(UserManager.userID!!)){
-                is com.wency.petmanager.data.Result.Success -> {
-                    userInfo = result.data
-                    userInfo.petList?.let { getMissionToday(it) }
-                    userInfo.petList?.let { deleteOverMission(it)}
+            UserManager.userID?.let {
+                when(val result = RemoteDataSource.getUserProfile(it)){
+                    is com.wency.petmanager.data.Result.Success -> {
+                        if (result.data.userId.isNotEmpty()) {
+                            userInfo = result.data
+                            userInfo.petList?.let { getMissionToday(it) }
+                            userInfo.petList?.let { deleteOverMission(it) }
+                        }
+                    }
                 }
+
             }
+
         }
     }
 

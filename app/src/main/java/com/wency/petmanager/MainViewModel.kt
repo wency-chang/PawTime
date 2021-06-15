@@ -20,6 +20,7 @@ import com.wency.petmanager.profile.Today
 import com.wency.petmanager.profile.UserManager
 import com.wency.petmanager.work.EventNotificationResetWork
 import com.wency.petmanager.work.EventNotificationWork
+import com.wency.petmanager.work.SystemAlarmSetting
 import kotlinx.coroutines.*
 import java.util.concurrent.TimeUnit
 
@@ -156,55 +157,60 @@ class MainViewModel(private val firebaseRepository: Repository) : ViewModel() {
     }
 
     fun getPetData() {
-        val petDataList = mutableListOf<Pet?>()
+        val petDataList = mutableListOf<Pet>()
+
 
         userInfoProfile.value?.petList?.let { petList ->
+            if (petList.isNotEmpty()) {
 
-            coroutineScope.async {
+                coroutineScope.async {
 
-                for (petId in petList) {
+                    for (petId in petList) {
 
 
-                    when (val result = firebaseRepository.getPetData(petId)) {
-                        is Result.Success -> {
-                            _error.value = null
-                            _status.value = LoadApiStatus.DONE
-                            petDataList.add(result.data)
-                            val tempList = mutableListOf<Pet>()
+                        when (val result = firebaseRepository.getPetData(petId)) {
+                            is Result.Success -> {
+                                _error.value = null
+                                _status.value = LoadApiStatus.DONE
+                                petDataList.add(result.data)
+                                val tempList = mutableListOf<Pet>()
 
-                            if (petDataList.size == petList.size) {
+                                if (petDataList.size == petList.size) {
 
-                                for (pet in petDataList){
-                                    pet?.let {
-                                        tempList.add(it)
+                                    for (pet in petDataList) {
+                                        pet?.let {
+                                            tempList.add(it)
+                                        }
                                     }
+                                    val petListForHome = tempList.filter {
+                                        !it.memoryMode
+                                    }
+                                    val memoryList = tempList.filter {
+                                        it.memoryMode
+                                    }
+                                    _userPetList.value = petListForHome.toMutableList()
+                                    _memoryPetList.value = memoryList.toMutableList()
+                                    petDataForAll.addAll(tempList)
                                 }
-                                val petListForHome = tempList.filter {
-                                    !it.memoryMode
-                                }
-                                val memoryList = tempList.filter {
-                                    it.memoryMode
-                                }
-                                _userPetList.value = petListForHome.toMutableList()
-                                _memoryPetList.value = memoryList.toMutableList()
-                                petDataForAll.addAll(tempList)
                             }
-                        }
-                        is Result.Error -> {
-                            _error.value = result.exception.toString()
-                            _status.value = LoadApiStatus.ERROR
-                        }
-                        is Result.Fail -> {
-                            _error.value = result.error
-                            _status.value = LoadApiStatus.ERROR
-                        }
-                        else -> {
-                            _error.value =
-                                ManagerApplication.instance.getString(R.string.error_message)
-                            _status.value = LoadApiStatus.ERROR
+                            is Result.Error -> {
+                                _error.value = result.exception.toString()
+                                _status.value = LoadApiStatus.ERROR
+                            }
+                            is Result.Fail -> {
+                                _error.value = result.error
+                                _status.value = LoadApiStatus.ERROR
+                            }
+                            else -> {
+                                _error.value =
+                                    ManagerApplication.instance.getString(R.string.error_message)
+                                _status.value = LoadApiStatus.ERROR
+                            }
                         }
                     }
                 }
+            } else {
+                _userPetList.value = mutableListOf()
             }
         }
     }
@@ -464,8 +470,10 @@ class MainViewModel(private val firebaseRepository: Repository) : ViewModel() {
         val intent = Intent(ManagerApplication.instance, NotificationReceiver::class.java)
         intent.putExtra(NotificationReceiver.PURPOSE, NotificationReceiver.PURPOSE_MISSION_NOTIFICATION)
         val pendingIntent = PendingIntent.getBroadcast(ManagerApplication.instance, NotificationReceiver.MISSION_REQUEST_CODE, intent, PendingIntent.FLAG_UPDATE_CURRENT)
-        val time = Today.dateNTimeFormat.parse("${Today.todayString} 21:30 PM")
-        alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, time.time, AlarmManager.INTERVAL_DAY, pendingIntent)
+        val time = Today.dateNTimeFormat.parse("${Today.todayString} 09:30 PM")
+        time?.let {
+            alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, it.time, AlarmManager.INTERVAL_DAY, pendingIntent)
+        }
     }
 
     fun assignWorkForEventCheck(){
@@ -550,9 +558,6 @@ class MainViewModel(private val firebaseRepository: Repository) : ViewModel() {
 
         }
 
-
-
-
     }
 
     private fun clearWorkSuccess(){
@@ -587,6 +592,12 @@ class MainViewModel(private val firebaseRepository: Repository) : ViewModel() {
 
         WorkManager.getInstance(ManagerApplication.instance).enqueue(resetNotificationWorkRequest)
 
+    }
+
+    fun setSystemAlarm(){
+        val resetWork = SystemAlarmSetting()
+        resetWork.assignWorkForDailyMission()
+        resetWork.assignWorkForEventCheck()
     }
 
 

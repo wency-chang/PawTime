@@ -19,6 +19,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.OrientationHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
@@ -119,6 +120,8 @@ class HomeFragment : Fragment() {
         })
 
 
+
+
         viewModel.tagExpand.observe(viewLifecycleOwner, Observer {
             if (it){
                 binding.filterLayout.startAnimation(
@@ -136,6 +139,8 @@ class HomeFragment : Fragment() {
                 )
             }
         })
+
+
         timelineRecycler.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 when (newState) {
@@ -169,13 +174,13 @@ class HomeFragment : Fragment() {
         val tagQueryRecycler = binding.tagQueryRecycler
 
         tagQueryRecycler.adapter = TagQueryAdapter(viewModel)
-        viewModel.tagList.observe(viewLifecycleOwner, Observer {
-//            val layoutManager = StaggeredGridLayoutManager((it.size/15+1)*5, OrientationHelper.HORIZONTAL)
-//
-//            binding.tagQueryRecycler.layoutManager = layoutManager
+
+        viewModel.notifyDataSetChange.observe(viewLifecycleOwner, Observer {
+            if (it){
+                (tagQueryRecycler.adapter as RecyclerView.Adapter).notifyDataSetChanged()
+                viewModel.notifyDataSetChange.value = false
+            }
         })
-
-
 
         binding.todayFloatingActionButton.setOnClickListener {
             viewModel.scrollToToday.value?.let {
@@ -192,9 +197,7 @@ class HomeFragment : Fragment() {
         })
 
         viewModel.tagQueryList.observe(viewLifecycleOwner, Observer {
-            Log.d("Debug", "tagQueryList observe $it")
             viewModel.queryByTag()
-
         })
 
         viewModel.navigateToCreateDestination.observe(viewLifecycleOwner, Observer {
@@ -202,7 +205,6 @@ class HomeFragment : Fragment() {
                 if (it < 3) {
                     mainViewModel.userInfoProfile.value?.let { userInfo ->
                         mainViewModel.userPetList.value?.let { petList ->
-                            Log.d("WHY", "USER PET LIST = $petList")
                             this.findNavController().navigate(
                                 NavHostDirections.actionGlobalToCreateFragment(
                                     it,

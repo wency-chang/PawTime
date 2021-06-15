@@ -56,7 +56,6 @@
                     android:inputType="text"
                     android:textColor="@color/blue_light"
                     android:textSize="24dp"
-                    android:textStyle="bold"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/recordTitleText"
                     app:layout_constraintTop_toBottomOf="@+id/newRecord" />
@@ -96,7 +95,6 @@
                     android:inputType="text"
                     android:textColor="@color/blue_light"
                     android:textSize="22dp"
-                    android:textStyle="bold"
                     app:layout_constraintEnd_toEndOf="@+id/recordTitleEditText"
                     app:layout_constraintStart_toStartOf="@+id/recordTitleEditText"
                     app:layout_constraintTop_toBottomOf="@+id/linearLayout6" />

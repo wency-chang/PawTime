@@ -15,14 +15,14 @@
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/memoListItemLayout">
 
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/clickableMemoCard"
-            android:layout_width="240dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="8dp"
             android:layout_marginTop="8dp"

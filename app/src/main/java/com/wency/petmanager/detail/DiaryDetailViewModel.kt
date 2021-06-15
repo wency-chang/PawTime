@@ -158,37 +158,36 @@ class DiaryDetailViewModel(val repository: Repository, val eventDetail: Event) :
         petDataList.value?.let { petList->
             petList.forEach {
                 tagList.addAll(it.tagList)
-                Log.d("TAGFORDIARY","PET TAG OPTION: ${it.tagList}")
             }
         }
 
         petListForOption.forEach {
             tagList.addAll(it.tagList)
-
         }
-        Log.d("TAGFORDIARY","EVENT TAG OPTION: ${eventDetail.tagList}")
+
         tagList.addAll(eventDetail.tagList)
         tagOptionList = tagList.toMutableList()
-        Log.d("TAGFORDIARY","TAG OPTION: $tagOptionList")
+
     }
 
-    fun getPetListOption(memory: List<Pet>, pet: List<Pet>){
+    fun getPetListOption(memory: List<Pet>, userPet: List<Pet>, allPet: List<Pet>){
         val list = mutableSetOf<Pet>()
         list.addAll(memory.filter {
             eventDetail.petParticipantList.contains(it.id)
         })
-        list.addAll(pet)
+        list.addAll(allPet.filter {
+            eventDetail.petParticipantList.contains(it.id)
+        })
+        list.addAll(userPet)
+        Log.d("Debug","${list.size}")
         _petListForOption = list.toMutableList()
     }
-
-
 
 
     private fun checkComplete(completeCount : Int){
         if (completeCount == 3){
             _loadingStatus.value = LoadStatus.DoneUpdate
         }
-
     }
 
 

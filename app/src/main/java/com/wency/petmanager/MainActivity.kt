@@ -15,6 +15,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.net.toUri
 import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
@@ -57,6 +58,8 @@ class MainActivity : AppCompatActivity() {
         val window = window
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
 
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+
 
         val navController = findNavController(R.id.navHostNavigation)
 
@@ -74,6 +77,7 @@ class MainActivity : AppCompatActivity() {
             binding.viewModel = viewModel
 
             if (it.petList.isNullOrEmpty()){
+                viewModel.getPetData()
                 findNavController(R.id.navHostNavigation)
                     .navigate(NavHostDirections.actionGlobalToHomeFragment
                         (it, null, null)
@@ -81,8 +85,11 @@ class MainActivity : AppCompatActivity() {
             }
             else {
                 viewModel.getPetData()
-                viewModel.petNumber.value = "${it.petList!!.size}"
             }
+            it.petList?.let {
+                viewModel.petNumber.value = "${it.size}"
+            }
+
 
             viewModel.inviteListLiveData.observe(this, Observer {
 //                for badge

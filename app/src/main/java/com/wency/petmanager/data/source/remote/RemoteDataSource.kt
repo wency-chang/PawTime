@@ -767,8 +767,8 @@ object RemoteDataSource : DataSource {
             )
             val bitmap = MediaStore.Images.Media.getBitmap(ManagerApplication.instance.contentResolver, uri)
             val compressedBitmap = if (folder.contains("Header")){
-                    compressBitmap(bitmap, 40) } else {
-                        compressBitmap(bitmap, 70)
+                    compressBitmap(bitmap, 30) } else {
+                        compressBitmap(bitmap, 60)
                     }
                     fileReference.putBytes(compressedBitmap)
                         .continueWithTask { task ->

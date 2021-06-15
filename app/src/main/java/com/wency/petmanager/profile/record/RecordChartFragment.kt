@@ -42,7 +42,7 @@ class RecordChartFragment: Fragment() {
             for (point in it.indices){
                 chartList.add(PointValue(point.toFloat(), it[point].recordNumber.toFloat()))
             }
-            Log.d("Chart","chartList: $chartList")
+
             if (it.isNotEmpty()){
                 linearChart.apply {
                     stopNestedScroll()
@@ -53,19 +53,19 @@ class RecordChartFragment: Fragment() {
                 val chartData = LineChartData()
                 val axisX = Axis()
                 val axisY = Axis()
-                axisY.setHasTiltedLabels(true)
-                axisY.typeface = Typeface.DEFAULT_BOLD
                 axisX.textColor = ManagerApplication.instance.getColor(R.color.blue_light)
                 axisX.values = viewModel.xAxis
                 axisX.typeface = Typeface.DEFAULT_BOLD
+                axisY.textColor = ManagerApplication.instance.getColor(R.color.grey_medium2)
+                axisY.textSize = 14
+                axisY.typeface = Typeface.SANS_SERIF
+                axisY.setHasLines(true)
                 chartData.lines = listOf(line)
                 chartData.axisXBottom = axisX
                 chartData.axisYLeft = axisY
                 chartData.axisYRight = axisY
                 chartData.isValueLabelBackgroundEnabled = true
                 chartData.valueLabelTypeface = Typeface.DEFAULT_BOLD
-
-
                 linearChart.lineChartData = chartData
 
             }

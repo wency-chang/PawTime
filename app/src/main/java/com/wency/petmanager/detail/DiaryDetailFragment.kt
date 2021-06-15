@@ -79,11 +79,14 @@ class DiaryDetailFragment: Fragment(), OnMapReadyCallback, AddMemoDialog.MemoDia
         binding = FragmentDiaryDetailBinding.inflate(layoutInflater, container, false)
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
-        mainViewModel.userPetList.value?.let { petList->
-            mainViewModel.memoryPetList.value?.let {memory->
-                viewModel.getPetListOption(memory, petList)
+        mainViewModel.petDataForAll?.let { petList->
+            mainViewModel.userPetList.value?.let {userPet->
+                mainViewModel.memoryPetList.value?.let {memory->
+                    viewModel.getPetListOption(memory, userPet, petList.toList())
+                }
 
             }
+
         }
 
 

@@ -20,12 +20,14 @@
         <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/petCoverPicture"
             android:layout_width="0dp"
-            android:layout_height="360dp"
+            android:layout_height="0dp"
+            android:layout_marginBottom="70dp"
+            android:src="@drawable/ic_paw_time__ui__06"
+            app:layout_constraintBottom_toTopOf="@+id/petNameEditText"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:srcCompat="@tools:sample/backgrounds/scenic"
-            android:src="@drawable/ic_paw_time__ui__06">
+            tools:srcCompat="@tools:sample/backgrounds/scenic">
 
         </androidx.viewpager2.widget.ViewPager2>
 
@@ -83,47 +85,46 @@
             imageUrlCircle="@{viewModel.profilePhoto}"
             android:layout_width="120dp"
             android:layout_height="120dp"
-            android:layout_marginTop="300dp"
             android:background="@drawable/bg_circle_padding_medium"
             android:backgroundTint="@color/blue_light2"
-            app:layout_constraintEnd_toEndOf="parent"
             android:clickable="@{viewModel.editable?true:false}"
-            app:layout_constraintStart_toStartOf="@+id/petCoverPicture"
-            app:layout_constraintTop_toTopOf="@+id/petCoverPicture"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="@id/petCoverPicture"
+            app:layout_constraintTop_toBottomOf="@id/petCoverPicture"
             tools:srcCompat="@tools:sample/avatars" />
-
 
 
         <EditText
             android:id="@+id/petNameEditText"
             android:layout_width="wrap_content"
             android:layout_height="55dp"
-            android:layout_marginTop="12dp"
-            android:text="@={viewModel.petNameLiveData}"
-            android:textSize="32sp"
-            android:textStyle="bold"
-            android:singleLine="true"
-            android:imeOptions="actionDone"
-            android:clickable="@{viewModel.editable?true:false}"
-            android:textColor="@color/blue_light"
+            android:layout_marginBottom="12dp"
             android:background="@null"
             android:backgroundTint="@{viewModel.editable?@color/blue_light:@color/transparent}"
+            android:clickable="@{viewModel.editable?true:false}"
             android:contextClickable="@{viewModel.editable?true:false}"
-            app:layout_constraintEnd_toEndOf="@+id/petHeaderPicture"
-            app:layout_constraintStart_toStartOf="@+id/petHeaderPicture"
             android:focusable="@{viewModel.editable?true:false}"
             android:focusableInTouchMode="@{viewModel.editable?true:false}"
-            app:layout_constraintTop_toBottomOf="@+id/petHeaderPicture" />
+            android:imeOptions="actionDone"
+            android:singleLine="true"
+            android:text="@={viewModel.petNameLiveData}"
+            android:textColor="@color/blue_light"
+            android:textSize="32sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/petLocationText"
+            app:layout_constraintEnd_toEndOf="@+id/petHeaderPicture"
+            app:layout_constraintStart_toStartOf="@+id/petHeaderPicture" />
 
         <TextView
             android:id="@+id/petLocationText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginBottom="20dp"
             android:text="@{viewModel.livingPlace}"
+            app:layout_constraintBottom_toTopOf="@+id/petOwnerText"
             app:layout_constraintEnd_toEndOf="@+id/petNameEditText"
-            app:layout_constraintStart_toStartOf="@+id/petNameEditText"
-            app:layout_constraintTop_toBottomOf="@+id/petNameEditText" />
+            app:layout_constraintStart_toStartOf="@+id/petNameEditText" />
 
         <ImageView
             android:id="@+id/profileLocationIcon"
@@ -139,32 +140,32 @@
             android:id="@+id/petOldText"
             android:layout_width="70dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:text="@{viewModel.yearsOld}"
-            android:textAlignment="center"
-            android:textSize="26dp"
+            android:layout_marginBottom="6dp"
             android:background="@drawable/bg_edit_button_blue"
             android:backgroundTint="@{viewModel.editable?@color/blue_light_transparent:@color/transparent}"
+            android:clickable="@{viewModel.editable?true:false}"
+            android:text="@{viewModel.yearsOld}"
+            android:textAlignment="center"
+            android:textColor="@{viewModel.editable?@color/white:@color/black}"
+            android:textSize="26dp"
+            app:layout_constraintBottom_toTopOf="@+id/years"
             app:layout_constraintEnd_toStartOf="@+id/petOwnerText"
             app:layout_constraintHorizontal_bias="0.5"
-            android:textColor="@{viewModel.editable?@color/white:@color/black}"
-            android:clickable="@{viewModel.editable?true:false}"
             app:layout_constraintHorizontal_chainStyle="spread"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/petLocationText" />
+            app:layout_constraintStart_toStartOf="parent" />
 
         <TextView
             android:id="@+id/petOwnerText"
             android:layout_width="70dp"
             android:layout_height="wrap_content"
-            android:text="@{viewModel.ownerNumber}"
-            android:textAlignment="center"
-            android:textSize="26dp"
             android:background="@drawable/bg_edit_button_blue"
             android:backgroundTint="@{viewModel.editable?@color/blue_light_transparent:@color/transparent}"
             android:clickable="@{viewModel.editable?true:false}"
-            android:textColor="@{viewModel.editable?@color/white:@color/black}"
             android:onClick="@{()->viewModel.chooseOwner()}"
+            android:text="@{viewModel.ownerNumber}"
+            android:textAlignment="center"
+            android:textColor="@{viewModel.editable?@color/white:@color/black}"
+            android:textSize="26dp"
             app:layout_constraintBottom_toBottomOf="@+id/petOldText"
             app:layout_constraintEnd_toStartOf="@+id/petMissionText"
             app:layout_constraintHorizontal_bias="0.5"
@@ -175,13 +176,13 @@
             android:id="@+id/petMissionText"
             android:layout_width="70dp"
             android:layout_height="wrap_content"
-            android:text="@{viewModel.missionListNumber}"
-            android:textSize="26dp"
             android:background="@drawable/bg_edit_button_blue"
             android:backgroundTint="@{viewModel.editable?@color/blue_light_transparent:@color/transparent}"
             android:clickable="@{viewModel.editable?true:false}"
-            android:textColor="@{viewModel.editable?@color/white:@color/black}"
+            android:text="@{viewModel.missionListNumber}"
             android:textAlignment="center"
+            android:textColor="@{viewModel.editable?@color/white:@color/black}"
+            android:textSize="26dp"
             app:layout_constraintBottom_toBottomOf="@+id/petOwnerText"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
@@ -192,20 +193,21 @@
             android:id="@+id/years"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginBottom="20dp"
             android:text="YEARS"
+            app:layout_constraintBottom_toTopOf="@+id/petProfileEditButton"
             app:layout_constraintEnd_toEndOf="@+id/petOldText"
-            app:layout_constraintStart_toStartOf="@+id/petOldText"
-            app:layout_constraintTop_toBottomOf="@+id/petOldText" />
+            app:layout_constraintStart_toStartOf="@+id/petOldText" />
 
         <TextView
             android:id="@+id/weight"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="OWNERS"
+            app:layout_constraintBottom_toBottomOf="@id/years"
             app:layout_constraintEnd_toEndOf="@+id/petOwnerText"
             app:layout_constraintStart_toStartOf="@+id/petOwnerText"
-            app:layout_constraintTop_toTopOf="@+id/years" />
+            app:layout_constraintTop_toTopOf="@id/years" />
 
         <LinearLayout
             android:layout_width="1dp"
@@ -233,6 +235,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="MISSIONS"
+            app:layout_constraintBottom_toBottomOf="@+id/weight"
             app:layout_constraintEnd_toEndOf="@+id/petMissionText"
             app:layout_constraintStart_toStartOf="@+id/petMissionText"
             app:layout_constraintTop_toTopOf="@+id/weight" />
@@ -241,14 +244,15 @@
             android:id="@+id/petProfileEditButton"
             android:layout_width="140dp"
             android:layout_height="40dp"
-            android:layout_marginTop="40dp"
             android:background="@drawable/bg_edit_button_grey"
+            android:backgroundTint="@color/blue_light2"
             android:gravity="center"
+            android:onClick="@{()->viewModel.clickButton()}"
             android:text="@{viewModel.buttonString}"
             android:textAlignment="center"
             android:textColor="@color/white"
             android:textSize="20dp"
-            android:onClick="@{()->viewModel.clickButton()}"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@+id/petNameEditText"
             app:layout_constraintStart_toStartOf="@+id/petNameEditText"
             app:layout_constraintTop_toBottomOf="@+id/weight" />
@@ -280,18 +284,18 @@
             android:visibility="@{viewModel.editable?View.VISIBLE:View.GONE}"
             />
 
-        <com.airbnb.lottie.LottieAnimationView
-            android:layout_width="200dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:lottie_fileName="upload_n_success.json"
-            app:lottie_autoPlay="true"
-            app:lottie_loop="true"
-            android:visibility="@{viewModel.loading?View.VISIBLE:View.GONE}"
-            />
+<!--        <com.airbnb.lottie.LottieAnimationView-->
+<!--            android:layout_width="200dp"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            app:layout_constraintTop_toTopOf="parent"-->
+<!--            app:layout_constraintBottom_toBottomOf="parent"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:lottie_fileName="upload_n_success.json"-->
+<!--            app:lottie_autoPlay="true"-->
+<!--            app:lottie_loop="true"-->
+<!--            android:visibility="@{viewModel.loading?View.VISIBLE:View.GONE}"-->
+<!--            />-->
 
         <ImageView
             android:id="@+id/memoryModeButton"
