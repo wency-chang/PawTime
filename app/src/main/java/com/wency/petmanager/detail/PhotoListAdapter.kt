@@ -1,12 +1,9 @@
 package com.wency.petmanager.detail
 
-import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.ViewModel
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.wency.petmanager.create.events.adapter.TagListAdapter
@@ -19,13 +16,14 @@ class PhotoListAdapter(val editable: LiveData<Boolean>,
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PhotoViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
-        return PhotoViewHolder(ItemDetailPhotoHolderBinding.inflate(layoutInflater, parent, false))
+        return PhotoViewHolder(
+            ItemDetailPhotoHolderBinding.inflate(layoutInflater, parent, false)
+        )
     }
 
     override fun onBindViewHolder(holder: PhotoViewHolder, position: Int) {
                 holder.bind(getItem(position), lifecycleOwner, this)
                 holder.cancelButton.setOnClickListener {
-                    Log.d("WTF","click position: $position")
                     onClickListener.onClick(false, position)
                     notifyDataSetChanged()
                 }
@@ -40,9 +38,7 @@ class PhotoListAdapter(val editable: LiveData<Boolean>,
             binding.photo = photo
             binding.executePendingBindings()
         }
-
     }
-
 
     class OnClickListener(val clickListener:(add: Boolean, position: Int)-> Unit){
         fun onClick(add: Boolean, position: Int) = clickListener(add, position)

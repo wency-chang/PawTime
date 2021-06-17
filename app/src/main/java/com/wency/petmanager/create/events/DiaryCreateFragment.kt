@@ -27,13 +27,13 @@ import com.wency.petmanager.databinding.FragmentDiaryCreateBinding
 import com.wency.petmanager.dialog.AddMemoDialog
 import com.wency.petmanager.dialog.AddNewTagDialog
 import com.wency.petmanager.ext.getVmFactory
-import com.wency.petmanager.profile.Today
+import com.wency.petmanager.profile.TimeFormat
 import java.time.Instant
 import java.util.*
 
 class DiaryCreateFragment: Fragment(), AddMemoDialog.MemoDialogListener, AddNewTagDialog.AddNewTagListener {
     lateinit var binding: FragmentDiaryCreateBinding
-    private val viewModel by viewModels<DiaryCreateViewModel>(){getVmFactory()}
+    private val viewModel by viewModels<DiaryCreateViewModel>{ getVmFactory() }
 
     private val createEventViewModel by viewModels<CreateEventViewModel> (ownerProducer = { requireParentFragment()})
 
@@ -44,12 +44,15 @@ class DiaryCreateFragment: Fragment(), AddMemoDialog.MemoDialogListener, AddNewT
         }
     private val getLocation = GetLocationFromMap()
     private val getLocationActivity =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
-            getLocation.onActivityResult(it,CreateEventViewModel.CASE_PICK_LOCATION)?.let {
-                viewModel.locationName.value = it.name
-                viewModel.location.locationName = it.name.toString()
-                viewModel.location.locationAddress = it.address.toString()
-                viewModel.location.locationLatlng = it.latLng!!
+        registerForActivityResult( ActivityResultContracts.StartActivityForResult()){ activityResult->
+            getLocation.onActivityResult(activityResult ,CreateEventViewModel.CASE_PICK_LOCATION)?.let {place->
+                viewModel.locationName.value = place.name
+                viewModel.location.locationName = place.name.toString()
+                viewModel.location.locationAddress = place.address.toString()
+                place.latLng?.let {it->
+                    viewModel.location.locationLatlng = it
+                }
+
             }
         }
 
@@ -57,17 +60,16 @@ class DiaryCreateFragment: Fragment(), AddMemoDialog.MemoDialogListener, AddNewT
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentDiaryCreateBinding.inflate(layoutInflater, container, false)
         binding.lifecycleOwner = this
 
         binding.viewModel = viewModel
         binding.createViewModel = createEventViewModel
 
-        createEventViewModel.petListLiveData.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+        createEventViewModel.petListLiveData.observe(viewLifecycleOwner, {
                 viewModel.updatePetSelector(it)
         })
-
 
         return binding.root
     }
@@ -75,14 +77,16 @@ class DiaryCreateFragment: Fragment(), AddMemoDialog.MemoDialogListener, AddNewT
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val manager = FlexboxLayoutManager(ManagerApplication.instance)
-        manager.flexDirection = FlexDirection.ROW
-        manager.flexWrap = FlexWrap.WRAP
-        manager.justifyContent = JustifyContent.FLEX_START
+        manager.apply {
+            flexDirection = FlexDirection.ROW
+            flexWrap = FlexWrap.WRAP
+            justifyContent = JustifyContent.FLEX_START
+        }
 
+        val tagAdapter = TagListAdapter(
+            TagListAdapter.OnClickListener{ type: Int, tag: String, checked: Boolean ->
 
-        val tagAdapter = TagListAdapter(TagListAdapter.OnClickListener{ it: Int, tag: String, checked: Boolean ->
-
-            when (it){
+            when (type){
                 TagListAdapter.ITEM_TYPE_TAG -> viewModel.selectedTag(tag, checked)
 
                 TagListAdapter.ITEM_TYPE_ADD -> {
@@ -97,7 +101,8 @@ class DiaryCreateFragment: Fragment(), AddMemoDialog.MemoDialogListener, AddNewT
 
                 TagListAdapter.ITEM_TYPE_CLOSE ->  viewModel.switchExtendStatus()
 
-                else -> { Log.d("tagListAdapter","$it")}
+                else -> { Log.d(ManagerApplication.instance.getString(R.string.APP_NAME)
+                    ,"Unknown Type: $type")}
 
             }
         })
@@ -112,17 +117,17 @@ class DiaryCreateFragment: Fragment(), AddMemoDialog.MemoDialogListener, AddNewT
         binding.tagRecyclerView.layoutManager = manager
         binding.tagRecyclerView.adapter = tagAdapter
 
-        val calendar = Calendar.getInstance()
-        val year = calendar.get(Calendar.YEAR)
-        val month = calendar.get(Calendar.MONTH)
-        val date = calendar.get(Calendar.DAY_OF_MONTH)
 
 
         binding.dateButton.setOnClickListener {
+            val calendar = Calendar.getInstance()
+            val year = calendar.get(Calendar.YEAR)
+            val month = calendar.get(Calendar.MONTH)
+            val date = calendar.get(Calendar.DAY_OF_MONTH)
             val datePicker = DatePickerDialog(requireContext(), R.style.datePickDialog,
                 { _, pickYear, pickMonth, pickDayOfMonth ->
                     calendar.set(pickYear, pickMonth, pickDayOfMonth)
-                    viewModel.pickDate.value = Today.dateFormat.format(calendar.time)
+                    viewModel.pickDate.value = TimeFormat.dateFormat.format(calendar.time)
                 }, year, month, date)
             datePicker.datePicker.maxDate = Instant.now().toEpochMilli()
             datePicker.show()
@@ -144,7 +149,6 @@ class DiaryCreateFragment: Fragment(), AddMemoDialog.MemoDialogListener, AddNewT
         )
 
         viewModel.photoList.observe(viewLifecycleOwner, {
-
             (binding.photoRecyclerView.adapter as PhotoListAdapter).notifyDataSetChanged()
         })
 
@@ -154,30 +158,32 @@ class DiaryCreateFragment: Fragment(), AddMemoDialog.MemoDialogListener, AddNewT
         }
 
         createEventViewModel.tagListLiveData.observe(
-            viewLifecycleOwner, androidx.lifecycle.Observer {
+            viewLifecycleOwner, {
 
-                viewModel._originTagList = it
+                viewModel.getTagList(it)
                 viewModel.createTagList()
 
                 tagAdapter.notifyDataSetChanged()
             }
         )
 
-        createEventViewModel.isConfirmButtonClick.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+        createEventViewModel.isConfirmButtonClick.observe(viewLifecycleOwner, {
             if (it && createEventViewModel.navigateDestination.value == CreateEventViewModel.DIARY_CREATE_PAGE){
                 viewModel.checkCompleteStatus()
                 createEventViewModel.isConfirmButtonClick.value = false
             }
         })
 
-        viewModel.checkingStatus.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+        viewModel.checkingStatus.observe(viewLifecycleOwner, {
             it?.let {
                 if (it){
                     viewModel.getUrlPhotoList()
                     viewModel.checkingStatus.value = null
-                    Toast.makeText(requireContext(),"Start update", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext()
+                        ,ManagerApplication.instance.getString(R.string.START_UPDATE)
+                        , Toast.LENGTH_SHORT).show()
+
                     createEventViewModel.loadingStatus.value = true
-                    createEventViewModel.loadingStatus.value = createEventViewModel.loadingStatus.value
 
                 } else {
                     Toast.makeText(requireContext(),"Choose one photo", Toast.LENGTH_SHORT).show()
@@ -186,15 +192,18 @@ class DiaryCreateFragment: Fragment(), AddMemoDialog.MemoDialogListener, AddNewT
             }
         })
 
-        viewModel.navigateBackToHome.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+        viewModel.navigateBackToHome.observe(viewLifecycleOwner, {
             if (it){
                 createEventViewModel.loadingStatus.value = false
-                createEventViewModel.loadingStatus.value = createEventViewModel.loadingStatus.value
                 createEventViewModel.backHome()
             }
         })
 
-
+        viewModel.error.observe(viewLifecycleOwner, { errorMessage->
+            errorMessage?.let {
+                Toast.makeText(this.requireContext(), it, Toast.LENGTH_LONG).show()
+            }
+        })
 
     }
 
@@ -206,17 +215,13 @@ class DiaryCreateFragment: Fragment(), AddMemoDialog.MemoDialogListener, AddNewT
     }
 
     override fun getTag(tag: String) {
-        createEventViewModel.myPetList?.let {
+        createEventViewModel.myPetList.let {
             createEventViewModel.updateNewTag(tag, it.toList())
         }
 
         binding.tagRecyclerView.adapter?.notifyDataSetChanged()
 
     }
-
-
-
-
 
 
 }

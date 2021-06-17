@@ -1,7 +1,5 @@
 package com.wency.petmanager.detail
 
-import android.graphics.Color
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -25,8 +23,6 @@ class DetailMemoAdapter(val editable: LiveData<Boolean>,
 
     override fun onBindViewHolder(holder: MemoHolder, position: Int) {
 
-
-
         holder.cancelButton.setOnClickListener {
             onClickListener.onClick(false, position, "")
             notifyDataSetChanged()
@@ -34,24 +30,21 @@ class DetailMemoAdapter(val editable: LiveData<Boolean>,
         holder.memoText.setOnClickListener {
             onClickListener.onClick(true, position, getItem(position))
         }
-        editable.value?.let { holder.bind(getItem(position), it, this) }
+        editable.value?.let { holder.bind(getItem(position), it) }
     }
 
     class MemoHolder(val binding: ItemDetailMemoListBinding): RecyclerView.ViewHolder(binding.root){
         val memoText = binding.memoTextEdit
         val cancelButton = binding.memoCancelButton
 
-
-        fun bind(memo: String, editable: Boolean, adapter: DetailMemoAdapter){
+        fun bind(memo: String, editable: Boolean){
 
             if (editable){
                 cancelButton.visibility = View.VISIBLE
             } else {
                 cancelButton.visibility = View.GONE
-
             }
             binding.editable = editable
-
             binding.memo = memo
             binding.clickableMemoCard.visibility = View.VISIBLE
             binding.memoTextEdit.visibility = View.VISIBLE

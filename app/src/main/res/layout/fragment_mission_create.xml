@@ -188,7 +188,7 @@
                     android:layout_width="0dp"
                     android:layout_marginTop="10dp"
                     android:gravity="center"
-                    android:prompt="@string/regularity"
+                    android:prompt="@string/REGULARITY"
                     android:selectedItemPosition="@={viewModel.selectedRegularityPosition}"
                     android:spinnerMode="dialog"
                     app:layout_constraintEnd_toEndOf="@+id/dateRangeSelectButton"

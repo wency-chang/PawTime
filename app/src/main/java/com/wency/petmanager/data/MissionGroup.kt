@@ -1,6 +1,5 @@
 package com.wency.petmanager.data
 
-import android.graphics.Bitmap
 import android.os.Parcelable
 import com.google.firebase.Timestamp
 import kotlinx.android.parcel.Parcelize
@@ -22,6 +21,7 @@ data class MissionGroup(
     var regularity: String = "",
     var petId: String = ""
 ): Parcelable
+
 
 data class MissionToday(
     var missionId: String,

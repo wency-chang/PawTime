@@ -4,13 +4,14 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.wency.petmanager.data.Pet
-import com.wency.petmanager.databinding.ItemFriendListChooseHolderBinding
 import com.wency.petmanager.databinding.SubItemFriendPetListBinding
 
-class PetListAdapter(val petIdList: List<String>, val viewModel: ChooseFriendViewModel): RecyclerView.Adapter<PetListAdapter.PetListViewHolder>() {
+class PetListAdapter(private val petIdList: List<String>, val viewModel: ChooseFriendViewModel):
+    RecyclerView.Adapter<PetListAdapter.PetListViewHolder>() {
 
 
-    class PetListViewHolder(val binding: SubItemFriendPetListBinding): RecyclerView.ViewHolder(binding.root){
+    class PetListViewHolder(val binding: SubItemFriendPetListBinding):
+        RecyclerView.ViewHolder(binding.root){
 
         fun bind(pet: Pet){
             binding.pet = pet
@@ -21,7 +22,8 @@ class PetListAdapter(val petIdList: List<String>, val viewModel: ChooseFriendVie
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PetListViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
-        return PetListViewHolder(SubItemFriendPetListBinding.inflate(layoutInflater, parent, false))
+        return PetListViewHolder(
+            SubItemFriendPetListBinding.inflate(layoutInflater, parent, false))
     }
 
     override fun onBindViewHolder(holder: PetListViewHolder, position: Int) {

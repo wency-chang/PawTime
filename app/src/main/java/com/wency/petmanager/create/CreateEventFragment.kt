@@ -1,35 +1,27 @@
 package com.wency.petmanager.create
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
-import androidx.viewpager2.widget.MarginPageTransformer
 import androidx.viewpager2.widget.ViewPager2
 import com.wency.petmanager.MainViewModel
-import com.wency.petmanager.NavCreateDirections
 import com.wency.petmanager.NavHostDirections
-import com.wency.petmanager.R
-import com.wency.petmanager.databinding.FragmentCreateBinding
 import com.wency.petmanager.create.events.DiaryCreateFragment
 import com.wency.petmanager.create.events.MissionCreateFragment
 import com.wency.petmanager.create.events.ScheduleCreateFragment
-import com.wency.petmanager.data.UserInfo
+import com.wency.petmanager.databinding.FragmentCreateBinding
 import com.wency.petmanager.ext.getVmFactory
-import com.wency.petmanager.friend.ChooseFriendFragment
 import com.wency.petmanager.friend.ChooseFriendViewModel
-import kotlinx.android.synthetic.main.activity_main.*
 
 class CreateEventFragment : Fragment() {
     lateinit var binding: FragmentCreateBinding
 
-    private val viewModel by viewModels<CreateEventViewModel>(){getVmFactory(
+    private val viewModel by viewModels<CreateEventViewModel> { getVmFactory(
         CreateEventFragmentArgs.fromBundle(requireArguments()).petList,
         CreateEventFragmentArgs.fromBundle(requireArguments()).selectedUser
     )}
@@ -39,35 +31,33 @@ class CreateEventFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
 
         viewModel.navigateDestination.value =
             CreateEventFragmentArgs.fromBundle(requireArguments()).createType
 
-//        val diaryCreateFragment = DiaryCreateFragment()
-//        val scheduleCreateFragment = ScheduleCreateFragment()
-//        val missionCreateFragment = MissionCreateFragment()
         val fragmentList = arrayListOf<Fragment>(
             DiaryCreateFragment(), ScheduleCreateFragment(), MissionCreateFragment()
         )
 
-        mainViewModel.tagListLiveData.value?.let {
+        mainViewModel.friendListLiveData.value?.let {
+            viewModel.friendIdList.addAll(it)
+        }
+        viewModel.getUserSelectOption()
 
+        mainViewModel.tagListLiveData.value?.let {
             viewModel.tagListLiveData.value = it
         }
-
 
         binding = FragmentCreateBinding.inflate(layoutInflater, container, false)
 
         viewModel.navigateDestination.value?.let {
-
-
-            binding.navCreateNavigation?.apply {
-                setPageTransformer(MarginPageTransformer(40))
+            binding.navCreateNavigation.apply {
                 isUserInputEnabled = false
                 isScrollContainer = false
-                adapter = CreatePageAdapter(childFragmentManager, lifecycle, fragmentList)
+                adapter = FragmentCreatePagerAdapter(childFragmentManager, lifecycle, fragmentList)
                 setCurrentItem(it, false)
+
                 registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback(){
                     override fun onPageSelected(position: Int) {
                         viewModel.navigateDestination.value = position
@@ -75,40 +65,22 @@ class CreateEventFragment : Fragment() {
                     }
                 })
             }
-
         }
-        viewModel.navigateDestination.observe(viewLifecycleOwner, Observer {
 
+        viewModel.navigateDestination.observe(viewLifecycleOwner, {
             binding.navCreateNavigation.setCurrentItem(it, true)
-
         })
 
         binding.lifecycleOwner = this
-
         binding.viewModel = viewModel
-
-
-//        viewModel.navigateDestination.observe(viewLifecycleOwner, Observer {
-//            Log.d("clicked","${viewModel.navigateDestination.value}")
-//            when (it) {
-//                0 -> childFragmentManager.beginTransaction().replace(R.id.navCreateNavigation, diaryCreateFragment).commit()
-//                1 -> childFragmentManager.beginTransaction().replace(R.id.navCreateNavigation, scheduleCreateFragment).commit()
-//                2 -> childFragmentManager.beginTransaction().replace(R.id.navCreateNavigation, missionCreateFragment).commit()
-//                else -> childFragmentManager.beginTransaction().replace(R.id.navCreateNavigation, diaryCreateFragment).commit()
-//            }
-//        }
-//        )
-
-
-
 
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
-        viewModel.backHome.observe(viewLifecycleOwner, Observer {
-            if (it){
+        viewModel.backHome.observe(viewLifecycleOwner, { backHome: Boolean->
+            if (backHome){
                 viewModel.navigateDestination.value?.let { page->
                     if (page == CreateEventViewModel.MISSION_CREATE_PAGE){
                         mainViewModel.userInfoProfile.value?.let { userInfo->
@@ -126,20 +98,18 @@ class CreateEventFragment : Fragment() {
                         viewModel.backHome()
                     }
                 }
-
             }
         })
 
-        viewModel.navigateToChooseFriend.observe(viewLifecycleOwner, Observer {
-            if (it){
+        viewModel.navigateToChooseFriend.observe(viewLifecycleOwner, { chooseFriend: Boolean->
+            if (chooseFriend){
                 mainViewModel.userInfoProfile.value?.let { userProfile->
-                    viewModel.currentSelectedList?.let {selectedUserList->
+                    viewModel.currentSelectedList.let {selectedUserList->
                         findNavController().navigate(NavHostDirections.actionGlobalToChooseFriend(
                             userProfile,
                             selectedUserList.toTypedArray(),
-                            ChooseFriendViewModel.FRAGMENT_SCHEDULE,
-                        )
-                        )
+                            ChooseFriendViewModel.FRAGMENT_SCHEDULE))
+
                         viewModel.navigatedToChooseFriend()
                     }
                 }

@@ -1,36 +1,36 @@
 package com.wency.petmanager.create.events
 
 import android.net.Uri
-import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.firebase.Timestamp
 import com.wency.petmanager.ManagerApplication
+import com.wency.petmanager.R
 import com.wency.petmanager.data.*
 import com.wency.petmanager.data.source.Repository
 import com.wency.petmanager.home.HomeViewModel
-import com.wency.petmanager.profile.Today
-import kotlinx.coroutines.*
-import java.util.*
+import com.wency.petmanager.profile.TimeFormat
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 class DiaryCreateViewModel(val repository: Repository) : ViewModel() {
 
-    private val isTagExtend = MutableLiveData<Boolean>(false)
-    private val needExtend = MutableLiveData<Boolean>(false)
-    var tagList = MutableLiveData<MutableList<String>>()
+    private val isTagExtend = MutableLiveData(false)
+    private val needExtend = MutableLiveData(false)
+    var tagListLiveData = MutableLiveData<MutableList<String>>()
 
-    var _originTagList = mutableListOf<String>()
-
+    private var _originTagList = mutableListOf<String>()
     private val originTagList : List<String>
         get() = _originTagList
 
 
     val memoList = MutableLiveData(mutableListOf(MissionCreateViewModel.NEED_ADD_HOLDER))
     val photoList = MutableLiveData(mutableListOf(MissionCreateViewModel.NEED_ADD_HOLDER))
-    val today: String = Today.todayString
-    val pickDate = MutableLiveData(today)
+    val pickDate = MutableLiveData(TimeFormat.todayString)
     val title = MutableLiveData<String>()
 
     private var viewModelJob = Job()
@@ -43,64 +43,62 @@ class DiaryCreateViewModel(val repository: Repository) : ViewModel() {
     private var participantPet = mutableSetOf<String>()
     private var chosenTagList = mutableSetOf<String>()
 
-    private val _navigateBackToHome = MutableLiveData<Boolean>(false)
+    private val _navigateBackToHome = MutableLiveData(false)
     val navigateBackToHome : LiveData<Boolean>
         get() = _navigateBackToHome
 
-    val selectedStatus = mutableListOf<Boolean>()
+    private val _petSelector = MutableLiveData<MutableList<PetSelector>>()
+    val petSelector : LiveData<MutableList<PetSelector>>
+        get() = _petSelector
 
-    val petSelector = MutableLiveData<MutableList<PetSelector>>()
+    private val _error = MutableLiveData<String?>()
 
-    
+    val error: LiveData<String?>
+        get() = _error
 
 
-    init {
-        createTagList()
-
+    fun getTagList(tag: List<String>){
+        _originTagList = tag.toMutableList()
     }
-
-
-
-
-    private val calendar = Calendar.getInstance()
 
     fun createTagList(){
 
-        originTagList?.let {
-            if (originTagList.isNullOrEmpty()){
-                tagList.value = mutableListOf<String>(ADD_TAG_STRING)
-                needExtend.value = false
+        originTagList.let {
+            when {
+                originTagList.isNullOrEmpty() -> {
+                    tagListLiveData.value = mutableListOf(ADD_TAG_STRING)
+                    needExtend.value = false
 
-            } else if (originTagList!!.size <= TAG_OPTION_LIMIT -1){
-                val totalTag = originTagList
-
-                tagList.value = totalTag.toMutableList()!!
-
-                tagList.value?.apply {
-                    add(ADD_TAG_STRING)
                 }
-                needExtend.value = false
+                originTagList.size <= TAG_OPTION_LIMIT -1 -> {
+                    val totalTag = originTagList
+                    tagListLiveData.value = totalTag.toMutableList()
+                    tagListLiveData.value?.apply {
+                        add(ADD_TAG_STRING)
+                    }
+                    needExtend.value = false
 
-            }else if (isTagExtend.value == true){
-                val totalTag = originTagList
-
-                tagList.value = totalTag.toMutableList()!!
-
-                tagList.value?.apply {
-                    add(ADD_TAG_STRING)
-                    add(CLOSE_TAG_STRING)
                 }
-                needExtend.value = false
-            }
-            else {
-                val totalTag = originTagList.toMutableList()
-                tagList.value = totalTag!!.subList(0, TAG_OPTION_LIMIT -1)
-                tagList.value?.apply {
-                    add(ADD_TAG_STRING)
-                    add(EXTEND_TAG_STRING)
-                }
-                needExtend.value = true
+                isTagExtend.value == true -> {
+                    val totalTag = originTagList
 
+                    tagListLiveData.value = totalTag.toMutableList()
+                    tagListLiveData.value?.apply {
+                        add(ADD_TAG_STRING)
+                        add(CLOSE_TAG_STRING)
+                    }
+                    needExtend.value = false
+                }
+                else -> {
+                    val totalTag = originTagList.toMutableList()
+                    tagListLiveData.value = totalTag.subList(0, TAG_OPTION_LIMIT -1)
+                    tagListLiveData.value?.apply {
+                        add(ADD_TAG_STRING)
+                        add(EXTEND_TAG_STRING)
+                    }
+                    needExtend.value = true
+
+                }
             }
 
         }
@@ -108,13 +106,11 @@ class DiaryCreateViewModel(val repository: Repository) : ViewModel() {
 
     }
     fun cancelPhoto(position: Int){
-        photoList.value?.let {
-            Log.d("WHP to the list","remove from ${it} at $position")
-            it.removeAt(position)
-        }
+        photoList.value?.removeAt(position)
     }
+
     var location : Location = Location("","", null)
-    val locationName = MutableLiveData("NONE")
+    val locationName = MutableLiveData(NONE)
 
     fun switchExtendStatus(){
         isTagExtend.value = isTagExtend.value != true
@@ -126,19 +122,31 @@ class DiaryCreateViewModel(val repository: Repository) : ViewModel() {
         const val EXTEND_TAG_STRING = "needToExtendIt"
         const val CLOSE_TAG_STRING = "needToCloseTheList"
         const val TAG_OPTION_LIMIT = 0x0A
+        const val NONE = "NONE"
+        private const val IMAGE_FOLDER_NAME = "DIARY/PHOTO"
     }
 
-    private fun updateImage(uri: Uri, folder: String){
+    private fun updateImage(uri: Uri){
 
         coroutineScope.launch {
-            when (val result = uri.let { repository.updateImage(it, folder) }){
+            when (val result = uri.let { repository.updateImage(it, IMAGE_FOLDER_NAME)}){
                 is Result.Success ->{
                     photoListToUpdate.add(result.data)
                     if (photoListToUpdate.size == photoList.value?.size?.minus(1)){
                         createDiary()
                     }
                 }
-                else -> {"update image Failed"}
+                is Result.Error -> {
+                    _error.value = result.exception.toString()
+                }
+                is Result.Fail -> {
+                    _error.value = result.error
+                }
+                else -> {
+                    _error.value =
+                        ManagerApplication.instance.getString(R.string.ERROR_MESSAGE)
+
+                }
             }
         }
 
@@ -152,39 +160,51 @@ class DiaryCreateViewModel(val repository: Repository) : ViewModel() {
     }
 
     private fun createDiary() {
-        coroutineScope.async {
+
+        coroutineScope.launch {
 //            update image to firebase
 
 //            arrange data
-            val dataToUpdate = Event(
-                date = Timestamp(Today.dateFormat.parse(pickDate.value)),
-                photoList = photoListToUpdate,
-                type = HomeViewModel.EVENT_TYPE_DIARY,
-                petParticipantList = participantPet.toList(),
-                title = title.value
-                )
+
+            val dataToUpdate = pickDate.value?.let { dateString ->
+                TimeFormat.dateFormat.parse(dateString)?.let { date->
+                    Event(
+                        date = Timestamp(date),
+                        photoList = photoListToUpdate,
+                        type = HomeViewModel.EVENT_TYPE_DIARY,
+                        petParticipantList = participantPet.toList(),
+                        title = title.value
+                    )
+
+                }
+
+            }
+
+
 //            optional information
             memoList.value?.let {
                 if (it.size > 1) {
                     it.removeAt(0)
-                    dataToUpdate.memoList = it
+                    dataToUpdate?.memoList = it
                 }
             }
             if (location.locationName.isNotBlank()) {
-                Log.d("Map","start record it ${location.locationName}")
-                dataToUpdate.locationAddress = location.locationAddress
-                dataToUpdate.locationName = location.locationName
-                dataToUpdate.locationLatLng = "${location.locationLatlng?.latitude},${location.locationLatlng?.longitude}"
+                dataToUpdate?.locationAddress = location.locationAddress
+                dataToUpdate?.locationName = location.locationName
+                dataToUpdate?.locationLatLng =
+                    "${location.locationLatlng?.latitude},${location.locationLatlng?.longitude}"
 
             }
 
             if (chosenTagList.isNotEmpty()){
-                dataToUpdate.tagList = chosenTagList.toList()
+                dataToUpdate?.tagList = chosenTagList.toList()
             }
 
 //            update data to firebase
 
-            updateDiary(dataToUpdate)
+            if (dataToUpdate != null) {
+                updateDiary(dataToUpdate)
+            }
 
         }
     }
@@ -194,7 +214,7 @@ class DiaryCreateViewModel(val repository: Repository) : ViewModel() {
         photoList.value?.let {
             coroutineScope.launch {
                 for (index in 1 until it.size){
-                    updateImage(Uri.parse(it[index]), "DIARY/PHOTO")
+                    updateImage(Uri.parse(it[index]))
                 }
 
             }
@@ -223,42 +243,80 @@ class DiaryCreateViewModel(val repository: Repository) : ViewModel() {
          coroutineScope.launch {
              when (val result = repository.createEvent(data)){
                  is Result.Success -> {
-                     Toast.makeText(ManagerApplication.instance, "Update Diary Success", Toast.LENGTH_SHORT).show()
+                     Toast.makeText(ManagerApplication.instance
+                         , ManagerApplication.instance.getString(R.string.UPDATE_SUCCESS)
+                         , Toast.LENGTH_SHORT).show()
                      addEventIdToPet(result.data)
                  }
                  is Result.Fail -> {
-                     Toast.makeText(ManagerApplication.instance, "${result.error}", Toast.LENGTH_SHORT).show()
+                     Toast.makeText(ManagerApplication.instance
+                         , result.error
+                         , Toast.LENGTH_SHORT).show()
                  }
                  is Result.Error -> {
-                     Toast.makeText(ManagerApplication.instance, "${result.exception}", Toast.LENGTH_SHORT).show()
+                     Toast.makeText(ManagerApplication.instance
+                         , result.exception.toString(), Toast.LENGTH_SHORT).show()
                  }
-                 else -> Toast.makeText(ManagerApplication.instance, "Unknown", Toast.LENGTH_SHORT).show()
+                 else -> Toast.makeText(ManagerApplication.instance
+                     , ManagerApplication.instance.getString(R.string.UNKNOWN_REASON),
+                     Toast.LENGTH_SHORT).show()
              }
          }
      }
 
     private fun addEventIdToPet(eventId: String){
         coroutineScope.launch {
+            var count = 0
+
             for (petId in participantPet){
                 when (val result = repository.addEventID(petId, eventId)){
-                    is Result.Fail -> Toast.makeText(ManagerApplication.instance, "${result.error}", Toast.LENGTH_SHORT).show()
+                    is Result.Success -> {
+                        count += 1
+                        if (count == participantPet.size){
+                            _navigateBackToHome.value = true
+                        }
+                    }
+
+                    is Result.Fail -> {
+                        Toast.makeText(ManagerApplication.instance, result.error, Toast.LENGTH_SHORT).show()
+                        count += 1
+                        if (count == participantPet.size){
+                            _navigateBackToHome.value = true
+                        }
+                    }
+                    is Result.Error -> {
+                        Toast.makeText(ManagerApplication.instance
+                            , result.exception.toString(), Toast.LENGTH_SHORT).show()
+                        count += 1
+                        if (count == participantPet.size){
+                            _navigateBackToHome.value = true
+                        }
+                    }
+                    else -> {
+                        Toast.makeText(ManagerApplication.instance
+                            , "Unknown", Toast.LENGTH_SHORT).show()
+                        count += 1
+                        if (count == participantPet.size){
+                            _navigateBackToHome.value = true
+                        }
+                    }
+
                 }
             }
-            _navigateBackToHome.value = true
+
         }
 
     }
 
-    fun updatePetSelector(petList: MutableList<Pet>?) {
-        petList?.let {
+    fun updatePetSelector(petList: MutableList<Pet>) {
+        petList.let {
             val petSelectorCreate = mutableListOf<PetSelector>()
             for (pet in it){
                 petSelectorCreate.add(PetSelector(pet = pet))
             }
-            petSelector.value = petSelectorCreate
+            _petSelector.value = petSelectorCreate
         }
     }
-
 
 }
 

@@ -11,7 +11,8 @@ class RegularitySpinnerAdapter(private val strings: Array<String>) : BaseAdapter
 
     @SuppressLint("ViewHolder")
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
-        val binding = ItemSpinnerRegularityBinding.inflate(LayoutInflater.from(parent?.context), parent, false)
+        val binding =
+            ItemSpinnerRegularityBinding.inflate(LayoutInflater.from(parent?.context), parent, false)
         binding.title = strings[position]
         return binding.root
     }

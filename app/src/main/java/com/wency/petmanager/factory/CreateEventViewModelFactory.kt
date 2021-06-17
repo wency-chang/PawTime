@@ -4,19 +4,18 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.wency.petmanager.create.CreateEventViewModel
 import com.wency.petmanager.data.Pet
-import com.wency.petmanager.data.UserInfo
 import com.wency.petmanager.data.source.Repository
 
 class CreateEventViewModelFactory(private val repository: Repository
                                   , val petList: Array<Pet>
-                                  , val selectedList: Array<String>
+                                  , private val selectedList: Array<String>
 ): ViewModelProvider.Factory {
 
     override fun <T : ViewModel?> create(modelClass: Class<T>)=
         with(modelClass) {
             when {
                 isAssignableFrom(CreateEventViewModel::class.java) ->
-                    CreateEventViewModel(repository,  petList, selectedList)
+                    CreateEventViewModel(repository, petList, selectedList)
 
                 else ->
                     throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")

@@ -6,20 +6,22 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.wency.petmanager.create.events.ScheduleCreateViewModel
-import com.wency.petmanager.data.Pet
 import com.wency.petmanager.data.UserInfo
-import com.wency.petmanager.databinding.ItemPetSelectorBinding
 import com.wency.petmanager.databinding.ItemUserChooseButtonBinding
 import com.wency.petmanager.databinding.ItemUserSelectorBinding
+import com.wency.petmanager.profile.UserManager
 
-class UserListAdapter (private val onClickListener: OnClickListener, val viewModel: ScheduleCreateViewModel):
-    ListAdapter<UserInfo, RecyclerView.ViewHolder>(DiffCallback)  {
+class UserListAdapter (
+    private val onClickListener: OnClickListener, val viewModel: ScheduleCreateViewModel)
+    : ListAdapter<UserInfo, RecyclerView.ViewHolder>(DiffCallback)  {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
         return when(viewType){
-            TYPE_USER -> UserSelectorViewHolder(ItemUserSelectorBinding.inflate(layoutInflater, parent, false))
-            TYPE_ADDER -> UserAddViewHolder(ItemUserChooseButtonBinding.inflate(layoutInflater, parent, false))
+            TYPE_USER ->
+                UserSelectorViewHolder(ItemUserSelectorBinding.inflate(layoutInflater, parent, false))
+            TYPE_ADDER ->
+                UserAddViewHolder(ItemUserChooseButtonBinding.inflate(layoutInflater, parent, false))
             else -> throw ClassCastException("Unknown viewType $viewType")
         }
 
@@ -29,19 +31,21 @@ class UserListAdapter (private val onClickListener: OnClickListener, val viewMod
         val user: UserInfo = getItem(position)
 
         when (holder){
-
             is UserSelectorViewHolder -> {
                 holder.itemView.setOnClickListener {
-                    onClickListener.onClick(user.userId, !viewModel.participantUser.contains(user.userId))
-                    notifyDataSetChanged()
+                    if (user.userId != UserManager.userID) {
+                        onClickListener.onClick(
+                            user.userId,
+                            !viewModel.participantUser.contains(user.userId)
+                        )
+                        notifyDataSetChanged()
+                    }
                 }
                 holder.bind(user, viewModel.participantUser.contains(user.userId))
-
             }
-
             is UserAddViewHolder -> {
                 holder.itemView.setOnClickListener {
-                    onClickListener.onClick("TYPE_ADDER", false)
+                    onClickListener.onClick(TYPE_ADDER_STRING, false)
                 }
             }
         }
@@ -58,9 +62,7 @@ class UserListAdapter (private val onClickListener: OnClickListener, val viewMod
             binding.executePendingBindings()
         }
     }
-    class UserAddViewHolder(val binding: ItemUserChooseButtonBinding): RecyclerView.ViewHolder(binding.root){
-
-    }
+    class UserAddViewHolder(val binding: ItemUserChooseButtonBinding): RecyclerView.ViewHolder(binding.root)
 
     override fun getItemViewType(position: Int): Int {
 
@@ -84,5 +86,6 @@ class UserListAdapter (private val onClickListener: OnClickListener, val viewMod
 
         const val TYPE_USER = 0x00
         const val TYPE_ADDER = 0x01
+        const val TYPE_ADDER_STRING = "TYPE_ADDER"
     }
 }

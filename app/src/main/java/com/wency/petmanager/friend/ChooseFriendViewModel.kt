@@ -1,19 +1,24 @@
 package com.wency.petmanager.friend
 
-import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.wency.petmanager.ManagerApplication
+import com.wency.petmanager.R
 import com.wency.petmanager.data.Pet
 import com.wency.petmanager.data.Result
 import com.wency.petmanager.data.UserInfo
 import com.wency.petmanager.data.source.Repository
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 class ChooseFriendViewModel(
     private val firebaseRepository: Repository,
     val userInfoProfile: UserInfo,
-    val selectedList: Array<String>,
+    private val selectedList: Array<String>,
     val fragmentInt: Int,
     val petId: String
 ) : ViewModel() {
@@ -27,17 +32,17 @@ class ChooseFriendViewModel(
     private var viewModelJob = Job()
     private val coroutineScope = CoroutineScope(viewModelJob + Dispatchers.Main)
 
-    val noFoundError = MutableLiveData<Boolean>(false)
+    val noFoundError = MutableLiveData(false)
 
-    val _navigateToFragmentSchedule = MutableLiveData<MutableList<String>>()
+    private val _navigateToFragmentSchedule = MutableLiveData<MutableList<String>>()
     val navigateToFragmentSchedule: LiveData<MutableList<String>>
         get() = _navigateToFragmentSchedule
 
-    val _updatePetLoadingStatus = MutableLiveData<Boolean>(false)
+    private val _updatePetLoadingStatus = MutableLiveData(false)
     val updatePetLoadingStatus: LiveData<Boolean>
         get() = _updatePetLoadingStatus
 
-    val _navigateToPetProfile = MutableLiveData<Pet>()
+    private val _navigateToPetProfile = MutableLiveData<Pet>()
     val navigateToPetProfile: LiveData<Pet>
         get() = _navigateToPetProfile
 
@@ -49,21 +54,18 @@ class ChooseFriendViewModel(
 
     val petInfoList = MutableLiveData<MutableList<Pet>>()
 
-
     fun confirmButtonClick() {
         when (fragmentInt) {
             FRAGMENT_SCHEDULE -> {
                 _navigateToFragmentSchedule.value = selectedIdList
             }
             FRAGMENT_PET -> {
-                Log.d("UpdateOwner", "StartUpdate")
                 if (petId != "0") {
                     val userList = mutableSetOf<String>()
                     userList.addAll(selectedIdList)
                     _updatePetLoadingStatus.value = true
-                    coroutineScope.async {
-
-                        when (val petResult = firebaseRepository.getPetData(petId)){
+                    coroutineScope.launch {
+                        when (val petResult = firebaseRepository.getPetData(petId)) {
                             is Result.Success -> {
                                 val oldPetData = petResult.data
                                 val deleteList = oldPetData.users.filter {
@@ -72,118 +74,95 @@ class ChooseFriendViewModel(
                                 val addList = selectedIdList.filter {
                                     !oldPetData.users.contains(it)
                                 }
-                                Log.d("UpdateOwner", "Get old data $oldPetData")
-                                Log.d("UpdateOwner", "delete ${deleteList.size}")
-                                Log.d("UpdateOwner", "add ${addList.size}")
-
                                 if (deleteList.isNotEmpty()) {
                                     var deleteCounter = 0
                                     for (deleteId in deleteList) {
                                         when (
-                                            firebaseRepository.userPetListUpdate(
+                                            val result = firebaseRepository.userPetListUpdate(
                                                 petId,
                                                 deleteId,
                                                 false
                                             )) {
-                                            is Result.Success -> {
-                                                deleteCounter += 1
-                                                if (deleteCounter == deleteList.size){
-                                                    addNewOwner(addList)
-                                                }
-                                            }
-
                                             is Result.Fail -> {
-
-
+                                                deleteCounter += 1
+                                                Toast.makeText(
+                                                    ManagerApplication.instance,
+                                                    result.error,
+                                                    Toast.LENGTH_SHORT
+                                                ).show()
                                             }
-
-                                            is Result.Error ->{
-
+                                            is Result.Error -> {
+                                                deleteCounter += 1
+                                                Toast.makeText(
+                                                    ManagerApplication.instance,
+                                                    result.exception.toString(),
+                                                    Toast.LENGTH_SHORT
+                                                ).show()
                                             }
+                                            else -> Toast.makeText(
+                                                ManagerApplication.instance,
+                                                ManagerApplication.instance.getString(R.string.UNKNOWN_REASON),
+                                                Toast.LENGTH_SHORT
+                                            ).show()
                                         }
-
-
+                                        if (deleteCounter == deleteList.size) {
+                                            addNewOwner(addList)
+                                        }
                                     }
                                 } else {
                                     addNewOwner(addList)
                                 }
-
-
-
-
                             }
                         }
-
-//                        for (userId in selectedIdList){
-//
-//                            when (val result = firebaseRepository.addOwner(petId, userId)){
-//                                is Result.Success-> {
-//                                    if (result.data) {
-//                                        when (val result = firebaseRepository.getPetData(petId)) {
-//                                            is Result.Success -> {
-//                                                result.data?.let {
-//                                                    Log.d("Choose Owner","updated PetData $it")
-//                                                    _navigateToPetProfile.value = it
-//                                                    _loadingStatus.value = false
-//                                                }
-//                                            }
-//                                            is Result.Error->{
-//
-//                                            }
-//                                            is Result.Fail->{
-//
-//                                            }
-//                                        }
-//                                    }
-//
-//                                }
-//                                is Result.Error->{
-//
-//
-//                                }
-//                                is Result.Fail ->{
-//
-//                                }
-//                            }
-//                        }
-
                     }
                 }
             }
         }
     }
 
-    private fun addNewOwner(addList: List<String>){
-        Log.d("UpdateOwner", "Go add Owner ${addList.size}")
-        if (addList.isNotEmpty()){
+    private fun addNewOwner(addList: List<String>) {
+        if (addList.isNotEmpty()) {
             var addCount = 0
             coroutineScope.launch {
-                for (user in addList){
-                    when (firebaseRepository.userPetListUpdate(petId, user, true)){
+                for (user in addList) {
+                    when (val result =
+                        firebaseRepository.userPetListUpdate(petId, user, true)) {
                         is Result.Success -> {
-                            Log.d("UpdateOwner", "add Owner Success ${addList.size}")
                             addCount += 1
-                            if (addCount == addList.size){
-                                updatePetData()
-                            }
                         }
                         is Result.Fail -> {
-
+                            addCount += 1
+                            Toast.makeText(
+                                ManagerApplication.instance,
+                                result.error,
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
                         is Result.Error -> {
-
+                            addCount += 1
+                            Toast.makeText(
+                                ManagerApplication.instance,
+                                result.exception.toString(),
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
+                        else -> Toast.makeText(
+                            ManagerApplication.instance,
+                            ManagerApplication.instance.getString(R.string.UNKNOWN_REASON),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                    if (addCount == addList.size) {
+                        updatePetData()
                     }
                 }
-
             }
         } else {
             updatePetData()
         }
     }
 
-    private fun updatePetData(){
-        Log.d("UpdateOwner", "Go update pet")
+    private fun updatePetData() {
         val userList = mutableSetOf<String>()
         userList.addAll(selectedIdList)
         coroutineScope.launch {
@@ -194,23 +173,29 @@ class ChooseFriendViewModel(
                     _navigateToPetProfile.value = petData
                     _updatePetLoadingStatus.value = false
                 }
-                is Result.Error -> {
-
-                }
                 is Result.Fail -> {
-
+                    Toast.makeText(
+                        ManagerApplication.instance,
+                        result.error,
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
+                is Result.Error -> {
+                    Toast.makeText(
+                        ManagerApplication.instance,
+                        result.exception.toString(),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+                else -> Toast.makeText(
+                    ManagerApplication.instance,
+                    ManagerApplication.instance.getString(R.string.UNKNOWN_REASON),
+                    Toast.LENGTH_SHORT
+                ).show()
 
             }
         }
-
-
-
-
-
     }
-
-
 
 
     fun searchByMail(mail: String) {
@@ -219,15 +204,31 @@ class ChooseFriendViewModel(
                 is Result.Success -> {
                     if (result.data == null) {
                         noFoundError.value = true
-                        Log.d("getByMail", "viewModel result: ${result.data}")
                     } else {
                         _userDetailDialogData.value = result.data!!
-                        Log.d("getByMail", "viewModel result: ${result.data}")
                     }
                 }
+                is Result.Fail -> {
+                    Toast.makeText(
+                        ManagerApplication.instance,
+                        result.error,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+                is Result.Error -> {
+                    Toast.makeText(
+                        ManagerApplication.instance,
+                        result.exception.toString(),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+                else -> Toast.makeText(
+                    ManagerApplication.instance,
+                    ManagerApplication.instance.getString(R.string.UNKNOWN_REASON),
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
-
     }
 
     fun onNavigated() {
@@ -244,29 +245,41 @@ class ChooseFriendViewModel(
                 }
             }
             val list = mutableListOf<Pet>()
+            var count = 0
             for (petId in petIdList) {
                 when (val result = firebaseRepository.getPetData(petId)) {
                     is Result.Success -> {
-                        result.data?.let {
+                        result.data.let {
                             list.add(it)
                         }
-                        if (list.size == petIdList.size) {
-                            petInfoList.value = list
-                        }
+                        count += 1
                     }
                     is Result.Fail -> {
-
+                        count += 1
+                        Toast.makeText(
+                            ManagerApplication.instance,
+                            result.error,
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                     is Result.Error -> {
-
+                        count += 1
+                        Toast.makeText(
+                            ManagerApplication.instance,
+                            result.exception.toString(),
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
-
+                    else -> Toast.makeText(
+                        ManagerApplication.instance,
+                        ManagerApplication.instance.getString(R.string.UNKNOWN_REASON),
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
-
-
+                if (count == petIdList.size) {
+                    petInfoList.value = list
+                }
             }
-
-
         }
 
 

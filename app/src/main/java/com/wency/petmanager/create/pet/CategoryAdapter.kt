@@ -11,9 +11,7 @@ import com.wency.petmanager.create.events.adapter.PhotoListAdapter
 import com.wency.petmanager.databinding.ItemPetCategoryAddHolderBinding
 import com.wency.petmanager.databinding.ItemPetCategoryCreateBinding
 
-class CategoryAdapter(val onCancelClickListener: PhotoListAdapter.OnCancelClickListener) : ListAdapter<String, RecyclerView.ViewHolder> (PhotoListAdapter.DiffCallback){
-
-
+class CategoryAdapter(private val onCancelClickListener: PhotoListAdapter.OnCancelClickListener) : ListAdapter<String, RecyclerView.ViewHolder> (PhotoListAdapter.DiffCallback){
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
@@ -32,9 +30,7 @@ class CategoryAdapter(val onCancelClickListener: PhotoListAdapter.OnCancelClickL
             is AddPhotoViewHolder -> {
                 holder.itemView.setOnClickListener {
                     onCancelClickListener.onClick(position)
-
                 }
-
             }
 
             is PhotoViewHolder -> {
@@ -55,9 +51,8 @@ class CategoryAdapter(val onCancelClickListener: PhotoListAdapter.OnCancelClickL
         }
     }
 
-    class AddPhotoViewHolder(val binding: ItemPetCategoryAddHolderBinding): RecyclerView.ViewHolder(binding.root){
+    class AddPhotoViewHolder(val binding: ItemPetCategoryAddHolderBinding): RecyclerView.ViewHolder(binding.root)
 
-    }
     class PhotoViewHolder(val binding: ItemPetCategoryCreateBinding): RecyclerView.ViewHolder(binding.root){
         val cancelButton = binding.petCategoryCancelButton
         fun bind(uri: Uri){

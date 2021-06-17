@@ -8,9 +8,11 @@ import com.wency.petmanager.create.events.adapter.UserListAdapter
 import com.wency.petmanager.data.UserInfo
 import com.wency.petmanager.databinding.ItemInviteListBinding
 
-class InviteListAdapter(val viewModel: FriendListViewModel): ListAdapter<UserInfo, InviteListAdapter.InviteRequestViewHolder>(UserListAdapter.DiffCallback) {
+class InviteListAdapter(val viewModel: FriendListViewModel): ListAdapter<UserInfo,
+        InviteListAdapter.InviteRequestViewHolder>(UserListAdapter.DiffCallback) {
 
-    class InviteRequestViewHolder(val binding: ItemInviteListBinding): RecyclerView.ViewHolder(binding.root){
+    class InviteRequestViewHolder(val binding: ItemInviteListBinding):
+        RecyclerView.ViewHolder(binding.root){
         val acceptButton = binding.inviteConfirmButton
         val rejectButton = binding.inviteRejectButton
         val clickToDetail = binding.clickToDialog
@@ -19,12 +21,12 @@ class InviteListAdapter(val viewModel: FriendListViewModel): ListAdapter<UserInf
             binding.user = user
             binding.executePendingBindings()
         }
-
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): InviteRequestViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
-        return InviteRequestViewHolder(ItemInviteListBinding.inflate(layoutInflater, parent, false))
+        return InviteRequestViewHolder(
+            ItemInviteListBinding.inflate(layoutInflater, parent, false))
     }
 
     override fun onBindViewHolder(holder: InviteRequestViewHolder, position: Int) {
@@ -40,5 +42,4 @@ class InviteListAdapter(val viewModel: FriendListViewModel): ListAdapter<UserInf
         }
         holder.bind(user)
     }
-
 }

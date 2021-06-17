@@ -7,22 +7,22 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.wency.petmanager.data.MissionGroup
 import com.wency.petmanager.databinding.ItemMissionListHolderBinding
-import com.wency.petmanager.dialog.MissionListViewModel
 
-class MissionAdapter(val clickListener: OnClickListener): ListAdapter<MissionGroup, MissionAdapter.MissionViewHolder >(DiffCallback) {
+class MissionAdapter(val clickListener: OnClickListener):
+    ListAdapter<MissionGroup, MissionAdapter.MissionViewHolder >(DiffCallback) {
     class MissionViewHolder(val binding: ItemMissionListHolderBinding): RecyclerView.ViewHolder(binding.root){
         val deleteButton = binding.missionDeleteButton
         fun bind(mission: MissionGroup){
             binding.mission = mission
             binding.executePendingBindings()
-
         }
     }
 
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MissionViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
-        return MissionViewHolder(ItemMissionListHolderBinding.inflate(layoutInflater, parent, false))
+        return MissionViewHolder(
+            ItemMissionListHolderBinding.inflate(layoutInflater, parent, false)
+        )
     }
 
     override fun onBindViewHolder(holder: MissionViewHolder, position: Int) {

@@ -1,34 +1,28 @@
 package com.wency.petmanager.create.pet
 
 import android.net.Uri
-import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.libraries.places.api.model.Place
 import com.google.firebase.Timestamp
 import com.wency.petmanager.ManagerApplication
-import com.wency.petmanager.create.events.MissionCreateViewModel
+import com.wency.petmanager.R
 import com.wency.petmanager.data.Location
 import com.wency.petmanager.data.Pet
 import com.wency.petmanager.data.Result
 import com.wency.petmanager.data.UserInfo
 import com.wency.petmanager.data.source.Repository
-import com.wency.petmanager.profile.Today
+import com.wency.petmanager.profile.TimeFormat
 import com.wency.petmanager.profile.UserManager
 import kotlinx.coroutines.*
-import java.lang.Exception
 import java.util.*
-import kotlin.math.log
 
 class PetCreateViewModel(val repository: Repository, val userInfoProfile: UserInfo) : ViewModel() {
 
-
-    val petHeader = MutableLiveData<String>("")
-
-    private val _backHome = MutableLiveData<Boolean>(false)
+    val petHeader = MutableLiveData("")
+    private val _backHome = MutableLiveData(false)
     val backHome: LiveData<Boolean>
         get() = _backHome
 
@@ -36,17 +30,17 @@ class PetCreateViewModel(val repository: Repository, val userInfoProfile: UserIn
     val hospitalName = MutableLiveData<String>()
     val livingPlaceName = MutableLiveData<String>()
 
-    val hospitalPlace: Location = Location("", "", LatLng(0.0, 0.0))
-    val livingPlace: Location = Location("", "", LatLng(0.0, 0.0))
+    private val hospitalPlace: Location =
+        Location("", "", LatLng(0.0, 0.0))
+    private val livingPlace:
+            Location = Location("", "", LatLng(0.0, 0.0))
 
-    val _statusLoading = MutableLiveData<Boolean>(false)
+    private val _statusLoading = MutableLiveData(false)
     val statusLoading: LiveData<Boolean>
         get() = _statusLoading
 
 
     val petName = MutableLiveData<String>()
-
-    val petWeight = MutableLiveData<String>()
 
     private val _petHeaderLink = MutableLiveData<String>()
     val petHeaderLink: LiveData<String>
@@ -57,7 +51,7 @@ class PetCreateViewModel(val repository: Repository, val userInfoProfile: UserIn
         get() = _petCoverLink
 
     private val _categoryPhotos =
-        MutableLiveData<MutableList<String>>(mutableListOf(ADD_HOLDER_STRING))
+        MutableLiveData(mutableListOf(ADD_HOLDER_STRING))
     val categoryPhotos: LiveData<MutableList<String>>
         get() = _categoryPhotos
 
@@ -80,19 +74,17 @@ class PetCreateViewModel(val repository: Repository, val userInfoProfile: UserIn
     fun getLocation(data: Location) {
         if (locationCode == HOSPITAL_LOCATION) {
             hospitalName.value = data.locationName
-            hospitalPlace?.locationName = data.locationName
-            hospitalPlace?.locationLatlng = data.locationLatlng
-            hospitalPlace?.locationAddress = data.locationAddress
+            hospitalPlace.locationName = data.locationName
+            hospitalPlace.locationLatlng = data.locationLatlng
+            hospitalPlace.locationAddress = data.locationAddress
             locationCode = NO_CALLING
         } else {
             livingPlaceName.value = data.locationName
-            livingPlace?.locationName = data.locationName
-            livingPlace?.locationLatlng = data.locationLatlng
-            livingPlace?.locationAddress = data.locationAddress
+            livingPlace.locationName = data.locationName
+            livingPlace.locationLatlng = data.locationLatlng
+            livingPlace.locationAddress = data.locationAddress
             locationCode = NO_CALLING
-
         }
-
     }
 
     fun removePhoto(position: Int) {
@@ -103,18 +95,15 @@ class PetCreateViewModel(val repository: Repository, val userInfoProfile: UserIn
         _categoryPhotos.value = photoList
     }
 
-
     fun checkInfoComplete() {
+
 //        initial pet need header picture and pet name
 
         if (!petName.value.isNullOrEmpty() && !petHeader.value.isNullOrEmpty()) {
             _statusLoading.value = true
             _statusLoading.value = _statusLoading.value
             updateImageToFirebase()
-
-        } else (
-                showError()
-                )
+        } else (showError())
 
     }
 
@@ -128,9 +117,8 @@ class PetCreateViewModel(val repository: Repository, val userInfoProfile: UserIn
     }
 
     fun createUpdateData() {
-
-        coroutineScope.async {
-            petName.value?.let {
+        coroutineScope.launch {
+            petName.value?.let { it ->
                 val dataForUpdate = Pet(
                     name = it,
                     profilePhoto = petHeaderLink.value!!,
@@ -143,23 +131,20 @@ class PetCreateViewModel(val repository: Repository, val userInfoProfile: UserIn
                         "${hospitalPlace.locationLatlng?.latitude},${hospitalPlace.locationLatlng?.longitude}"
                     dataForUpdate.hospitalLocationName = hospitalPlace.locationName
                 }
+
                 if (livingPlace.locationName.isNotEmpty()) {
                     dataForUpdate.livingLocationAddress = livingPlace.locationAddress
                     dataForUpdate.livingLocationName = livingPlace.locationName
                     dataForUpdate.livingLocationLatLng =
                         "${livingPlace.locationLatlng?.latitude},${livingPlace.locationLatlng?.longitude}"
                 }
-                birthDay.value?.let {
-                    dataForUpdate.birth = Timestamp(Today.dateFormat.parse(it))
-                }
-                petWeight.value?.let {
-                    dataForUpdate.weight = it.toLong()
-                }
-                petCoverLink.value?.let {
-                    dataForUpdate.coverPhotos = it
-                }
-                updateToFirebase(dataForUpdate)
 
+                birthDay.value?.let {birth->
+                    TimeFormat.dateFormat.parse(birth)?.let { date-> dataForUpdate.birth = Timestamp(date) }
+                }
+
+                petCoverLink.value?.let { dataForUpdate.coverPhotos = it }
+                updateToFirebase(dataForUpdate)
             }
         }
 
@@ -174,27 +159,38 @@ class PetCreateViewModel(val repository: Repository, val userInfoProfile: UserIn
                     is Result.Success -> {
                         when (folder) {
                             HEADER_UPLOAD -> {
-                                result.data?.let {
+                                result.data.let {
                                     _petHeaderLink.value = it
                                     return@launch
                                 }
-
                             }
                             COVER_UPLOAD -> {
-                                result.data?.let {
+                                result.data.let {
                                     _petCoverLink.value?.add(it)
                                     _petCoverLink.value = _petCoverLink.value
                                 }
                             }
                         }
-
                     }
                     is Result.Fail -> {
-
+                        Toast.makeText(
+                            ManagerApplication.instance,
+                            result.error,
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
-                    else -> {
-                        throw Exception("Failed Unknown Reason")
+                    is Result.Error -> {
+                        Toast.makeText(
+                            ManagerApplication.instance,
+                            result.exception.toString(),
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
+                    else -> Toast.makeText(
+                        ManagerApplication.instance,
+                        ManagerApplication.instance.getString(R.string.UNKNOWN_REASON),
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
         }
@@ -204,7 +200,7 @@ class PetCreateViewModel(val repository: Repository, val userInfoProfile: UserIn
     private fun showError() {
         Toast.makeText(
             ManagerApplication.instance,
-            "Please Fill Name and Header Photo",
+            ManagerApplication.instance.getString(R.string.LACK_INFORMATION),
             Toast.LENGTH_SHORT
         ).show()
     }
@@ -214,28 +210,61 @@ class PetCreateViewModel(val repository: Repository, val userInfoProfile: UserIn
         coroutineScope.launch {
             when (val result = repository.createPet(pet)) {
                 is Result.Success -> {
-                    Toast.makeText(
-                        ManagerApplication.instance,
-                        "Update Success",
-                        Toast.LENGTH_SHORT
-                    ).show()
                     updateToUserPetList(result.data)
                 }
-                is Result.Fail -> Toast.makeText(
+                is Result.Fail -> {
+                    Toast.makeText(
+                        ManagerApplication.instance,
+                        result.error,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+                is Result.Error -> {
+                    Toast.makeText(
+                        ManagerApplication.instance,
+                        result.exception.toString(),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+                else -> Toast.makeText(
                     ManagerApplication.instance,
-                    "Update Failed, Try Again",
+                    ManagerApplication.instance.getString(R.string.UNKNOWN_REASON),
                     Toast.LENGTH_SHORT
                 ).show()
-                is Result.Error -> throw Exception(result.exception)
             }
         }
     }
 
     private fun updateToUserPetList(petId: String) {
-
         coroutineScope.launch {
-            when (repository.addNewPetIdToUser(petId, userInfoProfile.userId)) {
-                is Result.Success -> backHome()
+            when (val result = repository.addNewPetIdToUser(petId, userInfoProfile.userId)) {
+                is Result.Success -> {
+                    Toast.makeText(
+                        ManagerApplication.instance,
+                        ManagerApplication.instance.getString(R.string.UPDATE_SUCCESS),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    backHome()
+                }
+                is Result.Fail -> {
+                    Toast.makeText(
+                        ManagerApplication.instance,
+                        result.error,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+                is Result.Error -> {
+                    Toast.makeText(
+                        ManagerApplication.instance,
+                        result.exception.toString(),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+                else -> Toast.makeText(
+                    ManagerApplication.instance,
+                    ManagerApplication.instance.getString(R.string.UNKNOWN_REASON),
+                    Toast.LENGTH_SHORT
+                ).show()
             }
 
         }
@@ -246,9 +275,7 @@ class PetCreateViewModel(val repository: Repository, val userInfoProfile: UserIn
             _backHome.value = !it
             _statusLoading.value = false
             _statusLoading.value = _statusLoading.value
-
         }
     }
-
 
 }

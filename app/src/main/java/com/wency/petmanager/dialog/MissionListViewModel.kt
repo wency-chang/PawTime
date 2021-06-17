@@ -1,9 +1,11 @@
 package com.wency.petmanager.dialog
 
-import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.wency.petmanager.ManagerApplication
+import com.wency.petmanager.R
 import com.wency.petmanager.data.MissionGroup
 import com.wency.petmanager.data.Pet
 import com.wency.petmanager.data.Result
@@ -27,15 +29,30 @@ class MissionListViewModel(private val repository: Repository,
 
     fun deleteMission(mission: MissionGroup){
         coroutineScope.launch {
-            when(repository.deleteMission(petData.id, mission.missionId)){
+            when(val result = repository.deleteMission(petData.id, mission.missionId)){
                 is Result.Success-> {
                     _missionListLiveData.value?.remove(mission)
                     _missionListLiveData.value = _missionListLiveData.value
                 }
-                else -> {
-                    Log.d("Delete","Mission Delete Failed")
-
+                is Result.Error -> {
+                    Toast.makeText(
+                        ManagerApplication.instance,
+                        result.exception.toString(),
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
+                is Result.Fail -> {
+                    Toast.makeText(
+                        ManagerApplication.instance,
+                        result.error,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+                else -> Toast.makeText(
+                    ManagerApplication.instance,
+                    ManagerApplication.instance.getString(R.string.UNKNOWN_REASON),
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
     }

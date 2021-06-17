@@ -1,6 +1,5 @@
 package com.wency.petmanager.home.timeline
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,8 +11,10 @@ import com.wency.petmanager.databinding.SubItemTimelineMissionBinding
 import com.wency.petmanager.home.HomeViewModel
 import com.wency.petmanager.profile.UserManager
 
-class MissionAdapter(private val mission: List<MissionToday>, val viewModel: HomeViewModel): RecyclerView.Adapter<MissionAdapter.MissionViewHolder>() {
-    class MissionViewHolder(val binding: SubItemTimelineMissionBinding):RecyclerView.ViewHolder(binding.root){
+class MissionAdapter(private val mission: List<MissionToday>, val viewModel: HomeViewModel):
+    RecyclerView.Adapter<MissionAdapter.MissionViewHolder>() {
+    class MissionViewHolder(val binding: SubItemTimelineMissionBinding):
+        RecyclerView.ViewHolder(binding.root){
         val completeCheckBox = binding.checkBox
         val completeUserPhoto = binding.completeUserImage
 
@@ -31,7 +32,8 @@ class MissionAdapter(private val mission: List<MissionToday>, val viewModel: Hom
     }
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MissionViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
-        return MissionViewHolder(SubItemTimelineMissionBinding.inflate(layoutInflater, parent, false))
+        return MissionViewHolder(
+            SubItemTimelineMissionBinding.inflate(layoutInflater, parent, false))
     }
 
     override fun onBindViewHolder(holder: MissionViewHolder, position: Int) {
@@ -63,7 +65,6 @@ class MissionAdapter(private val mission: List<MissionToday>, val viewModel: Hom
                 }
 
             } else {
-                Log.d("checked button clicked", "isChecked $isChecked")
                 holder.completeUserPhoto.apply {
                     visibility = View.GONE
                     startAnimation(AnimationUtils.loadAnimation(this.context,R.anim.image_gone))
@@ -73,7 +74,6 @@ class MissionAdapter(private val mission: List<MissionToday>, val viewModel: Hom
         }
         holder.completeUserPhoto.setOnClickListener {
             if (mission.completeUserId == viewModel.userInfoProfile?.userId) {
-
                 viewModel.changeMissionStatus(mission.petID, mission.missionId, false)
                 holder.completeUserPhoto.apply {
                     visibility = View.GONE
@@ -81,9 +81,7 @@ class MissionAdapter(private val mission: List<MissionToday>, val viewModel: Hom
                 }
                 holder.completeCheckBox.isChecked = false
             }
-
         }
-
     }
 
     override fun getItemCount(): Int {

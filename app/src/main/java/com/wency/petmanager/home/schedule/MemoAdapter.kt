@@ -8,7 +8,8 @@ import com.wency.petmanager.databinding.SubItemMemoTextBinding
 class MemoAdapter(val memoList: List<String>):RecyclerView.Adapter<MemoAdapter.MemoListHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MemoListHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
-        return MemoListHolder(SubItemMemoTextBinding.inflate(layoutInflater, parent, false))
+        return MemoListHolder(
+            SubItemMemoTextBinding.inflate(layoutInflater, parent, false))
     }
 
     override fun onBindViewHolder(holder: MemoListHolder, position: Int) {

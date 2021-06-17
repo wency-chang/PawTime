@@ -4,14 +4,16 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.google.firebase.Timestamp
 import com.wency.petmanager.ManagerApplication
 import com.wency.petmanager.R
 import com.wency.petmanager.data.*
 import com.wency.petmanager.data.source.Repository
 import com.wency.petmanager.network.LoadApiStatus
-import com.wency.petmanager.profile.Today
-import kotlinx.coroutines.*
+import com.wency.petmanager.profile.TimeFormat
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import java.util.*
 
 
@@ -31,13 +33,11 @@ class HomeViewModel(
         const val PAGE_MISSION_CREATE = 0x02
     }
 
-
     private val _navigateToCreateDestination = MutableLiveData<Int?>(null)
 
     private val _petQueryPosition = MutableLiveData<Int?>(null)
     val petQueryPosition: LiveData<Int?>
         get() = _petQueryPosition
-
 
     val navigateToCreateDestination: LiveData<Int?>
         get() = _navigateToCreateDestination
@@ -50,10 +50,9 @@ class HomeViewModel(
     private var viewModelJob = Job()
     private val coroutineScope = CoroutineScope(viewModelJob + Dispatchers.Main)
 
-    val notifyDataSetChange = MutableLiveData<Boolean>(false)
+    val notifyDataSetChange = MutableLiveData(false)
 
-
-    private val _isCreateButtonVisible = MutableLiveData<Boolean>(false)
+    private val _isCreateButtonVisible = MutableLiveData(false)
 
     val isCreateButtonVisible: LiveData<Boolean>
         get() = _isCreateButtonVisible
@@ -63,9 +62,7 @@ class HomeViewModel(
     val navigateToPetProfileDestination: LiveData<Pet?>
         get() = _navigateToPetProfileDestination
 
-
-    private val today: Date = Today.dateFormat.parse(Today.todayString)
-
+    private val today: Date? = TimeFormat.timeStamp8amToday?.toDate()
 
     // petList had null at last for pet add button
     private val _petList = MutableLiveData<MutableList<Pet?>>(null)
@@ -80,7 +77,7 @@ class HomeViewModel(
     val tagList: LiveData<List<String>>
         get() = _tagList
 
-    val tagRecyclerSpanCount = MutableLiveData<Int>(0)
+    private val tagRecyclerSpanCount = MutableLiveData<Int>(0)
 
 
     private val _status = MutableLiveData<LoadApiStatus>()
@@ -122,7 +119,7 @@ class HomeViewModel(
 
     var onStatusQuery = false
 
-    private val _scrollToToday = MutableLiveData<Int>(0)
+    private val _scrollToToday = MutableLiveData(0)
 
     val scrollToToday: LiveData<Int>
         get() = _scrollToToday
@@ -134,9 +131,9 @@ class HomeViewModel(
         get() = _missionListToday
 
 
-//  tag query
+    //  tag query
     private val _tagQueryList = MutableLiveData<MutableSet<String>>()
-    val tagQueryList : LiveData<MutableSet<String>>
+    val tagQueryList: LiveData<MutableSet<String>>
         get() = _tagQueryList
 
     val _tagExpand = MutableLiveData<Boolean>(false)
@@ -157,7 +154,6 @@ class HomeViewModel(
 
     fun clickForCreate(id: Int) {
         _navigateToCreateDestination.value = id
-        Log.d("debug", "click")
     }
 
     //    about detail
@@ -181,12 +177,8 @@ class HomeViewModel(
 
     init {
         onStatusQuery = false
-//        if (petList.value.isNullOrEmpty()){
-//            getPetData()
-//        }
         if (!userPetList.isNullOrEmpty()) {
             getPetHeaderList(userPetList.toList())
-//            getTodayMissionLiveData(userPetList.toMutableList())
             getTagList()
         }
 
@@ -200,47 +192,45 @@ class HomeViewModel(
         _refreshStatus.value = true
     }
 
-    fun getPetHeaderList(petList: List<Pet>) {
-        petList?.let {
-            _petList.value = it.toMutableList()
+    private fun getPetHeaderList(petList: List<Pet>) {
+        petList.let {
+            _petList.value = userPetList?.toMutableList()
             _petList.value?.add(null)
         }
     }
 
     private fun getTagList() {
+//        get event tag list for search
         val tagList = mutableSetOf<String>()
         if (petEventList != null) {
-            for (event in petEventList) {
+            for (event in this.petEventList) {
                 tagList.addAll(event.tagList)
             }
         }
-//        if (userPetList != null) {
-//            for (pet in userPetList) {
-//                tagList.addAll(pet.tagList)
-//            }
-//        }
         _tagList.value = tagList.toList()
-        tagRecyclerSpanCount.value = ((tagList.size/15)+1)*5
+        tagRecyclerSpanCount.value = ((tagList.size / 15) + 1) * 5
         _tagQueryList.value = tagList.toMutableSet()
     }
 
-    fun getMissionToday(missionList: List<MissionGroup>){
+    fun getMissionToday(missionList: List<MissionGroup>) {
         _missionListToday.value = missionList
     }
 
 
     private fun initMission(petId: String, mission: MissionGroup) {
-        Log.d("MISSION","INIT MISSION")
-        mission.complete = false
-        mission.completeUserId = ""
-        mission.completeUserName = ""
-        mission.completeUserPhoto = ""
-        mission.recordDate = Timestamp(Today.dateNTimeFormat.parse("${Today.todayString} 08:00 AM"))
-        updateMissionStatus(petId, mission)
+        TimeFormat.timeStamp8amToday?.let { today ->
+            mission.complete = false
+            mission.completeUserId = ""
+            mission.completeUserName = ""
+            mission.completeUserPhoto = ""
+            mission.recordDate = today
+            updateMissionStatus(petId, mission)
+        }
+
     }
 
     private fun updateMissionStatus(petId: String, mission: MissionGroup) {
-        Log.d("MISSION","UPDATE MISSION : $mission")
+        Log.d("MISSION", "UPDATE MISSION : $mission")
         coroutineScope.launch {
             when (val result = repository.updateMission(petId, mission)) {
                 is Result.Success -> {
@@ -254,7 +244,7 @@ class HomeViewModel(
                 }
                 else -> {
                     _error.value =
-                        ManagerApplication.instance.getString(R.string.error_message)
+                        ManagerApplication.instance.getString(R.string.ERROR_MESSAGE)
                 }
             }
         }
@@ -277,11 +267,8 @@ class HomeViewModel(
                 mission.completeUserName = it.name
                 mission.completeUserPhoto = it.userPhoto.toString()
             }
-
-
         }
         updateMissionStatus(petId, mission)
-
     }
 
     fun createMissionTimeItem(missionList: List<MissionGroup>) {
@@ -292,7 +279,7 @@ class HomeViewModel(
             }
             petPhoto?.let {
                 if (mission.recordDate ==
-                    Timestamp(Today.dateNTimeFormat.parse("${Today.todayString} 08:00 AM"))
+                    TimeFormat.timeStamp8amToday
                 ) {
                     list.add(
                         MissionToday(
@@ -309,7 +296,6 @@ class HomeViewModel(
                     )
 
                 } else {
-                    Log.d("MISSION","RECORD DATED NOT TODAY")
                     initMission(it[0].id, mission)
                 }
             }
@@ -317,15 +303,25 @@ class HomeViewModel(
         _todayMissionListForTimeline.value = list
     }
 
-    fun insertMissionToTimeline(){
-        if (petEventList.isNullOrEmpty() || timeline.value.isNullOrEmpty()){
-            _timeline.value = mutableListOf(TimelineItem.Today(DayMission(Date(),
-                todayMissionListForTimeline.value)))
+    fun insertMissionToTimeline() {
+        if (petEventList.isNullOrEmpty() || timeline.value.isNullOrEmpty()) {
+            _timeline.value = mutableListOf(
+                TimelineItem.Today(
+                    DayMission(
+                        Date(),
+                        todayMissionListForTimeline.value
+                    )
+                )
+            )
         } else {
             scrollToToday.value?.let {
-                _timeline.value?.let { timeline->
-                    timeline[it] = TimelineItem.Today(DayMission(Date(),
-                        todayMissionListForTimeline.value))
+                _timeline.value?.let { timeline ->
+                    timeline[it] = TimelineItem.Today(
+                        DayMission(
+                            Date(),
+                            todayMissionListForTimeline.value
+                        )
+                    )
                 }
                 _timeline.value = _timeline.value
             }
@@ -333,9 +329,7 @@ class HomeViewModel(
     }
 
     fun createTimelineItem(eventList: MutableList<Event>) {
-        Log.d("Bugg","eventList: $eventList")
 
-//        _scrollToToday.value = 0
         _timeline.value = mutableListOf()
         val listTimelineItem = mutableListOf<TimelineItem>()
         var isTodayAdd = false
@@ -348,31 +342,36 @@ class HomeViewModel(
                 it.date
             }
             do {
-                Log.d("Bugg","start timelineItem")
-
-                if (today.before(eventList[count].date.toDate()) && !isTodayAdd) {
-                    listTimelineItem.add(
-                        TimelineItem.Today(
-                            DayMission(
-                                today,
-                                todayMissionListForTimeline.value
+                today?.let { today ->
+                    if (today.before(eventList[count].date.toDate()) && !isTodayAdd) {
+                        listTimelineItem.add(
+                            TimelineItem.Today(
+                                DayMission(
+                                    today,
+                                    todayMissionListForTimeline.value
+                                )
                             )
                         )
-                    )
-                    isTodayAdd = true
-                    todayLocation = timelineCount
-                    timelineCount += 1
-
+                        isTodayAdd = true
+                        todayLocation = timelineCount
+                        timelineCount += 1
+                    }
                 }
 
-
-                val countDay = Today.dateNTimeFormat.parse("${Today.dateFormat.format(eventList[count].date.toDate())} 08:00 AM")
+                val countDay =
+                    TimeFormat.dateNTimeFormat.parse("${TimeFormat.dateFormat.format(eventList[count].date.toDate())} ${TimeFormat.EIGHT_AM_STRING}")
                 val listCardHolder = mutableListOf<Event>()
                 val listPhotoHolder = mutableListOf<Event>()
 
-                while (countDay == Today.dateNTimeFormat.parse("${Today.dateFormat.format(eventList[count].date.toDate())} 08:00 AM") && count < eventList.size) {
+                while (countDay ==
+                    TimeFormat.dateNTimeFormat
+                        .parse("${TimeFormat.dateFormat.format(eventList[count].date.toDate())} ${TimeFormat.EIGHT_AM_STRING}")
+                    && count < eventList.size
+                ) {
 
-                    if (eventList[count].private && eventList[count].userParticipantList?.contains(userInfoProfile?.userId) == false){
+                    if (eventList[count].private
+                        && eventList[count].userParticipantList?.contains(userInfoProfile?.userId) == false
+                    ) {
 
                     } else if (eventList[count].type == EVENT_TYPE_SCHEDULE && eventList[count].complete
                         && !eventList[count].photoList.isNullOrEmpty()
@@ -380,18 +379,14 @@ class HomeViewModel(
                         listPhotoHolder.add(eventList[count])
                     } else if (eventList[count].type == EVENT_TYPE_DIARY) {
                         listPhotoHolder.add(eventList[count])
-                    } else if (eventList[count] == null) {
-                        Log.d("event empty","${eventList[count]}")
                     } else {
-                            listCardHolder.add(eventList[count])
+                        listCardHolder.add(eventList[count])
                     }
                     count += 1
                     if (count == eventList.size) {
                         break
                     }
                 }
-
-
 
                 if (!listCardHolder.isNullOrEmpty()) {
                     listTimelineItem.add(
@@ -420,70 +415,33 @@ class HomeViewModel(
                 }
 
                 if (count == eventList.size && !isTodayAdd) {
-                    listTimelineItem.add(
-                        TimelineItem.Today(
-                            DayMission(
-                                today,
-                                todayMissionListForTimeline.value
+                    today?.let { today->
+                        listTimelineItem.add(
+                            TimelineItem.Today(
+                                DayMission(
+                                    today,
+                                    todayMissionListForTimeline.value
+                                )
                             )
                         )
-                    )
-                    isTodayAdd = true
-
-                    todayLocation = timelineCount
+                        isTodayAdd = true
+                        todayLocation = timelineCount
+                    }
                 }
-
-
             } while (count < eventList.size)
 
             _refreshStatus.value = false
-
             _timeline.value = listTimelineItem
             _scrollToToday.value = todayLocation
         }
     }
 
-
-
-    fun findTodayLocation(eventList: MutableList<Event>): Int {
-        var start = 0
-        var end = eventList.size - 1
-        var position = 0
-        val today = Calendar.getInstance().time
-        when {
-            eventList[start].date.toDate().after(today) -> {
-                return 0
-            }
-            eventList[end].date.toDate().before(today) -> {
-                return end
-            }
-            else -> {
-                while (end > start) {
-                    position = (end - start) / 2
-                    if (eventList[position].date.toDate()
-                            .before(today) && (eventList[position + 1].date.toDate()
-                            .after(today) || eventList[position + 1].date.toDate() == today)
-                    ) {
-                        return position + 1
-                    } else if (eventList[position].date.toDate().after(today)) {
-                        end = position
-                    } else {
-                        start = position
-                    }
-                }
-                return 0
-            }
-        }
-    }
-
     fun queryByPet(petPosition: Int, isQuery: Boolean) {
-
         if (isQuery) {
             petList.value?.let { totalPetList ->
                 totalPetList[petPosition]?.let { pet ->
 
-
-                    if (pet.eventList.isNullOrEmpty()){
+                    if (pet.eventList.isNullOrEmpty()) {
                         _eventForTimeline.value = mutableListOf()
                     } else {
                         _eventForTimeline.value = petEventList?.filter {
@@ -491,15 +449,12 @@ class HomeViewModel(
                         }?.toMutableList()
                     }
                     onStatusQuery = true
-
-                    missionListToday.value?.let { todayMission->
+                    missionListToday.value?.let { todayMission ->
                         createMissionTimeItem(todayMission.filter {
                             it.petId == pet.id
                         })
                     }
-
                 }
-
                 _petQueryPosition.value = petPosition
             }
 
@@ -515,9 +470,9 @@ class HomeViewModel(
         }
     }
 
-    fun clickQuery(tag: String, add: Boolean){
+    fun clickQuery(tag: String, add: Boolean) {
 
-        if (add){
+        if (add) {
             _tagQueryList.value?.add(tag)
         } else {
             _tagQueryList.value?.remove(tag)
@@ -529,15 +484,15 @@ class HomeViewModel(
     fun queryByTag() {
 
         resetTimeline()
-        if (tagQueryList.value?.size != tagList.value?.size){
+        if (tagQueryList.value?.size != tagList.value?.size) {
             val list = mutableSetOf<Event>()
             if (tagQueryList.value.isNullOrEmpty()) {
 
-                    evenForTimeline.value?.let { eventList ->
-                        list.addAll(eventList.filter { event ->
-                            event.tagList.isEmpty()
-                        })
-                    }
+                evenForTimeline.value?.let { eventList ->
+                    list.addAll(eventList.filter { event ->
+                        event.tagList.isEmpty()
+                    })
+                }
             } else {
                 tagQueryList.value?.forEach {
                     evenForTimeline.value?.let { eventList ->
@@ -559,18 +514,16 @@ class HomeViewModel(
         }
     }
 
-    private fun resetTimeline(){
-        if (petQueryPosition.value == null){
+    private fun resetTimeline() {
+        if (petQueryPosition.value == null) {
             _eventForTimeline.value = petEventList?.toMutableList()
         } else {
             queryByPet(petQueryPosition.value!!, true)
         }
     }
 
-
-
-    fun clearTagQuery(selectedAll: Boolean){
-        if (selectedAll){
+    fun clearTagQuery(selectedAll: Boolean) {
+        if (selectedAll) {
             _tagQueryList.value = tagList.value?.toMutableSet()
         } else {
             _tagQueryList.value = mutableSetOf()
@@ -579,17 +532,10 @@ class HomeViewModel(
         notifyDataSetChange.value = true
     }
 
-    fun closeTagQuery(){
-        if (tagExpand.value==true) {
+    fun closeTagQuery() {
+        if (tagExpand.value == true) {
             _tagExpand.value = false
         }
     }
-
-
-
-
-
-
-
 
 }

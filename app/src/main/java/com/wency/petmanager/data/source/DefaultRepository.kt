@@ -2,7 +2,6 @@ package com.wency.petmanager.data.source
 
 import android.net.Uri
 import androidx.lifecycle.MutableLiveData
-import com.google.firebase.Timestamp
 import com.wency.petmanager.data.*
 
 class DefaultRepository(private val remoteDataSource: DataSource
@@ -74,8 +73,8 @@ class DefaultRepository(private val remoteDataSource: DataSource
         return remoteDataSource.addEventID(petID, eventID)
     }
 
-    override suspend fun addNewTag(petId: String, tag: String): Result<Boolean> {
-        return remoteDataSource.addNewTag(petId, tag)
+    override suspend fun addNewTag(petID: String, tag: String): Result<Boolean> {
+        return remoteDataSource.addNewTag(petID, tag)
     }
 
     override suspend fun createPet(pet: Pet): Result<String> {

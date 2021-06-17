@@ -5,8 +5,8 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.util.Log
 import androidx.work.*
+import com.wency.petmanager.ManagerApplication
 import com.wency.petmanager.R
 import com.wency.petmanager.data.source.remote.RemoteDataSource
 import com.wency.petmanager.profile.UserManager
@@ -23,13 +23,9 @@ class NotificationReceiver: BroadcastReceiver() {
     private val coroutineScope = CoroutineScope(workJob + Dispatchers.Main)
     override fun onReceive(context: Context, intent: Intent?) {
         val purpose = intent?.getIntExtra(PURPOSE, 0)
-        val data = intent?.getBundleExtra(BUNDLE)
-
-        Log.d("ALARM","Broadcast receive $purpose")
 
         if (intent?.action == Intent.ACTION_REBOOT){
 //            get action reboot intent to reset the work
-
             val resetWork = SystemAlarmSetting()
             resetWork.assignWorkForDailyMission()
             resetWork.assignWorkForEventCheck()
@@ -48,7 +44,6 @@ class NotificationReceiver: BroadcastReceiver() {
                             .build()
                     WorkManager.getInstance(context).enqueue(checkMissionWorkRequest)
 
-
                 }
 
                 else -> {
@@ -61,7 +56,9 @@ class NotificationReceiver: BroadcastReceiver() {
                     val eventTime = intent?.getStringExtra(EventNotificationWork.EVENT_TIME)
 
 
-                    val detailEventIntent: Intent = Uri.parse("pawtime://schedule.detail").let {
+                    val detailEventIntent: Intent = Uri.parse(
+                        ManagerApplication.instance.getString(R.string.URI_STRING_DETAIL)
+                    ).let {
                         Intent(Intent.ACTION_VIEW, it)
                     }
                     detailEventIntent.putExtra(EVENT_ID, eventId)
@@ -73,19 +70,19 @@ class NotificationReceiver: BroadcastReceiver() {
                             detailEventIntent,
                             PendingIntent.FLAG_CANCEL_CURRENT
                         )
-                    val builder = Notification.Builder(context, "${eventId}")
+                    val builder = Notification.Builder(context, "$eventId")
 
-                    builder.setContentTitle("schedule reminder. ${eventTitle}")
+                    builder.setContentTitle("schedule reminder. $eventTitle")
                         .setSmallIcon(R.drawable.ic_paw_time__ui__06)
-                        .setContentText("${eventTime} ${eventTitle} is Starting!!  \n Click for more")
+                        .setContentText("$eventTime $eventTitle is Starting!!  \n Click for more")
                         .setContentIntent(pendingIntent)
                         .setAutoCancel(true)
 
                     val manager =
                         context.getSystemService(Service.NOTIFICATION_SERVICE) as NotificationManager
                     val channel = NotificationChannel(
-                        "${eventId}",
-                        "Paw Time Schedule Reminder",
+                        "$eventId",
+                        ManagerApplication.instance.getString(R.string.SCHEDULE_REMINDER),
                         NotificationManager.IMPORTANCE_HIGH
                     )
                     channel.enableLights(true)
@@ -116,11 +113,8 @@ class NotificationReceiver: BroadcastReceiver() {
         const val PURPOSE_EVENT_NOTIFICATION = 0x00
         const val PURPOSE_MISSION_NOTIFICATION = 0x01
         const val PURPOSE_EVENT_NEW = 0x02
-        const val PURPOSE_EVENT_CHECK = 0x0A
         const val PURPOSE = "purpose"
-        const val BUNDLE = "data"
         const val EVENT_ID = "eventId"
-        const val CREATOR = "createName"
         const val MISSION_REQUEST_CODE = 2020
         const val EVENT_NEW_REQUEST_CODE = 3030
         const val EVENT_ALARM_REQUEST_CODE = 4040

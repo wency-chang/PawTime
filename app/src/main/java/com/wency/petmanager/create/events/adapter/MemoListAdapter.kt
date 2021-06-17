@@ -9,14 +9,16 @@ import com.wency.petmanager.create.events.MissionCreateViewModel
 import com.wency.petmanager.databinding.ItemAddContentHolderBinding
 import com.wency.petmanager.databinding.ItemMemoHolderBinding
 
-class MemoListAdapter(private val onClickListener: OnClickListener): ListAdapter<String, RecyclerView.ViewHolder >(
-    DiffCallback
-) {
+class MemoListAdapter(private val onClickListener: OnClickListener)
+    : ListAdapter<String, RecyclerView.ViewHolder >(DiffCallback) {
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
         return when(viewType){
-            TYPE_MEMO_HOLDER -> MemoHolder(ItemMemoHolderBinding.inflate(layoutInflater, parent, false))
-            TYPE_ADD_HOLDER -> NeedAddHolder(ItemAddContentHolderBinding.inflate(layoutInflater, parent, false))
+            TYPE_MEMO_HOLDER ->
+                MemoHolder(ItemMemoHolderBinding.inflate(layoutInflater, parent, false))
+            TYPE_ADD_HOLDER ->
+                NeedAddHolder(ItemAddContentHolderBinding.inflate(layoutInflater, parent, false))
             else -> throw ClassCastException("Unknown viewType $viewType")
         }
     }

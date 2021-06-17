@@ -1,9 +1,11 @@
 package com.wency.petmanager.friend
 
-import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.wency.petmanager.ManagerApplication
+import com.wency.petmanager.R
 import com.wency.petmanager.data.Result
 import com.wency.petmanager.data.UserInfo
 import com.wency.petmanager.data.source.Repository
@@ -26,27 +28,46 @@ class FriendListViewModel(val repository: Repository) : ViewModel() {
 
     var userInfo = UserInfo()
 
-    val noFoundError = MutableLiveData<Boolean>(false)
+    val noFoundError = MutableLiveData(false)
 
     fun getFriendData(friendList: List<String>){
         coroutineScope.launch {
             val list = mutableListOf<UserInfo>()
+            var count = 0
             for (friend in friendList){
                 when (val result = repository.getUserProfile(friend)){
                     is Result.Success -> {
-                        result.data?.let {
-                            list.add(it)
+                        result.data.let {
+                            if (it.userId.isNotEmpty()){
+                                list.add(it)
+                            }
+                            count += 1
                         }
-                        if (list.size == friendList.size){
-                            _friendList.value = list
-                        }
                     }
-                    is Result.Error ->{
-
+                    is Result.Fail -> {
+                        count += 1
+                        Toast.makeText(
+                            ManagerApplication.instance,
+                            result.error,
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
-                    is Result.Fail ->{
-
+                    is Result.Error -> {
+                        count += 1
+                        Toast.makeText(
+                            ManagerApplication.instance,
+                            result.exception.toString(),
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
+                    else -> Toast.makeText(
+                        ManagerApplication.instance,
+                        ManagerApplication.instance.getString(R.string.UNKNOWN_REASON),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+                if (count == friendList.size){
+                    _friendList.value = list
                 }
             }
         }
@@ -55,10 +76,26 @@ class FriendListViewModel(val repository: Repository) : ViewModel() {
         coroutineScope.launch {
             when (val result = repository.acceptFriend(userInfo.userId, friendId)){
                 is Result.Success -> {
-                    if (result.data){
-
-                    }
                 }
+                is Result.Fail -> {
+                    Toast.makeText(
+                        ManagerApplication.instance,
+                        result.error,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+                is Result.Error -> {
+                    Toast.makeText(
+                        ManagerApplication.instance,
+                        result.exception.toString(),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+                else -> Toast.makeText(
+                    ManagerApplication.instance,
+                    ManagerApplication.instance.getString(R.string.UNKNOWN_REASON),
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
 
@@ -68,10 +105,26 @@ class FriendListViewModel(val repository: Repository) : ViewModel() {
         coroutineScope.launch {
             when(val result = repository.rejectInvite(userInfo.userId, friendId)){
                 is Result.Success -> {
-                    if (result.data){
-
-                    }
                 }
+                is Result.Fail -> {
+                    Toast.makeText(
+                        ManagerApplication.instance,
+                        result.error,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+                is Result.Error -> {
+                    Toast.makeText(
+                        ManagerApplication.instance,
+                        result.exception.toString(),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+                else -> Toast.makeText(
+                    ManagerApplication.instance,
+                    ManagerApplication.instance.getString(R.string.UNKNOWN_REASON),
+                    Toast.LENGTH_SHORT
+                ).show()
             }
 
         }
@@ -83,12 +136,29 @@ class FriendListViewModel(val repository: Repository) : ViewModel() {
                 is Result.Success -> {
                     if (result.data == null){
                         noFoundError.value = true
-                        Log.d("getByMail","viewModel result: ${result.data}")
                     } else {
                         _userDetailDialogData.value = result.data!!
-                        Log.d("getByMail","viewModel result: ${result.data}")
                     }
                 }
+                is Result.Fail -> {
+                    Toast.makeText(
+                        ManagerApplication.instance,
+                        result.error,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+                is Result.Error -> {
+                    Toast.makeText(
+                        ManagerApplication.instance,
+                        result.exception.toString(),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+                else -> Toast.makeText(
+                    ManagerApplication.instance,
+                    ManagerApplication.instance.getString(R.string.UNKNOWN_REASON),
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
 

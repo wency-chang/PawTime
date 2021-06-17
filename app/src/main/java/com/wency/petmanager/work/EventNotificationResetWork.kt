@@ -4,26 +4,27 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.widget.Toast
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 import com.wency.petmanager.ManagerApplication
+import com.wency.petmanager.R
 import com.wency.petmanager.data.EventNotification
-import com.wency.petmanager.data.Result
 import com.wency.petmanager.data.source.remote.RemoteDataSource
 import com.wency.petmanager.notification.NotificationReceiver
-import com.wency.petmanager.profile.Today
+import com.wency.petmanager.profile.TimeFormat
 import com.wency.petmanager.profile.UserManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
-class EventNotificationResetWork(val context: Context, workerParameters: WorkerParameters): Worker(context, workerParameters) {
+class EventNotificationResetWork(
+    val context: Context, workerParameters: WorkerParameters): Worker(context, workerParameters) {
     private var workJob = Job()
     private val coroutineScope = CoroutineScope(workJob + Dispatchers.Main)
     override fun doWork(): Result {
         getNotificationList()
-
         return Result.success()
     }
 
@@ -36,6 +37,25 @@ class EventNotificationResetWork(val context: Context, workerParameters: WorkerP
                             resetNotification(result.data)
                         }
                     }
+                    is com.wency.petmanager.data.Result.Fail -> {
+                        Toast.makeText(
+                            ManagerApplication.instance,
+                            result.error,
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                    is com.wency.petmanager.data.Result.Error -> {
+                        Toast.makeText(
+                            ManagerApplication.instance,
+                            result.exception.toString(),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                    else -> Toast.makeText(
+                        ManagerApplication.instance,
+                        ManagerApplication.instance.getString(R.string.UNKNOWN_REASON),
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
 
@@ -86,11 +106,10 @@ class EventNotificationResetWork(val context: Context, workerParameters: WorkerP
             putExtra(EventNotificationWork.EVENT_TITLE, eventNotification.eventTitle)
             putExtra(EventNotificationWork.EVENT_ID, eventNotification.eventId)
             eventNotification.eventTime?.let {
-                putExtra(EventNotificationWork.EVENT_TIME, Today.notificationFormat.format(it.toDate()))
+                putExtra(EventNotificationWork.EVENT_TIME, TimeFormat.notificationFormat.format(it.toDate()))
             }
 
         }
         return intent
-
     }
 }

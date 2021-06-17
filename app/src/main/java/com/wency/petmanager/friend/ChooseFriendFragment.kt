@@ -1,27 +1,22 @@
 package com.wency.petmanager.friend
 
 import android.os.Bundle
-import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatDialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.wency.petmanager.MainViewModel
 import com.wency.petmanager.NavHostDirections
 import com.wency.petmanager.create.CreateEventViewModel
-import com.wency.petmanager.data.UserInfo
 import com.wency.petmanager.databinding.FragmentSelectFriendBinding
 import com.wency.petmanager.ext.getVmFactory
-import kotlinx.android.parcel.Parcelize
 
-class ChooseFriendFragment(): Fragment() {
+class ChooseFriendFragment: Fragment() {
     lateinit var binding: FragmentSelectFriendBinding
     val viewModel by viewModels<ChooseFriendViewModel> { getVmFactory(
         ChooseFriendFragmentArgs.fromBundle(requireArguments()).userInfo,
@@ -36,7 +31,7 @@ class ChooseFriendFragment(): Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentSelectFriendBinding.inflate(layoutInflater, container, false)
 
 
@@ -56,27 +51,26 @@ class ChooseFriendFragment(): Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
-        binding.searchFriendByMail.setOnKeyListener { view, keyCode, event ->
+        binding.searchFriendByMail.setOnKeyListener { _, keyCode, event ->
             if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN ){
                 viewModel.searchByMail(binding.searchFriendByMail.text.toString())
-
                 return@setOnKeyListener true
             }
             return@setOnKeyListener false
         }
 
-        viewModel.noFoundError.observe(viewLifecycleOwner, Observer {
+        viewModel.noFoundError.observe(viewLifecycleOwner, {
             if (it){
                 Toast.makeText(this.context, "Mail No Found", Toast.LENGTH_LONG).show()
                 viewModel.noFoundError.value = false
             }
         })
 
-        viewModel.userDetailDialogData.observe(viewLifecycleOwner, Observer { friend->
+        viewModel.userDetailDialogData.observe(viewLifecycleOwner, { friend->
 
             if (friend != null){
                 if (friend.userId.isNotEmpty()) {
-                    viewModel.userInfoProfile?.let { user ->
+                    viewModel.userInfoProfile.let { user ->
                         findNavController().navigate(
                             NavHostDirections.actionGlobalToDialogFindFriend(
                                 user, friend
@@ -88,13 +82,14 @@ class ChooseFriendFragment(): Fragment() {
             }
         })
 
-        viewModel.petInfoList.observe(viewLifecycleOwner, Observer {
+        viewModel.petInfoList.observe(viewLifecycleOwner, {
             binding.friendListRecycler.adapter?.notifyDataSetChanged()
         })
 
-        viewModel.navigateToFragmentSchedule.observe(viewLifecycleOwner, Observer { selectedList->
+        viewModel.navigateToFragmentSchedule.observe(viewLifecycleOwner, { selectedList->
             mainViewModel.userPetList.value?.let { petList->
-                findNavController().navigate(ChooseFriendFragmentDirections.actionChooseFriendFragmentToCreateEventFragment(
+                findNavController().navigate(
+                    ChooseFriendFragmentDirections.actionChooseFriendFragmentToCreateEventFragment(
                     CreateEventViewModel.SCHEDULE_CREATE_PAGE,
                     petList.toTypedArray(),
                     selectedList.toTypedArray()
@@ -103,17 +98,12 @@ class ChooseFriendFragment(): Fragment() {
         }
         )
 
-        viewModel.navigateToPetProfile.observe(viewLifecycleOwner, Observer {
+        viewModel.navigateToPetProfile.observe(viewLifecycleOwner, {
             mainViewModel.updatePetData(it)
             mainViewModel.getFriendData()
-            findNavController().navigate(ChooseFriendFragmentDirections.actionChooseFriendFragmentToPetProfileFragment(
-                it
-            ))
-        }
-        )
-
-        viewModel.updatePetLoadingStatus.observe(viewLifecycleOwner, Observer {
-            Log.d("loading Status", "$it")
+            findNavController().navigate(
+                ChooseFriendFragmentDirections.actionChooseFriendFragmentToPetProfileFragment(it)
+            )
         })
 
     }

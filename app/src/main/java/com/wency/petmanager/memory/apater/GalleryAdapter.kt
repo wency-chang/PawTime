@@ -1,6 +1,5 @@
 package com.wency.petmanager.memory.apater
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -21,7 +20,6 @@ class GalleryAdapter(private val memoryList: List<Gallery>) : RecyclerView.Adapt
     }
 
     override fun onBindViewHolder(holder: GalleryViewHolder, position: Int) {
-        Log.d("Debug","Adapter: $position")
         val gallery = memoryList[position]
         holder.bind(gallery)
     }

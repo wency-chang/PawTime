@@ -1,23 +1,27 @@
 package com.wency.petmanager.profile
 
 import android.net.Uri
-import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.android.libraries.places.api.model.Place
 import com.google.firebase.Timestamp
+import com.wency.petmanager.ManagerApplication
+import com.wency.petmanager.R
 import com.wency.petmanager.create.pet.PetCreateViewModel
 import com.wency.petmanager.data.MissionGroup
 import com.wency.petmanager.data.Pet
 import com.wency.petmanager.data.Result
 import com.wency.petmanager.data.source.Repository
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.ObjectInputStream
 import java.io.ObjectOutputStream
-import java.lang.reflect.Array.get
 import java.math.RoundingMode
 import java.text.DecimalFormat
 import java.util.*
@@ -25,7 +29,6 @@ import java.util.*
 class PetProfileViewModel(val firebaseRepository: Repository, val petProfile: Pet) : ViewModel() {
     val coverPhoto = MutableLiveData<MutableList<String>>(petProfile.coverPhotos)
     val profilePhoto = MutableLiveData<String>(petProfile.profilePhoto)
-    val weightShow = petProfile.weight.toString()
     val ownerNumber = petProfile.users.size.toString()
     var missionList = mutableListOf<MissionGroup>()
     val missionListNumber = MutableLiveData<String>()
@@ -41,7 +44,7 @@ class PetProfileViewModel(val firebaseRepository: Repository, val petProfile: Pe
 
     val buttonString = MutableLiveData<String>(UNEDITABLE)
 
-    val _navigateBackHome = MutableLiveData<Boolean>(false)
+    private val _navigateBackHome = MutableLiveData<Boolean>(false)
     val navigateBackHome: LiveData<Boolean>
         get() = _navigateBackHome
 
@@ -49,7 +52,7 @@ class PetProfileViewModel(val firebaseRepository: Repository, val petProfile: Pe
     private var viewModelJob = Job()
     private val coroutineScope = CoroutineScope(viewModelJob + Dispatchers.Main)
 
-    val _navigateToChooseFriend = MutableLiveData<Pet?>(null)
+    private val _navigateToChooseFriend = MutableLiveData<Pet?>(null)
     val navigateToChooseFriend : LiveData<Pet?>
         get()=_navigateToChooseFriend
 
@@ -63,7 +66,6 @@ class PetProfileViewModel(val firebaseRepository: Repository, val petProfile: Pe
     val doneUpdate : LiveData<Boolean>
         get() = _doneUpdate
 
-
     init {
         getMission()
         countYears()
@@ -74,14 +76,13 @@ class PetProfileViewModel(val firebaseRepository: Repository, val petProfile: Pe
         const val UNEDITABLE = "EDIT"
     }
 
-    fun getMission(){
-        Log.d("MISSION","GET MISSION")
+    private fun getMission(){
+
         coroutineScope.launch {
             when (val result = firebaseRepository.getMissionList(petProfile.id)){
                 is Result.Success -> {
                     missionList = result.data.toMutableList()
                     missionListNumber.value = missionList.size.toString()
-                    Log.d("MISSION","result : $missionList ${missionListNumber.value}")
                 }
             }
         }
@@ -93,9 +94,7 @@ class PetProfileViewModel(val firebaseRepository: Repository, val petProfile: Pe
             val yearFormat = DecimalFormat("0.#")
             yearFormat.roundingMode = RoundingMode.HALF_DOWN
             yearsOld.value = yearFormat.format(years).toString()
-
         }
-
     }
 
     fun clickButton(){
@@ -103,11 +102,19 @@ class PetProfileViewModel(val firebaseRepository: Repository, val petProfile: Pe
             petNameLiveData.value?.let {
                 petDataBeUpdate.name = it
             }
-
             if (it){
                 if (petDataBeUpdate != petProfile || petDataBeUpdate.coverPhotos != petProfile.coverPhotos){
-                    _loading.value = true
-                    updateData()
+                    if (petDataBeUpdate.name.isEmpty() || petDataBeUpdate.coverPhotos.isNullOrEmpty()){
+                        Toast.makeText(
+                            ManagerApplication.instance,
+                            ManagerApplication.instance.getString(R.string.LACK_INFORMATION),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        updateSuccess()
+                    } else {
+                        _loading.value = true
+                        updateData()
+                    }
                 }
             }
          _editable.value = _editable.value == false
@@ -122,24 +129,42 @@ class PetProfileViewModel(val firebaseRepository: Repository, val petProfile: Pe
         }
         coroutineScope.launch {
             petDataBeUpdate?.let {
-                when (firebaseRepository.updatePetData(petProfile.id, it)){
+                when (val result = firebaseRepository.updatePetData(petProfile.id, it)){
                     is Result.Success -> {
-                        _loading.value = false
-                        _doneUpdate.value = true
+                        updateSuccess()
                     }
                     is Result.Fail -> {
-                        _loading.value = false
-                        _doneUpdate.value = true
+                        Toast.makeText(
+                            ManagerApplication.instance,
+                            result.error,
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        updateSuccess()
                     }
                     is Result.Error -> {
-                        _loading.value = false
-                        _doneUpdate.value = true
+                        Toast.makeText(
+                            ManagerApplication.instance,
+                            result.exception.toString(),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        updateSuccess()
                     }
+                    else -> Toast.makeText(
+                        ManagerApplication.instance,
+                        ManagerApplication.instance.getString(R.string.UNKNOWN_REASON),
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
 
         }
     }
+
+    private fun updateSuccess(){
+        _loading.value = false
+        _doneUpdate.value = true
+    }
+
 
     fun chooseOwner(){
         _navigateToChooseFriend.value = petProfile
@@ -162,6 +187,7 @@ class PetProfileViewModel(val firebaseRepository: Repository, val petProfile: Pe
         petDataBeUpdate?.livingLocationAddress = location.address
         livingPlace.value = location.name
     }
+
     fun getNewProfilePhoto(photoUri: Uri){
         coroutineScope.launch {
             when (val result = firebaseRepository.updateImage(photoUri, PetCreateViewModel.HEADER_UPLOAD)){
@@ -171,6 +197,25 @@ class PetProfileViewModel(val firebaseRepository: Repository, val petProfile: Pe
                         profilePhoto.value = it
                     }
                 }
+                is Result.Fail -> {
+                    Toast.makeText(
+                        ManagerApplication.instance,
+                        result.error,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+                is Result.Error -> {
+                    Toast.makeText(
+                        ManagerApplication.instance,
+                        result.exception.toString(),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+                else -> Toast.makeText(
+                    ManagerApplication.instance,
+                    ManagerApplication.instance.getString(R.string.UNKNOWN_REASON),
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
     }
@@ -180,38 +225,48 @@ class PetProfileViewModel(val firebaseRepository: Repository, val petProfile: Pe
             imageUpdateStatus.value = true
             coroutineScope.launch {
                 val newList = mutableListOf<String>()
+                var count = 0
                 for (uri in photoList){
                     when(val result = firebaseRepository.updateImage(uri, PetCreateViewModel.COVER_UPLOAD)){
                         is Result.Success -> {
-                            imageUpdateStatus.value = false
                             newList.add(result.data)
-                            if (newList.size == photoList.size){
-                                petDataBeUpdate?.coverPhotos?.addAll(newList)
-                                if (petDataBeUpdate?.coverPhotos == null){
-                                    petDataBeUpdate?.coverPhotos = newList
-                                }
-                                petDataBeUpdate?.coverPhotos?.let {
-                                    coverPhoto.value = it
-                                }
-                            }
-                            imageUpdateStatus.value = false
-                        }
-                        is Result.Error -> {
-
-
+                            count += 1
                         }
                         is Result.Fail -> {
-
+                            Toast.makeText(
+                                ManagerApplication.instance,
+                                result.error,
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            count += 1
                         }
+                        is Result.Error -> {
+                            Toast.makeText(
+                                ManagerApplication.instance,
+                                result.exception.toString(),
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            count += 1
+                        }
+                        else -> Toast.makeText(
+                            ManagerApplication.instance,
+                            ManagerApplication.instance.getString(R.string.UNKNOWN_REASON),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                    if (count == photoList.size){
+                        petDataBeUpdate?.coverPhotos?.addAll(newList)
+                        if (petDataBeUpdate?.coverPhotos == null){
+                            petDataBeUpdate?.coverPhotos = newList
+                        }
+                        petDataBeUpdate?.coverPhotos?.let {
+                            coverPhoto.value = it
+                        }
+                        imageUpdateStatus.value = false
                     }
                 }
             }
-
-
         }
-
-
-
     }
 
     fun deleteCoverPhoto(currentPage: Int){
@@ -225,7 +280,7 @@ class PetProfileViewModel(val firebaseRepository: Repository, val petProfile: Pe
     }
 
 
-    fun <T> T.clone() : T
+    private fun <T> T.clone() : T
     {
         val byteArrayOutputStream= ByteArrayOutputStream()
         ObjectOutputStream(byteArrayOutputStream).use { outputStream ->
@@ -251,31 +306,31 @@ class PetProfileViewModel(val firebaseRepository: Repository, val petProfile: Pe
 
         coroutineScope.launch {
             petDataBeUpdate?.let {
-                when (firebaseRepository.updatePetData(petProfile.id, it)){
+                when (val result = firebaseRepository.updatePetData(petProfile.id, it)){
                     is Result.Success -> {
                         _navigateBackHome.value = true
                     }
                     is Result.Fail -> {
-
+                        Toast.makeText(
+                            ManagerApplication.instance,
+                            result.error,
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                     is Result.Error -> {
-
+                        Toast.makeText(
+                            ManagerApplication.instance,
+                            result.exception.toString(),
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
+                    else -> Toast.makeText(
+                        ManagerApplication.instance,
+                        ManagerApplication.instance.getString(R.string.UNKNOWN_REASON),
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
-
         }
-
-
-
-
-
-
     }
-
-
-
-
-
-
 }

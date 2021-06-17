@@ -1,21 +1,14 @@
 package com.wency.petmanager.dialog
 
-import android.app.Dialog
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatDialogFragment
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
-import com.wency.petmanager.ManagerApplication
 import com.wency.petmanager.R
-import com.wency.petmanager.data.UserInfo
 import com.wency.petmanager.databinding.DialogFindFriendBinding
-import com.wency.petmanager.detail.DiaryDetailFragmentArgs
-import com.wency.petmanager.detail.DiaryDetailViewModel
 import com.wency.petmanager.ext.getVmFactory
 import com.wency.petmanager.friend.FriendPetListAdapter
 
@@ -35,7 +28,7 @@ class FindFriendDialog(): AppCompatDialogFragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = DialogFindFriendBinding.inflate(layoutInflater, container, false)
         binding.lifecycleOwner = this
         binding.dialogFragment = this
@@ -47,8 +40,7 @@ class FindFriendDialog(): AppCompatDialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
-        viewModel.back.observe(viewLifecycleOwner, Observer {
-            Log.d("send invite","back $it")
+        viewModel.back.observe(viewLifecycleOwner, {
             if (it){
                 this.dismiss()
                 viewModel.back()

@@ -10,7 +10,8 @@ import com.wency.petmanager.databinding.ItemParticipantHeaderBinding
 
 class PetHeaderAdapter(private val selectedIdList: MutableList<String>,
                        private val editable: LiveData<Boolean>,
-                       private val onClickListener: OnClickListener): ListAdapter<Pet, PetHeaderAdapter.PetHeaderViewHolder>(
+                       private val onClickListener: OnClickListener):
+    ListAdapter<Pet, PetHeaderAdapter.PetHeaderViewHolder>(
     com.wency.petmanager.home.adapter.PetHeaderAdapter.DiffCallback) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PetHeaderViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)

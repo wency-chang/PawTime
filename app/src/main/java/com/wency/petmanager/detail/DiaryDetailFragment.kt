@@ -2,59 +2,48 @@ package com.wency.petmanager.detail
 
 import android.app.AlertDialog
 import android.app.DatePickerDialog
-import android.content.Context
 import android.content.DialogInterface
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.Canvas
-import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.content.ContextCompat
-import androidx.core.content.res.ResourcesCompat
-import androidx.core.view.get
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
-import com.google.android.gms.maps.*
-import com.google.android.gms.maps.model.BitmapDescriptor
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
-import com.wency.petmanager.MainViewModel
-import com.wency.petmanager.NavHostDirections
-import com.wency.petmanager.databinding.FragmentDiaryDetailBinding
-import com.wency.petmanager.ext.getVmFactory
-import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.MarkerOptions
-import com.google.android.libraries.places.api.model.Place
-import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
+import com.wency.petmanager.MainViewModel
 import com.wency.petmanager.ManagerApplication
+import com.wency.petmanager.NavHostDirections
 import com.wency.petmanager.R
 import com.wency.petmanager.create.CreateEventViewModel
 import com.wency.petmanager.create.GetImageFromGallery
 import com.wency.petmanager.create.GetLocationFromMap
 import com.wency.petmanager.data.LoadStatus
 import com.wency.petmanager.data.Pet
+import com.wency.petmanager.databinding.FragmentDiaryDetailBinding
 import com.wency.petmanager.dialog.AddMemoDialog
 import com.wency.petmanager.dialog.AddNewTagDialog
-import kotlinx.android.synthetic.*
-import kotlinx.android.synthetic.main.fragment_diary_detail.*
+import com.wency.petmanager.ext.getVmFactory
 import java.util.*
 
 
-class DiaryDetailFragment: Fragment(), OnMapReadyCallback, AddMemoDialog.MemoDialogListener, AddNewTagDialog.AddNewTagListener {
+class DiaryDetailFragment: Fragment()
+    , OnMapReadyCallback
+    , AddMemoDialog.MemoDialogListener
+    , AddNewTagDialog.AddNewTagListener {
     lateinit var binding: FragmentDiaryDetailBinding
-    private val viewModel by viewModels<DiaryDetailViewModel>(){getVmFactory(DiaryDetailFragmentArgs.fromBundle(requireArguments()).eventDetail)}
+    private val viewModel by viewModels<DiaryDetailViewModel> {
+        getVmFactory(DiaryDetailFragmentArgs.fromBundle(requireArguments()).eventDetail)
+    }
     private val mainViewModel by activityViewModels<MainViewModel>()
     lateinit var googleMap: GoogleMap
-
     private val getImage = GetImageFromGallery()
     private val getNewPhotoActivity =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result->
@@ -74,19 +63,17 @@ class DiaryDetailFragment: Fragment(), OnMapReadyCallback, AddMemoDialog.MemoDia
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
 
         binding = FragmentDiaryDetailBinding.inflate(layoutInflater, container, false)
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
-        mainViewModel.petDataForAll?.let { petList->
+        mainViewModel.petDataForAll.let { petList->
             mainViewModel.userPetList.value?.let {userPet->
                 mainViewModel.memoryPetList.value?.let {memory->
                     viewModel.getPetListOption(memory, userPet, petList.toList())
                 }
-
             }
-
         }
 
 
@@ -100,7 +87,7 @@ class DiaryDetailFragment: Fragment(), OnMapReadyCallback, AddMemoDialog.MemoDia
         val memoRecycler = binding.diaryDetailMemoRecycler
 
 
-        viewModel.editable.observe(viewLifecycleOwner, Observer {
+        viewModel.editable.observe(viewLifecycleOwner, {
             photoPager.adapter?.notifyDataSetChanged()
             petRecycler.adapter?.notifyDataSetChanged()
             tagRecycler.adapter?.notifyDataSetChanged()
@@ -109,7 +96,6 @@ class DiaryDetailFragment: Fragment(), OnMapReadyCallback, AddMemoDialog.MemoDia
             if (it){
                 binding.mapCardView.visibility = View.VISIBLE
                 binding.constraintLayout5.setTransition(R.id.end, R.id.end)
-
 
             } else {
                 binding.constraintLayout5.setTransition(R.id.start, R.id.end)
@@ -123,7 +109,7 @@ class DiaryDetailFragment: Fragment(), OnMapReadyCallback, AddMemoDialog.MemoDia
 
         photoPager.adapter = PhotoPagerAdapter(viewModel.eventDetail.photoList)
 
-        TabLayoutMediator(binding.photoDotsRecycler, photoPager){ tab, position ->
+        TabLayoutMediator(binding.photoDotsRecycler, photoPager){ _, _ ->
         }.attach()
 
 
@@ -185,33 +171,24 @@ class DiaryDetailFragment: Fragment(), OnMapReadyCallback, AddMemoDialog.MemoDia
             val alertDialog = AlertDialog.Builder(requireContext())
             alertDialog.setTitle("DELETE DIARY")
                 .setMessage("ARE YOU SURE TO DELETE?")
-                .setNegativeButton("NO", DialogInterface.OnClickListener{ dialogInterface: DialogInterface, i: Int ->
-                })
-                .setPositiveButton("YES", DialogInterface.OnClickListener { dialog, which ->
+                .setNegativeButton("NO") { _: DialogInterface, _: Int ->
+                }
+                .setPositiveButton("YES") { _, _ ->
                     viewModel.deleteEvent()
-                })
+                }
                 .show()
         }
 
-        viewModel.loadingStatus.observe(viewLifecycleOwner, Observer {
+        viewModel.loadingStatus.observe(viewLifecycleOwner, {
             when (it){
                 LoadStatus.DoneNBack -> {
                     mainViewModel.deleteEvent(viewModel.eventDetail)
-//                    mainViewModel.userInfoProfile.value?.let { profile->
-//                        mainViewModel.userPetList.value?.let { petList->
-//                            mainViewModel.eventDetailList.value?.let{eventList->
-//                                findNavController().navigate(NavHostDirections.actionGlobalToHomeFragment(
-//                                    profile, petList.toTypedArray(),eventList.toTypedArray()
-//                                ))
-//                                viewModel.statusDone()
-//                            }
-//                        }
-//                    }
-
                 }
                 LoadStatus.DoneUpdate -> {
                     mainViewModel.updateEvent(viewModel.currentDetailData)
-//                    mainViewModel.getEventDetailList()
+                }
+                else -> {
+
                 }
             }
         })
@@ -253,7 +230,8 @@ class DiaryDetailFragment: Fragment(), OnMapReadyCallback, AddMemoDialog.MemoDia
 
         binding.detailAddTagIcon.setOnClickListener {
             val newTagDialog = AddNewTagDialog(this, viewModel.tagOptionList)
-            newTagDialog.show(childFragmentManager, "TAG")
+            newTagDialog.show(childFragmentManager,
+                ManagerApplication.instance.getString(R.string.TAG_TAG))
         }
 
         val mapFragment = childFragmentManager.findFragmentById(R.id.locationMap) as SupportMapFragment
@@ -264,7 +242,7 @@ class DiaryDetailFragment: Fragment(), OnMapReadyCallback, AddMemoDialog.MemoDia
     override fun onMapReady(map: GoogleMap) {
         googleMap = map
         presentMap()
-        viewModel.latLngToMap.observe(viewLifecycleOwner, Observer {
+        viewModel.latLngToMap.observe(viewLifecycleOwner, {
             it?.let {
                 presentMap()
             }
@@ -274,31 +252,14 @@ class DiaryDetailFragment: Fragment(), OnMapReadyCallback, AddMemoDialog.MemoDia
 
     private fun presentMap(){
         viewModel.latLngToMap.value?.let {
-//            val icon = (ResourcesCompat.getDrawable(this.resources, R.drawable.ic_map_location_blue, null) as BitmapDrawable).bitmap
             googleMap.addMarker(
                 MarkerOptions()
                     .position(it)
                     .title(viewModel.currentDetailData.locationName)
-//                .icon(BitmapDescriptorFactory.fromBitmap(icon))
             ).showInfoWindow()
 
             googleMap.moveCamera(CameraUpdateFactory.newLatLng(it))
         }
-    }
-
-
-    private fun bitMapFromVector(context: Context, vectorRoute: Int ): BitmapDescriptor?{
-        val vectorDrawable = ContextCompat.getDrawable(context, vectorRoute)
-        val bitMap: Bitmap
-        val canvas: Canvas
-        vectorDrawable?.let {drawable->
-            drawable.setBounds(0, 0, drawable.intrinsicWidth, drawable.intrinsicHeight)
-            bitMap = Bitmap.createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight, Bitmap.Config.ARGB_8888)
-            canvas = Canvas(bitMap)
-            drawable.draw(canvas)
-            return BitmapDescriptorFactory.fromBitmap(bitMap)
-        }
-        return null
     }
 
     override fun getTag(tag: String) {
@@ -308,6 +269,5 @@ class DiaryDetailFragment: Fragment(), OnMapReadyCallback, AddMemoDialog.MemoDia
     override fun getMemo(memo: String, position: Int?) {
         viewModel.addMemo(memo, position)
     }
-
 
 }

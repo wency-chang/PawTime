@@ -28,7 +28,6 @@ object ServiceLocator {
     }
     private fun createLocalDataSource(context: Context): DataSource {
         return ManagerLocalDataSource(context)
-
     }
 
 }

@@ -9,11 +9,9 @@ import android.content.Intent
 import android.graphics.Paint
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.DatePicker
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContract
@@ -42,7 +40,7 @@ import java.util.*
 class PetProfileFragment: Fragment() {
 
     lateinit var binding: FragmentPetProfileBinding
-    private val viewModel by viewModels<PetProfileViewModel>() { getVmFactory(
+    private val viewModel by viewModels<PetProfileViewModel> { getVmFactory(
         PetProfileFragmentArgs.fromBundle(requireArguments()).petInfo
     ) }
 
@@ -82,7 +80,7 @@ class PetProfileFragment: Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentPetProfileBinding.inflate(layoutInflater, container, false)
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
@@ -107,11 +105,11 @@ class PetProfileFragment: Fragment() {
 
         }
 
-        viewModel.editable.observe(viewLifecycleOwner, Observer {
+        viewModel.editable.observe(viewLifecycleOwner, {
             if (it){
                 viewModel.buttonString.value = PetProfileViewModel.EDITABLE
-//                binding.petOwnerText.paintFlags = Paint.UNDERLINE_TEXT_FLAG
-//                binding.petOldText.paintFlags = Paint.UNDERLINE_TEXT_FLAG
+                binding.petOwnerText.paintFlags = Paint.UNDERLINE_TEXT_FLAG
+                binding.petOldText.paintFlags = Paint.UNDERLINE_TEXT_FLAG
             } else {
                 viewModel.buttonString.value = PetProfileViewModel.UNEDITABLE
                 binding.petOwnerText.paintFlags = Paint.LINEAR_TEXT_FLAG
@@ -119,7 +117,7 @@ class PetProfileFragment: Fragment() {
             }
         })
 
-        viewModel.navigateToChooseFriend.observe(viewLifecycleOwner, Observer {
+        viewModel.navigateToChooseFriend.observe(viewLifecycleOwner, {
 
             if (it != null) {
                 mainViewModel.userInfoProfile.value?.let { userInfo->
@@ -167,7 +165,8 @@ class PetProfileFragment: Fragment() {
         binding.coverPhotoCancelButton.setOnClickListener {
             viewModel.coverPhoto.value?.let {
                 if (it.isEmpty()){
-                    Toast.makeText(this.requireContext(), "No cover photo to delete~", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this.requireContext(),
+                        this.getString(R.string.COVER_PHOTO_EMPTY), Toast.LENGTH_SHORT).show()
                 } else {
                     viewModel.deleteCoverPhoto(coverPager.currentItem)
                 }
@@ -201,17 +200,17 @@ class PetProfileFragment: Fragment() {
             val alertDialog = AlertDialog.Builder(requireContext())
             alertDialog.setTitle("TURN INTO MEMORY MODE")
                 .setMessage("THIS WILL TURN ${viewModel.petNameLiveData.value} INTO MEMORY MODE")
-                .setNegativeButton("NO", DialogInterface.OnClickListener{ dialogInterface: DialogInterface, i: Int ->
+                .setNegativeButton("NO", DialogInterface.OnClickListener{ _: DialogInterface, _: Int ->
                 })
-                .setPositiveButton("YES", DialogInterface.OnClickListener { dialog, which ->
+                .setPositiveButton("YES", DialogInterface.OnClickListener { _, _ ->
                     val calendar = Calendar.getInstance()
                     val datePicker = DatePickerDialog(requireContext(), R.style.memoryDatePickDialog,  DatePickerDialog.OnDateSetListener { view, pickYear, pickMonth, pickDayOfMonth ->
                         calendar.set(pickYear, pickMonth, pickDayOfMonth)
                         viewModel.updateIntoMemoryMode(calendar.time)
                         val memoryDoneDialog = Dialog(requireContext())
                         memoryDoneDialog.setContentView(R.layout.dialog_turn_to_memory_mode)
-
-                        memoryDoneDialog.window?.setBackgroundDrawable(ManagerApplication.instance.getDrawable(R.color.transparent))
+                        memoryDoneDialog.window?.setBackgroundDrawable(
+                            ManagerApplication.instance.getDrawable(R.color.transparent))
                         memoryDoneDialog.show()
                         val timer = Timer()
                         timer.schedule(object : TimerTask (){
@@ -220,12 +219,11 @@ class PetProfileFragment: Fragment() {
                             }
                         }, 3000)
 
+                    }, calendar.get(Calendar.YEAR),
+                        calendar.get(Calendar.MONTH),
+                        calendar.get(Calendar.DAY_OF_MONTH))
 
-                    }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH))
                     datePicker.datePicker.maxDate = Instant.now().toEpochMilli()
-
-
-
                     datePicker.show()
 
                 })
@@ -239,15 +237,12 @@ class PetProfileFragment: Fragment() {
         viewModel.navigateBackHome.observe(viewLifecycleOwner, Observer {
             if (it){
                 mainViewModel.getPetData()
-
             }
         })
 
         binding.recordButton.setOnClickListener {
             findNavController().navigate(NavHostDirections.actionGlobalToRecordListFragment(viewModel.petProfile))
         }
-
-
 
     }
 

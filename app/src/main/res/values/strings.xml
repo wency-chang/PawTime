@@ -1,8 +1,8 @@
 <resources>
-    <string name="app_name">PAW TIME</string>
-    <string name="regularity">Select Regularity</string>
-    <string name="error_message">Unknown Error</string>
-    <string-array name="regularity">
+    <string name="APP_NAME">PAW TIME</string>
+    <string name="REGULARITY">Select Regularity</string>
+    <string name="ERROR_MESSAGE">Unknown Error</string>
+    <string-array name="REGULARITY">
         <item>One Time</item>
         <item>Every Day</item>
         <item>Every Two Days</item>
@@ -12,8 +12,29 @@
         <item>Every Two Months</item>
         <item>Every Year</item>
     </string-array>
+    <string name="START_UPDATE">Start Updating…</string>
+    <string name="UPDATE_SUCCESS">Update Success</string>
     <string name="API_KEY">AIzaSyDgQ3B62BF3BDH50SyMMG9cLr7MP7DmGZk</string>
     <string name="MAP_KEY">AIzaSyDgQ3B62BF3BDH50SyMMG9cLr7MP7DmGZk</string>
+    <string name="FIREBASE_PATH">gs://petmanager-7b0c9.appspot.com</string>
+    <string name="UNKNOWN_REASON">Failed Unknown Reason</string>
+    <string name="LACK_INFORMATION">Please fill the information</string>
+    <string name="LACK_PARTICIPANT">At least one participant</string>
+    <string name="NOTIFICATION_TAG">Notification</string>
+    <string name="MEMO_TAG">Memo</string>
+    <string name="NONE">NONE</string>
+    <string name="DATE_RANGE">Choose dates</string>
+    <string name="SCHEDULE_REMINDER">Paw Time Schedule Reminder</string>
+    <string name="URI_STRING_DETAIL">pawtime://schedule.detail</string>
+    <string name="SCHEDULE_PHOTO_FOLDER">Schedule/Photos</string>
+    <string name="TAG_TAG">Tag</string>
+    <string name="MAIL_NO_FOUND">Mail no found</string>
+    <string name="EMPTY_MEMO">No Memo</string>
+    <string name="MEMO_ADDED">Memo added success</string>
+    <string name="EMPTY_TAG">No Tag</string>
+    <string name="REPEAT_TAG">Tag already Existed</string>
+    <string name="TAG_ADDED">Tag added success</string>
+    <string name="COVER_PHOTO_EMPTY">Cover photo is already empty</string>
     <string name="USER_PHOTO_HOLDER">https://pbs.twimg.com/profile_images/1128713017569316865/ITPoN3di_400x400.jpg</string>
     <string name="PRIVACY_POLICY"><h1>Privacy Policy</h1><p>Last updated: June 08, 2021</p>
 <p>This Privacy Policy describes Our policies and procedures on the collection, use and disclosure of Your information when You use the Service and tells You about Your privacy rights and how the law protects You.</p>

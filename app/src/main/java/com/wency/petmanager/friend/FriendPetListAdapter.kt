@@ -8,8 +8,8 @@ import com.wency.petmanager.data.Pet
 import com.wency.petmanager.databinding.SubItemFriendPetListBinding
 import com.wency.petmanager.home.adapter.PetHeaderAdapter
 
-class FriendPetListAdapter: ListAdapter<Pet, FriendPetListAdapter.PetListViewHolder >(
-    PetHeaderAdapter.DiffCallback) {
+class FriendPetListAdapter: ListAdapter<Pet,
+        FriendPetListAdapter.PetListViewHolder >(PetHeaderAdapter.DiffCallback) {
 
 
     class PetListViewHolder(val binding: SubItemFriendPetListBinding): RecyclerView.ViewHolder(binding.root){

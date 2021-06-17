@@ -7,5 +7,6 @@ enum class LoadStatus {
     ImageUpload,
     DoneNBack,
     DoneUpdate,
-    DownLoad
+    DownLoad,
+    Error
 }

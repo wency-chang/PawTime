@@ -1,3 +1,5 @@
+@file:Suppress("LABEL_NAME_CLASH")
+
 package com.wency.petmanager.data.source.remote
 
 import android.graphics.Bitmap
@@ -6,17 +8,15 @@ import android.provider.MediaStore
 import android.util.Log
 import android.webkit.MimeTypeMap
 import androidx.lifecycle.MutableLiveData
-import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
-import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.*
 import com.google.firebase.storage.FirebaseStorage
 import com.wency.petmanager.ManagerApplication
+import com.wency.petmanager.R
 import com.wency.petmanager.data.*
 import com.wency.petmanager.data.source.DataSource
-import com.wency.petmanager.profile.Today
-import com.wency.petmanager.profile.UserManager
+import com.wency.petmanager.profile.TimeFormat
 import com.wency.petmanager.work.EventNotificationWork
 import java.io.ByteArrayOutputStream
 import java.util.*
@@ -32,13 +32,10 @@ object RemoteDataSource : DataSource {
     private const val PATH_PET_MISSION_LIST = "missionList"
     private const val MISSION_DATE = "datesTodo"
     private const val PET_TAG_LIST = "tagList"
-    private const val FIRESTORAGE_PATH = "gs://petmanager-7b0c9.appspot.com"
+    private val FIRESTORAGE_PATH: String
+        get() = ManagerApplication.instance.getString(R.string.FIREBASE_PATH)
     private const val USER_PET_LIST = "petList"
     private const val PATH_MISSION = "missions"
-    private const val MISSION_COMPLETE_STATE = "complete"
-    private const val MISSION_COMPLETE_USER_ID = "completeUserId"
-    private const val MISSION_COMPLETE_USER_NAME = "completeUserName"
-    private const val MISSION_COMPLETE_USER_PHOTO = "completeUserPhoto"
     private const val USER_INVITE_LIST = "invitationList"
     private const val USER_ID_FIELD = "userId"
     private const val USER_FRIEND_LIST_FIELD = "friendList"
@@ -48,10 +45,9 @@ object RemoteDataSource : DataSource {
     private const val USER_NOTIFICATION = "notificationList"
     private const val USER_NOTIFICATION_DELETE = "notificationDeleteList"
     private const val EVENT_COMPLETE_UPDATE = "complete"
-    private const val NOTIFICATION_ALARM = "alarmTime"
-    private const val NOTIFICATION_EVENT_TIME = "eventTime"
     private const val PET_RECORD_COLLECTION = "recordList"
     private const val PET_RECORD_DATA_FIELD = "recordData"
+    private const val FOLDER_HEADER = "Header"
 
 
 
@@ -66,14 +62,18 @@ object RemoteDataSource : DataSource {
                         task.result?.let { document ->
                             document.toObject(UserInfo::class.java)?.let {
                                 continuation.resume(Result.Success(it))
+                                return@addOnCompleteListener
                             }
                         }
+                        continuation.resume(Result.Success(UserInfo()))
                     } else {
                         task.exception?.let {
                             continuation.resume(Result.Error(it))
                             return@addOnCompleteListener
                         }
-                        continuation.resume(Result.Fail("failed unknown reason"))
+                        continuation.resume(Result.Fail(
+                            ManagerApplication.instance.getString(R.string.UNKNOWN_REASON)
+                        ))
                     }
                 }
         }
@@ -87,18 +87,19 @@ object RemoteDataSource : DataSource {
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     task.result?.let { document ->
-
                         document.toObject(Pet::class.java)?.let {
                             continuation.resume(Result.Success(it))
                         }
-
                     }
+
                 } else {
                     task.exception?.let {
                         continuation.resume(Result.Error(it))
                         return@addOnCompleteListener
                     }
-                    continuation.resume(Result.Fail("failed unknown reason"))
+                    continuation.resume(Result.Fail(
+                        ManagerApplication.instance.getString(R.string.UNKNOWN_REASON)
+                    ))
                 }
 
             }
@@ -117,19 +118,18 @@ object RemoteDataSource : DataSource {
                             continuation.resume(Result.Success(it))
                         }
                     }
-                    if (task.result == null){
-                        continuation.resume(Result.Success(Event()))
-                    } else if (task.result.data == null) {
+                    if (task.result == null || task.result.data == null){
                         continuation.resume(Result.Success(Event()))
                     }
-
 
                 } else {
                     task.exception?.let {
                         continuation.resume(Result.Error(it))
                         return@addOnCompleteListener
                     }
-                    continuation.resume(Result.Fail("failed unknown reason"))
+                    continuation.resume(Result.Fail(
+                        ManagerApplication.instance.getString(R.string.UNKNOWN_REASON)
+                    ))
                 }
 
             }
@@ -150,7 +150,9 @@ object RemoteDataSource : DataSource {
                             continuation.resume(Result.Error(it))
                             return@addOnCompleteListener
                         }
-                        continuation.resume(Result.Fail("failed unknown reason"))
+                        continuation.resume(Result.Fail(
+                            ManagerApplication.instance.getString(R.string.UNKNOWN_REASON)
+                        ))
                     }
                 }
         }
@@ -166,7 +168,11 @@ object RemoteDataSource : DataSource {
                     } else {
                         task.exception?.let {
                             continuation.resume(Result.Error(it))
+                            return@addOnCompleteListener
                         }
+                        continuation.resume(Result.Fail(
+                            ManagerApplication.instance.getString(R.string.UNKNOWN_REASON)
+                        ))
                     }
 
                 }
@@ -184,6 +190,9 @@ object RemoteDataSource : DataSource {
                         task.exception?.let {
                             continuation.resume(Result.Error(it))
                         }
+                        continuation.resume(Result.Fail(
+                            ManagerApplication.instance.getString(R.string.UNKNOWN_REASON)
+                        ))
                     }
 
                 }
@@ -204,7 +213,9 @@ object RemoteDataSource : DataSource {
                             continuation.resume(Result.Error(it))
                             return@addOnCompleteListener
                         }
-                        continuation.resume(Result.Fail("failed unknown reason"))
+                        continuation.resume(Result.Fail(
+                            ManagerApplication.instance.getString(R.string.UNKNOWN_REASON)
+                        ))
                     }
                 }
         }
@@ -224,37 +235,44 @@ object RemoteDataSource : DataSource {
                         continuation.resume(Result.Error(it))
                         return@addOnCompleteListener
                     }
-                    continuation.resume(Result.Fail("failed unknown reason"))
+                    continuation.resume(Result.Fail(
+                        ManagerApplication.instance.getString(R.string.UNKNOWN_REASON)
+                    ))
                 }
             }
 
     }
 
-    override suspend fun getTodayMission(petID: String): Result<List<MissionGroup>> =
+    override suspend fun getTodayMission(petId: String): Result<List<MissionGroup>> =
         suspendCoroutine { continuation ->
             val missionList = mutableListOf<MissionGroup>()
-            val today = Timestamp(Today.dateNTimeFormat.parse("${Today.todayString} 08:00 AM"))
-            FirebaseFirestore.getInstance().collection(PATH_PETS)
-                .document(petID)
-                .collection(PATH_PET_MISSION_LIST)
-                .whereArrayContains(MISSION_DATE, today)
-                .get()
-                .addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        task.result?.let { document ->
-                            for (item in document) {
-                                missionList.add(item.toObject(MissionGroup::class.java))
+            TimeFormat.timeStamp8amToday?.let { today->
+                FirebaseFirestore.getInstance().collection(PATH_PETS)
+                    .document(petId)
+                    .collection(PATH_PET_MISSION_LIST)
+                    .whereArrayContains(MISSION_DATE, today)
+                    .get()
+                    .addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            task.result?.let { document ->
+                                for (item in document) {
+                                    missionList.add(item.toObject(MissionGroup::class.java))
+                                }
+                                continuation.resume(Result.Success(missionList))
                             }
-                            continuation.resume(Result.Success(missionList))
-                        }
 
-                    } else {
-                        task.exception?.let {
-                            continuation.resume(Result.Error(it))
-                            return@addOnCompleteListener
+                        } else {
+                            task.exception?.let {
+                                continuation.resume(Result.Error(it))
+                                return@addOnCompleteListener
+                            }
+                            continuation.resume(Result.Fail(
+                                ManagerApplication.instance.getString(R.string.UNKNOWN_REASON)
+                            ))
                         }
                     }
-                }
+            }
+
 
         }
 
@@ -278,6 +296,9 @@ object RemoteDataSource : DataSource {
                             continuation.resume(Result.Error(it))
                             return@addOnCompleteListener
                         }
+                        continuation.resume(Result.Fail(
+                            ManagerApplication.instance.getString(R.string.UNKNOWN_REASON)
+                        ))
                     }
 
                 }
@@ -299,7 +320,9 @@ object RemoteDataSource : DataSource {
                             continuation.resume(Result.Error(it))
                             return@addOnCompleteListener
                         }
-                        continuation.resume(Result.Fail("failed unknown reason"))
+                        continuation.resume(Result.Fail(
+                            ManagerApplication.instance.getString(R.string.UNKNOWN_REASON)
+                        ))
                     }
                 }
         }
@@ -318,7 +341,9 @@ object RemoteDataSource : DataSource {
                             continuation.resume(Result.Error(it))
                             return@addOnCompleteListener
                         }
-                        continuation.resume(Result.Fail("failed unknown reason"))
+                        continuation.resume(Result.Fail(
+                            ManagerApplication.instance.getString(R.string.UNKNOWN_REASON)
+                        ))
                     }
 
 
@@ -344,7 +369,9 @@ object RemoteDataSource : DataSource {
                             continuation.resume(Result.Error(it))
                             return@addOnCompleteListener
                         }
-                        continuation.resume(Result.Fail("failed unknown reason"))
+                        continuation.resume(Result.Fail(
+                            ManagerApplication.instance.getString(R.string.UNKNOWN_REASON)
+                        ))
                     }
                 }
         }
@@ -357,22 +384,22 @@ object RemoteDataSource : DataSource {
             val friendDocument = fireStore.document(friendId)
 
             userDocument.update(USER_FRIEND_LIST_FIELD, FieldValue.arrayUnion(friendId))
-                .addOnCompleteListener {
-                    if (it.isSuccessful) {
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
                         userInviteList
                             .whereEqualTo(USER_ID_FIELD, friendId)
                             .get()
-                            .continueWith { task ->
-                                if (task.isSuccessful) {
-                                    for (document in task.result) {
+                            .continueWith { friendTask ->
+                                if (friendTask.isSuccessful) {
+                                    for (document in friendTask.result) {
                                         deleteDocument(userInviteList, document)
                                     }
                                     friendDocument.update(USER_FRIEND_LIST_FIELD, FieldValue.arrayUnion(userId))
-                                        .addOnCompleteListener {
-                                            if (it.isSuccessful) {
+                                        .addOnCompleteListener { userFriendTask ->
+                                            if (userFriendTask.isSuccessful) {
                                                 continuation.resume(Result.Success(true))
                                             } else {
-                                                it.exception?.let {
+                                                userFriendTask.exception?.let {
                                                     continuation.resume(
                                                         Result.Error(
                                                             it
@@ -380,9 +407,19 @@ object RemoteDataSource : DataSource {
                                                     )
                                                     return@addOnCompleteListener
                                                 }
-                                                continuation.resume(com.wency.petmanager.data.Result.Fail("failed unknown reason"))
+                                                continuation.resume(Result.Fail(
+                                                    ManagerApplication.instance.getString(R.string.UNKNOWN_REASON)
+                                                ))
                                             }
                                         }
+                                } else {
+                                    friendTask.exception?.let {
+                                        continuation.resume(Result.Error(it))
+                                        return@continueWith
+                                    }
+                                    continuation.resume(Result.Fail(
+                                        ManagerApplication.instance.getString(R.string.UNKNOWN_REASON)
+                                    ))
                                 }
                             }
 
@@ -398,7 +435,7 @@ object RemoteDataSource : DataSource {
 
     override suspend fun sendFriendInvite(userInfo: UserInfo, friendId: String): Result<Boolean> =
         suspendCoroutine { continuation ->
-            Log.d("send invite","repository sendFriendInvite")
+
             FirebaseFirestore.getInstance()
                 .collection(PATH_USERS)
                 .document(friendId)
@@ -412,7 +449,9 @@ object RemoteDataSource : DataSource {
                             continuation.resume(Result.Error(it))
                             return@addOnCompleteListener
                         }
-                        continuation.resume(Result.Fail("failed unknown reason"))
+                        continuation.resume(Result.Fail(
+                            ManagerApplication.instance.getString(R.string.UNKNOWN_REASON)
+                        ))
                     }
                 }
         }
@@ -422,14 +461,13 @@ object RemoteDataSource : DataSource {
         FirebaseFirestore.getInstance()
             .collection(PATH_USERS)
             .document(userId)
-            .addSnapshotListener { value, error ->
+            .addSnapshotListener { value, _ ->
                 var list = listOf<String>()
-                value?.let {
-                    val userInfo = it.toObject(UserInfo::class.java)
-                    userInfo?.friendList?.let {
-                        list = it
+                value?.let { document ->
+                    val userInfo = document.toObject(UserInfo::class.java)
+                    userInfo?.friendList?.let {friendList->
+                        list = friendList
                     }
-
                 }
                 liveData.value = list
             }
@@ -445,7 +483,7 @@ object RemoteDataSource : DataSource {
             .collection(USER_INVITE_LIST)
             .addSnapshotListener{ querySnapshot: QuerySnapshot?, exception: FirebaseFirestoreException? ->
                 exception?.let {
-                    Log.w("FIRESTORE","get inviteList LiveData failed $it")
+                    Log.w(ManagerApplication.instance.getString(R.string.APP_NAME),"get inviteList LiveData failed $it")
                     return@addSnapshotListener
                 }
 
@@ -459,13 +497,12 @@ object RemoteDataSource : DataSource {
                     }
                 }
                 liveData.value = list
-
             }
-
         return liveData
     }
 
-    override suspend fun rejectInvite(userId: String, friendId: String): Result<Boolean> = suspendCoroutine  {continuation->
+    override suspend fun rejectInvite(userId: String, friendId: String): Result<Boolean> =
+        suspendCoroutine  {continuation->
         val reference = FirebaseFirestore.getInstance()
             .collection(PATH_USERS)
             .document(userId)
@@ -475,18 +512,25 @@ object RemoteDataSource : DataSource {
             .get()
             .continueWith { task->
                 if (task.isSuccessful){
-                    task?.let {
-                        for (document in it.result){
+                        for (document in task.result){
                             deleteDocument(reference, document)
                         }
                         continuation.resume(Result.Success(true))
-                    }
 
+                } else {
+                    task.exception?.let {
+                        continuation.resume(Result.Error(it))
+                        return@continueWith
+                    }
+                    continuation.resume(Result.Fail(
+                        ManagerApplication.instance.getString(R.string.UNKNOWN_REASON)
+                    ))
                 }
             }
     }
 
-    override suspend fun searchUserByMail(userMail: String): Result<UserInfo?> = suspendCoroutine {continuation->
+    override suspend fun searchUserByMail(userMail: String): Result<UserInfo?> =
+        suspendCoroutine {continuation->
         FirebaseFirestore.getInstance()
             .collection(PATH_USERS)
             .whereEqualTo(USER_MAIL_FIELD, userMail)
@@ -507,12 +551,12 @@ object RemoteDataSource : DataSource {
             }
     }
 
-    override suspend fun signInWithGoogle(idToken: String): Result<String> = suspendCoroutine {continuation->
+    override suspend fun signInWithGoogle(idToken: String): Result<String> =
+        suspendCoroutine {continuation->
         val auth = FirebaseAuth.getInstance()
         val credential = GoogleAuthProvider.getCredential(idToken, null)
         val userCollection = FirebaseFirestore.getInstance().collection(PATH_USERS)
         if (auth.currentUser == null) {
-
             auth.signInWithCredential(credential)
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
@@ -543,8 +587,6 @@ object RemoteDataSource : DataSource {
                                                 userPhoto = user.photoUrl.toString()
                                             )
 
-                                            UserManager.userID = user.uid
-
                                             userCollection
                                                 .document(user.uid)
                                                 .set(newUser)
@@ -552,19 +594,34 @@ object RemoteDataSource : DataSource {
                                                     if (it.isSuccessful) {
                                                         continuation.resume(Result.Success(user.uid))
                                                     } else {
-                                                        continuation.resume(Result.Fail(it.exception.toString()))
+                                                        it.exception?.let {e->
+                                                            continuation.resume(Result.Error(e))
+                                                            return@addOnCompleteListener
+                                                        }
+                                                        continuation.resume(Result.Fail(
+                                                            ManagerApplication.instance.getString(R.string.UNKNOWN_REASON)
+                                                        ))
                                                     }
                                                 }
 
                                         } else {
-                                            continuation.resume(Result.Success(userInfo.userId))
+                                            fireStoreUserTask.exception?.let {e->
+                                                continuation.resume(Result.Error(e))
+                                                return@addOnCompleteListener
+                                            }
+                                            continuation.resume(Result.Success(user.uid))
                                         }
                                     }
                                 }
                         }
-
                     } else {
-                        continuation.resume(Result.Fail(task.exception.toString()))
+                        task.exception?.let {
+                            continuation.resume(Result.Error(it))
+                            return@addOnCompleteListener
+                        }
+                        continuation.resume(Result.Fail(
+                            ManagerApplication.instance.getString(R.string.UNKNOWN_REASON)
+                        ))
                     }
                 }
         } else {
@@ -576,11 +633,11 @@ object RemoteDataSource : DataSource {
 
     override suspend fun sinOut(): Result<Boolean> {
         FirebaseAuth.getInstance().signOut()
-
         return Result.Success(true)
     }
 
-    override suspend fun updateOwner(petId: String, userIdList: List<String>): Result<Pet> = suspendCoroutine {continuation->
+    override suspend fun updateOwner(petId: String, userIdList: List<String>): Result<Pet> =
+        suspendCoroutine {continuation->
         val petDocument = FirebaseFirestore.getInstance().collection(PATH_PETS).document(petId)
         val userCollection = FirebaseFirestore.getInstance().collection(PATH_USERS)
         petDocument
@@ -596,6 +653,7 @@ object RemoteDataSource : DataSource {
                                         .update(USER_PET_LIST, FieldValue.arrayUnion(petId))
                                         .addOnCompleteListener {
                                             if (it.isSuccessful) {
+
                                                 userUpdatedCount += 1
                                                 if (userUpdatedCount == userIdList.size) {                                                    petDocument
                                                         .get()
@@ -603,21 +661,33 @@ object RemoteDataSource : DataSource {
                                                             if (petTask.isSuccessful) {
                                                                 val petData =
                                                                     petTask.result.toObject(Pet::class.java)
-                                                                petData?.let {
+                                                                petData?.let {pet->
                                                                     continuation.resume(
                                                                         Result.Success(
-                                                                            it
+                                                                            pet
                                                                         )
                                                                     )
                                                                 }
                                                             } else {
-                                                                continuation.resume(Result.Fail(petTask.exception.toString()))
+                                                                petTask.exception?.let {e->
+                                                                    continuation.resume(Result.Error(e))
+                                                                    return@addOnCompleteListener
+                                                                }
+                                                                continuation.resume(Result.Fail(
+                                                                    ManagerApplication.instance.getString(R.string.UNKNOWN_REASON)
+                                                                ))
                                                             }
 
                                                         }
                                                 }
                                             } else {
-                                                continuation.resume(Result.Fail(it.exception.toString()))
+                                                it.exception?.let {e->
+                                                    continuation.resume(Result.Error(e))
+                                                    return@addOnCompleteListener
+                                                }
+                                                continuation.resume(Result.Fail(
+                                                    ManagerApplication.instance.getString(R.string.UNKNOWN_REASON)
+                                                ))
                                             }
 
                                         }
@@ -625,32 +695,45 @@ object RemoteDataSource : DataSource {
 
                                 }
                             } else {
-                                continuation.resume(Result.Fail(taskUpdate.exception.toString()))
-
+                                taskUpdate.exception?.let {e->
+                                    continuation.resume(Result.Error(e))
+                                    return@addOnCompleteListener
+                                }
+                                continuation.resume(Result.Fail(
+                                    ManagerApplication.instance.getString(R.string.UNKNOWN_REASON)
+                                ))
                             }
-
                         }
 
                 } else {
-                    continuation.resume(Result.Fail(taskDelete.exception.toString()))
-
+                    taskDelete.exception?.let {e->
+                        continuation.resume(Result.Error(e))
+                        return@addOnCompleteListener
+                    }
+                    continuation.resume(Result.Fail(
+                        ManagerApplication.instance.getString(R.string.UNKNOWN_REASON)
+                    ))
                 }
 
             }
     }
 
-    override suspend fun userPetListUpdate(petId: String, userId: String, add: Boolean): Result<Boolean> = suspendCoroutine{ continuation->
+    override suspend fun userPetListUpdate(petId: String, userId: String, add: Boolean): Result<Boolean> =
+        suspendCoroutine{ continuation->
         val userDocument = FirebaseFirestore.getInstance().collection(PATH_USERS).document(userId)
-
         if (add){
-
             userDocument.update(USER_PET_LIST, FieldValue.arrayUnion(petId))
                 .addOnCompleteListener { task->
                     if (task.isSuccessful){
                         continuation.resume(Result.Success(true))
                     } else {
-                        continuation.resume(Result.Fail(task.exception.toString()))
-                        Log.d("UpdateOwner","fail update ${task.result}")
+                        task.exception?.let {e->
+                            continuation.resume(Result.Error(e))
+                            return@addOnCompleteListener
+                        }
+                        continuation.resume(Result.Fail(
+                            ManagerApplication.instance.getString(R.string.UNKNOWN_REASON)
+                        ))
                     }
 
                 }
@@ -659,36 +742,54 @@ object RemoteDataSource : DataSource {
                 .addOnCompleteListener { task->
                     if (task.isSuccessful){
                         continuation.resume(Result.Success(true))
-                    }
-                    else {
-                        continuation.resume(Result.Fail(task.exception.toString()))
-                        Log.d("UpdateOwner","fail update ${task.result}")
+                    }else {
+                        task.exception?.let {e->
+                            continuation.resume(Result.Error(e))
+                            return@addOnCompleteListener
+                        }
+                        continuation.resume(Result.Fail(
+                            ManagerApplication.instance.getString(R.string.UNKNOWN_REASON)
+                        ))
                     }
                 }
         }
     }
 
-    override suspend fun updatePetData(petId: String, petData: Pet): Result<Boolean> = suspendCoroutine { continuation->
+    override suspend fun updatePetData(petId: String, petData: Pet): Result<Boolean> =
+        suspendCoroutine { continuation->
         val petDocument = FirebaseFirestore.getInstance().collection(PATH_PETS).document(petId)
         petDocument.set(petData)
             .addOnCompleteListener { task->
                 if (task.isSuccessful){
                     continuation.resume(Result.Success(true))
                 } else {
-                    continuation.resume(Result.Fail(task.exception.toString()))
+                    task.exception?.let {e->
+                        continuation.resume(Result.Error(e))
+                        return@addOnCompleteListener
+                    }
+                    continuation.resume(Result.Fail(
+                        ManagerApplication.instance.getString(R.string.UNKNOWN_REASON)
+                    ))
                 }
             }
 
     }
 
-    override suspend fun deleteEventFromPetData(petId: String, eventId: String): Result<Boolean> = suspendCoroutine {continuation->
+    override suspend fun deleteEventFromPetData(petId: String, eventId: String): Result<Boolean> =
+        suspendCoroutine {continuation->
         val petDocument = FirebaseFirestore.getInstance().collection(PATH_PETS).document(petId)
         petDocument.update(PET_EVENT_LIST, FieldValue.arrayRemove(eventId))
             .addOnCompleteListener {
                 if (it.isSuccessful){
                     continuation.resume(Result.Success(true))
                 } else {
-                    continuation.resume(Result.Fail(it.exception.toString()))
+                    it.exception?.let {e->
+                        continuation.resume(Result.Error(e))
+                        return@addOnCompleteListener
+                    }
+                    continuation.resume(Result.Fail(
+                        ManagerApplication.instance.getString(R.string.UNKNOWN_REASON)
+                    ))
                 }
             }
     }
@@ -699,14 +800,19 @@ object RemoteDataSource : DataSource {
         add: Boolean
     ): Result<Boolean> = suspendCoroutine {continuation->
         val petDocument = FirebaseFirestore.getInstance().collection(PATH_PETS).document(petId)
-
         if (add){
             petDocument.update(PET_EVENT_LIST, FieldValue.arrayUnion(eventId))
                 .addOnCompleteListener {
                     if (it.isSuccessful){
                         continuation.resume(Result.Success(true))
                     } else {
-                        continuation.resume(Result.Fail(it.exception.toString()))
+                        it.exception?.let {e->
+                            continuation.resume(Result.Error(e))
+                            return@addOnCompleteListener
+                        }
+                        continuation.resume(Result.Fail(
+                            ManagerApplication.instance.getString(R.string.UNKNOWN_REASON)
+                        ))
                     }
                 }
 
@@ -716,7 +822,13 @@ object RemoteDataSource : DataSource {
                     if (it.isSuccessful){
                         continuation.resume(Result.Success(true))
                     } else {
-                        continuation.resume(Result.Fail(it.exception.toString()))
+                        it.exception?.let {e->
+                            continuation.resume(Result.Error(e))
+                            return@addOnCompleteListener
+                        }
+                        continuation.resume(Result.Fail(
+                            ManagerApplication.instance.getString(R.string.UNKNOWN_REASON)
+                        ))
                     }
                 }
         }
@@ -736,24 +848,34 @@ object RemoteDataSource : DataSource {
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         continuation.resume(Result.Success(true))
-                    } else {
-                        task.exception?.let {
-                            continuation.resume(Result.Error(it))
+                    }else {
+                        task.exception?.let {e->
+                            continuation.resume(Result.Error(e))
                             return@addOnCompleteListener
                         }
+                        continuation.resume(Result.Fail(
+                            ManagerApplication.instance.getString(R.string.UNKNOWN_REASON)
+                        ))
                     }
-
                 }
         }
 
     override suspend fun updateEvent(event: Event): Result<Boolean> = suspendCoroutine {continuation->
-        val eventDocument = FirebaseFirestore.getInstance().collection(PATH_EVENT).document(event.eventID)
-        eventDocument.set(event)
+        FirebaseFirestore.getInstance()
+            .collection(PATH_EVENT)
+            .document(event.eventID)
+            .set(event)
             .addOnCompleteListener {
                 if (it.isSuccessful){
                     continuation.resume(Result.Success(true))
                 } else {
-                    continuation.resume(Result.Fail(it.exception.toString()))
+                    it.exception?.let {e->
+                        continuation.resume(Result.Error(e))
+                        return@addOnCompleteListener
+                    }
+                    continuation.resume(Result.Fail(
+                        ManagerApplication.instance.getString(R.string.UNKNOWN_REASON)
+                    ))
                 }
             }
     }
@@ -761,12 +883,13 @@ object RemoteDataSource : DataSource {
     override suspend fun updateImage(uri: Uri, folder: String): Result<String> =
         suspendCoroutine { continuation ->
             val storageReference = FirebaseStorage.getInstance(FIRESTORAGE_PATH)
-            val databaseReference = FirebaseDatabase.getInstance(FIRESTORAGE_PATH)
             val fileReference = storageReference.reference.child(
                 "$folder/${System.currentTimeMillis()}.${getFileExtension(uri)}"
             )
-            val bitmap = MediaStore.Images.Media.getBitmap(ManagerApplication.instance.contentResolver, uri)
-            val compressedBitmap = if (folder.contains("Header")){
+            val bitmap = MediaStore.Images.Media.getBitmap(
+                ManagerApplication.instance.contentResolver, uri
+            )
+            val compressedBitmap = if (folder.contains(FOLDER_HEADER)){
                     compressBitmap(bitmap, 30) } else {
                         compressBitmap(bitmap, 60)
                     }
@@ -783,11 +906,13 @@ object RemoteDataSource : DataSource {
                             if (task.isSuccessful) {
                                 continuation.resume(Result.Success(task.result.toString()))
                             } else {
-                                task.exception?.let { Result.Error(it) }?.let {
-                                    continuation.resume(
-                                        it
-                                    )
+                                task.exception?.let {e->
+                                    continuation.resume(Result.Error(e))
+                                    return@addOnCompleteListener
                                 }
+                                continuation.resume(Result.Fail(
+                                    ManagerApplication.instance.getString(R.string.UNKNOWN_REASON)
+                                ))
                             }
                         }
 
@@ -809,20 +934,28 @@ object RemoteDataSource : DataSource {
         return mimeTypeMap.getExtensionFromMimeType(contentResolver.getType(uri))
     }
 
-    override suspend fun deleteEvent(id: String): Result<Boolean> = suspendCoroutine {continuation->
+    override suspend fun deleteEvent(id: String): Result<Boolean> =
+        suspendCoroutine {continuation->
         val eventDocument = FirebaseFirestore.getInstance().collection(PATH_EVENT).document(id)
         eventDocument.delete()
             .addOnCompleteListener {
                 if (it.isSuccessful){
                     continuation.resume(Result.Success(true))
                 } else {
-                    continuation.resume(Result.Fail(it.exception.toString()))
+                    it.exception?.let {e->
+                        continuation.resume(Result.Error(e))
+                        return@addOnCompleteListener
+                    }
+                    continuation.resume(Result.Fail(
+                        ManagerApplication.instance.getString(R.string.UNKNOWN_REASON)
+                    ))
                 }
             }
 
     }
 
-    override suspend fun deleteMission(petId: String, missionId: String): Result<Boolean> = suspendCoroutine {continuation->
+    override suspend fun deleteMission(petId: String, missionId: String): Result<Boolean> =
+        suspendCoroutine {continuation->
         FirebaseFirestore.getInstance()
             .collection(PATH_PETS)
             .document(petId)
@@ -832,6 +965,14 @@ object RemoteDataSource : DataSource {
             .addOnCompleteListener {
                 if (it.isSuccessful){
                     continuation.resume(Result.Success(true))
+                } else {
+                    it.exception?.let {e->
+                        continuation.resume(Result.Error(e))
+                        return@addOnCompleteListener
+                    }
+                    continuation.resume(Result.Fail(
+                        ManagerApplication.instance.getString(R.string.UNKNOWN_REASON)
+                    ))
                 }
             }
     }
@@ -839,51 +980,51 @@ object RemoteDataSource : DataSource {
 
 
     override fun getTodayMissionLiveData(petList: List<Pet>): MutableLiveData<List<MissionGroup>> {
-        val today = Timestamp(Today.dateNTimeFormat.parse("${Today.todayString} 08:00 AM"))
         val liveData = MutableLiveData<List<MissionGroup>>()
         val petMissionList = mutableMapOf<String, List<MissionGroup>>()
         val firebasePet = FirebaseFirestore.getInstance().collection(PATH_PETS)
-
-        for (pet in petList) {
-            firebasePet.document(pet.id).collection(PATH_PET_MISSION_LIST)
-                .whereArrayContains(MISSION_DATE, today)
-                .addSnapshotListener { querySnapshot: QuerySnapshot?, firebaseFirestoreException: FirebaseFirestoreException? ->
-                    firebaseFirestoreException?.let {
-                        Log.d("todayLiveData", "Error ${it.message}")
-                        return@addSnapshotListener
-                    }
-                    val list = mutableListOf<MissionGroup>()
-                    if (querySnapshot != null && !querySnapshot.isEmpty) {
-                        Log.d("Mission","snapshot != null")
-                        for (document in querySnapshot) {
-                            val missionGroup = document.toObject(MissionGroup::class.java)
-                            list.add(missionGroup)
+        TimeFormat.timeStamp8amToday?.let { today->
+            for (pet in petList) {
+                firebasePet.document(pet.id).collection(PATH_PET_MISSION_LIST)
+                    .whereArrayContains(MISSION_DATE, today)
+                    .addSnapshotListener { querySnapshot: QuerySnapshot?, exception: FirebaseFirestoreException? ->
+                        exception?.let {
+                            return@addSnapshotListener
                         }
-                        petMissionList.put(pet.id, list)
-                    } else {
-                        petMissionList.remove(pet.id)
+                        val list = mutableListOf<MissionGroup>()
+                        if (querySnapshot != null && !querySnapshot.isEmpty) {
+                            for (document in querySnapshot) {
+                                list.add(document.toObject(MissionGroup::class.java))
+                            }
+                            petMissionList[pet.id] = list
+                        } else {
+                            petMissionList.remove(pet.id)
+                        }
+
+                        val totalList = mutableListOf<MissionGroup>()
+
+                        petMissionList.forEach { (_, value) ->
+                            totalList.addAll(value)
+                        }
+
+                        liveData.value = totalList
                     }
 
-                    val totalList = mutableListOf<MissionGroup>()
-
-                    petMissionList.forEach { (key, value) ->
-                        totalList.addAll(value)
-                    }
-                    Log.d("Mission","LiveData $totalList $querySnapshot")
-                    liveData.value = totalList
-                }
-
+            }
         }
-//        liveData.value = liveDataList.toList()
-//        liveData.value = liveData.value
-//        Log.d("reposition mission4","return liveDataList ${liveData.value}")
+
+
+
         return liveData
     }
 
-    suspend fun checkNotificationState(userId: String) : Result<List<EventNotification>> = suspendCoroutine{ continuation->
-        val userNotification = FirebaseFirestore.getInstance().collection(PATH_USERS).document(userId).collection(
-            USER_NOTIFICATION)
-        userNotification.whereEqualTo(EVENT_COMPLETE_UPDATE, false)
+    suspend fun checkNotificationState(userId: String) : Result<List<EventNotification>> =
+        suspendCoroutine{ continuation->
+        FirebaseFirestore.getInstance()
+            .collection(PATH_USERS)
+            .document(userId)
+            .collection(USER_NOTIFICATION)
+            .whereEqualTo(EVENT_COMPLETE_UPDATE, false)
             .get()
             .addOnCompleteListener {
                 if (it.isSuccessful){
@@ -900,18 +1041,37 @@ object RemoteDataSource : DataSource {
                             }
                         }
                     }
+                } else {
+                    it.exception?.let {e->
+                        continuation.resume(Result.Error(e))
+                        return@addOnCompleteListener
+                    }
+                    continuation.resume(Result.Fail(
+                        ManagerApplication.instance.getString(R.string.UNKNOWN_REASON)
+                    ))
                 }
             }
     }
 
-    suspend fun completeNotificationSetting(userId: String, eventId: String, delete: Boolean) : Result<Boolean> = suspendCoroutine { continuation->
+    suspend fun completeNotificationSetting(userId: String,
+                                            eventId: String,
+                                            needDelete: Boolean): Result<Boolean> =
+        suspendCoroutine { continuation->
         val notification = FirebaseFirestore.getInstance().collection(PATH_USERS).document(userId).collection(
             USER_NOTIFICATION).document(eventId)
-        if (delete){
+        if (needDelete){
             notification.delete()
                 .addOnCompleteListener {
                     if (it.isSuccessful){
                         continuation.resume(Result.Success(true))
+                    } else {
+                        it.exception?.let {e->
+                            continuation.resume(Result.Error(e))
+                            return@addOnCompleteListener
+                        }
+                        continuation.resume(Result.Fail(
+                            ManagerApplication.instance.getString(R.string.UNKNOWN_REASON)
+                        ))
                     }
                 }
         } else {
@@ -919,12 +1079,21 @@ object RemoteDataSource : DataSource {
                 .addOnCompleteListener {
                     if (it.isSuccessful){
                         continuation.resume(Result.Success(true))
+                    } else {
+                        it.exception?.let {e->
+                            continuation.resume(Result.Error(e))
+                            return@addOnCompleteListener
+                        }
+                        continuation.resume(Result.Fail(
+                            ManagerApplication.instance.getString(R.string.UNKNOWN_REASON)
+                        ))
                     }
                 }
         }
     }
 
-    suspend fun getNotificationNeedToBeDeleted(userId: String): Result<List<EventNotification>> = suspendCoroutine { continuation->
+    suspend fun getNotificationNeedToBeDeleted(userId: String): Result<List<EventNotification>> =
+        suspendCoroutine { continuation->
         FirebaseFirestore.getInstance()
             .collection(PATH_USERS)
             .document(userId)
@@ -933,7 +1102,6 @@ object RemoteDataSource : DataSource {
             .addOnCompleteListener {
                 val list = mutableListOf<EventNotification>()
                 if (it.isSuccessful){
-
                     if (it.result.isEmpty){
                         continuation.resume(Result.Success(list))
                     } else {
@@ -946,12 +1114,20 @@ object RemoteDataSource : DataSource {
                             }
                         }
                     }
-
+                } else {
+                    it.exception?.let {e->
+                        continuation.resume(Result.Error(e))
+                        return@addOnCompleteListener
+                    }
+                    continuation.resume(Result.Fail(
+                        ManagerApplication.instance.getString(R.string.UNKNOWN_REASON)
+                    ))
                 }
             }
     }
 
-    suspend fun completeDeleteList(userId: String, eventId: String): Result<Boolean> = suspendCoroutine { continuation->
+    suspend fun completeDeleteList(userId: String, eventId: String): Result<Boolean> =
+        suspendCoroutine { continuation->
         FirebaseFirestore.getInstance()
             .collection(PATH_USERS)
             .document(userId)
@@ -961,11 +1137,19 @@ object RemoteDataSource : DataSource {
             .addOnCompleteListener {
                 if (it.isSuccessful){
                     continuation.resume(Result.Success(true))
+                } else {
+                    it.exception?.let {e->
+                        continuation.resume(Result.Error(e))
+                        return@addOnCompleteListener
+                    }
+                    continuation.resume(Result.Fail(
+                        ManagerApplication.instance.getString(R.string.UNKNOWN_REASON)
+                    ))
                 }
             }
     }
 
-    suspend fun deleteMissionOver(petId: String){
+    fun deleteMissionOver(petId: String){
         val calendar = Calendar.getInstance()
         calendar.add(Calendar.DAY_OF_MONTH, -1)
         val missionCollection = FirebaseFirestore.getInstance()
@@ -983,11 +1167,25 @@ object RemoteDataSource : DataSource {
                                 missionCollection
                                     .document(mission.missionId)
                                     .delete()
+                                    .addOnCompleteListener { deleteTask->
+                                        deleteTask.exception?.let { e->
+                                            Log.e(ManagerApplication.instance.getString(R.string.APP_NAME),
+                                                e.toString())
+                                        }
+                                    }
                             }
 
                         }
 
                     }
+
+                } else {
+                    it.exception?.let {e->
+                        Log.e(ManagerApplication.instance.getString(R.string.APP_NAME), e.toString())
+                        return@addOnCompleteListener
+                    }
+                    Log.e(ManagerApplication.instance.getString(R.string.APP_NAME),
+                        ManagerApplication.instance.getString(R.string.ERROR_MESSAGE))
 
                 }
 
@@ -999,9 +1197,10 @@ object RemoteDataSource : DataSource {
         userId: String,
         eventNotification: EventNotification
     ): Result<Boolean> = suspendCoroutine {continuation->
-        val userNotification = FirebaseFirestore.getInstance().collection(PATH_USERS).document(userId).collection(
-            USER_NOTIFICATION)
-
+        val userNotification = FirebaseFirestore.getInstance()
+            .collection(PATH_USERS)
+            .document(userId)
+            .collection(USER_NOTIFICATION)
 
         val document = if (eventNotification.type == EventNotificationWork.TYPE_EVENT_ALARM){
             userNotification.document(eventNotification.eventId)
@@ -1011,45 +1210,85 @@ object RemoteDataSource : DataSource {
         eventNotification.notificationId = document.id
 
         document.set(eventNotification)
-            .addOnCompleteListener {
-                if (it.isSuccessful){
+            .addOnCompleteListener {task->
+                if (task.isSuccessful){
                     continuation.resume(Result.Success(true))
+                } else {
+                    task.exception?.let {e->
+                        continuation.resume(Result.Error(e))
+                        return@addOnCompleteListener
+                    }
+                    continuation.resume(Result.Fail(
+                        ManagerApplication.instance.getString(R.string.UNKNOWN_REASON)
+                    ))
                 }
             }
     }
 
-    override suspend fun updateUserInfo(userId: String, userInfo: UserInfo): Result<Boolean> = suspendCoroutine {continuation->
-        val userProfile = FirebaseFirestore.getInstance().collection(PATH_USERS).document(userId)
-        userProfile.set(userInfo)
+    override suspend fun updateUserInfo(userId: String, userInfo: UserInfo): Result<Boolean> =
+        suspendCoroutine {continuation->
+        FirebaseFirestore.getInstance()
+            .collection(PATH_USERS)
+            .document(userId)
+            .set(userInfo)
             .addOnCompleteListener {
                 if (it.isSuccessful){
                     continuation.resume(Result.Success(true))
+                } else {
+                    it.exception?.let {e->
+                        continuation.resume(Result.Error(e))
+                        return@addOnCompleteListener
+                    }
+                    continuation.resume(Result.Fail(
+                        ManagerApplication.instance.getString(R.string.UNKNOWN_REASON)
+                    ))
                 }
             }
     }
 
-    override suspend fun deleteNotification(userId: String, eventId: String): Result<Boolean> = suspendCoroutine{ continuation->
+    override suspend fun deleteNotification(userId: String, eventId: String): Result<Boolean> =
+        suspendCoroutine{ continuation->
         val notification = FirebaseFirestore.getInstance().collection(PATH_USERS).document(userId)
             .collection(USER_NOTIFICATION)
             .document(eventId)
                 notification.get()
                     .addOnCompleteListener {
                         if (it.isSuccessful){
-                            val eventNotification = (it.result.toObject(EventNotification::class.java))
+                            val eventNotification =
+                                (it.result.toObject(EventNotification::class.java))
                             if (eventNotification == null){
                                 continuation.resume(Result.Success(false))
                             } else {
                                 if (eventNotification.complete){
                                     notification.delete()
-                                        .addOnCompleteListener {
-                                            continuation.resume(Result.Success(true))
+                                        .addOnCompleteListener {deleteTask->
+                                            if (deleteTask.isSuccessful){
+                                                continuation.resume(Result.Success(true))
+                                            } else {
+                                                deleteTask.exception?.let {e->
+                                                    continuation.resume(Result.Error(e))
+                                                    return@addOnCompleteListener
+                                                }
+                                                continuation.resume(Result.Fail(
+                                                    ManagerApplication.instance.getString(
+                                                        R.string.UNKNOWN_REASON
+                                                    )
+                                                ))
+                                            }
+
                                         }
                                 } else {
                                     continuation.resume(Result.Success(true))
                                 }
                             }
                         } else {
-                            continuation.resume(Result.Fail(it.exception.toString()))
+                            it.exception?.let {e->
+                                continuation.resume(Result.Error(e))
+                                return@addOnCompleteListener
+                            }
+                            continuation.resume(Result.Fail(
+                                ManagerApplication.instance.getString(R.string.UNKNOWN_REASON)
+                            ))
                         }
                     }
 
@@ -1063,64 +1302,92 @@ object RemoteDataSource : DataSource {
         userDocument.collection(USER_NOTIFICATION)
             .document(eventNotification.eventId)
             .get()
-            .addOnCompleteListener {
-                if (it.isSuccessful){
-                    if (it.result.data == null){
+            .addOnCompleteListener {getTask->
+                if (getTask.isSuccessful){
+                    if (getTask.result.data == null){
 //                        addList doesn't exist
                         continuation.resume(Result.Success(true))
                     } else {
-                        if (it.result[EVENT_COMPLETE_UPDATE] == false){
+                        if (getTask.result[EVENT_COMPLETE_UPDATE] == false){
 //                            notification haven't updated yet
                             userDocument.collection(USER_NOTIFICATION).document(eventNotification.eventId)
                                 .delete()
-                                .addOnCompleteListener {
-                                    if (it.isSuccessful){
+                                .addOnCompleteListener {task->
+                                    if (task.isSuccessful){
                                         continuation.resume(Result.Success(true))
                                     } else {
-
+                                        task.exception?.let {e->
+                                            continuation.resume(Result.Error(e))
+                                            return@addOnCompleteListener
+                                        }
+                                        continuation.resume(Result.Fail(
+                                            ManagerApplication.instance.getString(R.string.UNKNOWN_REASON)
+                                        ))
                                     }
                                 }
                         } else {
 //                            notification already updated --> delete and update in delete list
                             userDocument.collection(USER_NOTIFICATION).document(eventNotification.eventId)
                                 .delete()
-                                .addOnCompleteListener {
-                                    if (it.isSuccessful){
-                                        userDocument.collection(USER_NOTIFICATION_DELETE).document(eventNotification.eventId)
+                                .addOnCompleteListener {task->
+                                    if (task.isSuccessful){
+                                        userDocument.collection(USER_NOTIFICATION_DELETE)
+                                            .document(eventNotification.eventId)
                                             .set(eventNotification)
                                             .addOnCompleteListener {
                                                 if (it.isSuccessful){
                                                     continuation.resume(Result.Success(true))
+                                                } else {
+                                                    it.exception?.let {e->
+                                                        continuation.resume(Result.Error(e))
+                                                        return@addOnCompleteListener
+                                                    }
+                                                    continuation.resume(Result.Fail(
+                                                        ManagerApplication.instance.getString(R.string.UNKNOWN_REASON)
+                                                    ))
                                                 }
                                             }
-                                    }else {
-
+                                    } else {
+                                        task.exception?.let {e->
+                                            continuation.resume(Result.Error(e))
+                                            return@addOnCompleteListener
+                                        }
+                                        continuation.resume(Result.Fail(
+                                            ManagerApplication.instance.getString(R.string.UNKNOWN_REASON)
+                                        ))
                                     }
 
                                 }
                         }
                     }
+                } else {
+                    getTask.exception?.let {e->
+                        continuation.resume(Result.Error(e))
+                        return@addOnCompleteListener
+                    }
+                    continuation.resume(Result.Fail(
+                        ManagerApplication.instance.getString(R.string.UNKNOWN_REASON)
+                    ))
                 }
             }
     }
 
-    override suspend fun getAllNotificationAlreadyUpdated(userId: String): Result<List<EventNotification>> = suspendCoroutine {continuation->
-        FirebaseFirestore.getInstance().collection(PATH_USERS).document(userId).collection(
-            USER_NOTIFICATION)
+    override suspend fun getAllNotificationAlreadyUpdated(userId: String): Result<List<EventNotification>> =
+        suspendCoroutine {continuation->
+        FirebaseFirestore.getInstance()
+            .collection(PATH_USERS)
+            .document(userId)
+            .collection(USER_NOTIFICATION)
             .whereEqualTo(EVENT_COMPLETE_UPDATE, true)
             .get()
             .addOnCompleteListener {
                 val list = mutableListOf<EventNotification>()
                 if (it.isSuccessful){
-
                     if (it.result.isEmpty){
                         continuation.resume(Result.Success(list))
-
                     } else {
                         var count = 0
-
                         for (document in it.result) {
-
                             list.add(document.toObject(EventNotification::class.java))
                             count += 1
                             if (count == it.result.size()) {
@@ -1128,11 +1395,20 @@ object RemoteDataSource : DataSource {
                             }
                         }
                     }
+                } else {
+                    it.exception?.let {e->
+                        continuation.resume(Result.Error(e))
+                        return@addOnCompleteListener
+                    }
+                    continuation.resume(Result.Fail(
+                        ManagerApplication.instance.getString(R.string.UNKNOWN_REASON)
+                    ))
                 }
             }
     }
 
-    override suspend fun getRecordData(petId: String): Result<List<RecordDocument>> = suspendCoroutine{ continuation->
+    override suspend fun getRecordData(petId: String): Result<List<RecordDocument>> =
+        suspendCoroutine{ continuation->
         FirebaseFirestore.getInstance()
             .collection(PATH_PETS)
             .document(petId)
@@ -1141,7 +1417,7 @@ object RemoteDataSource : DataSource {
             .addOnCompleteListener {
                 if (it.isSuccessful){
                     if (it.result.isEmpty){
-                        continuation.resume(Result.Success(listOf<RecordDocument>(RecordDocument())))
+                        continuation.resume(Result.Success(listOf(RecordDocument())))
                     } else {
                         val list = mutableListOf<RecordDocument>()
                         for (document in it.result){
@@ -1151,9 +1427,14 @@ object RemoteDataSource : DataSource {
                             }
                         }
                     }
-
                 } else {
-                    continuation.resume(Result.Fail(it.exception.toString()))
+                    it.exception?.let {e->
+                        continuation.resume(Result.Error(e))
+                        return@addOnCompleteListener
+                    }
+                    continuation.resume(Result.Fail(
+                        ManagerApplication.instance.getString(R.string.UNKNOWN_REASON)
+                    ))
                 }
             }
     }
@@ -1171,7 +1452,13 @@ object RemoteDataSource : DataSource {
                 if (it.isSuccessful){
                     continuation.resume(Result.Success(true))
                 } else {
-                    continuation.resume(Result.Fail(it.exception.toString()))
+                    it.exception?.let {e->
+                        continuation.resume(Result.Error(e))
+                        return@addOnCompleteListener
+                    }
+                    continuation.resume(Result.Fail(
+                        ManagerApplication.instance.getString(R.string.UNKNOWN_REASON)
+                    ))
                 }
             }
     }
@@ -1191,7 +1478,13 @@ object RemoteDataSource : DataSource {
                 if (it.isSuccessful){
                     continuation.resume(Result.Success(true))
                 } else {
-                    continuation.resume(Result.Fail(it.exception.toString()))
+                    it.exception?.let {e->
+                        continuation.resume(Result.Error(e))
+                        return@addOnCompleteListener
+                    }
+                    continuation.resume(Result.Fail(
+                        ManagerApplication.instance.getString(R.string.UNKNOWN_REASON)
+                    ))
                 }
             }
     }

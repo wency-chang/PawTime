@@ -1,7 +1,6 @@
 package com.wency.petmanager.dialog
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,9 +10,15 @@ import com.wency.petmanager.R
 import com.wency.petmanager.databinding.DialogNotificationBinding
 import java.util.*
 
-class NotificationDialog(val day: Int = 0, val hour: Int = 0, val minute: Int = 0, private val targetDate: Date,
-                            val listener: NotificationListener): AppCompatDialogFragment() {
+class NotificationDialog(
+    private val day: Int = 0,
+    private val hour: Int = 0,
+    private val minute: Int = 0,
+    private val targetDate: Date,
+    val listener: NotificationListener): AppCompatDialogFragment() {
+
     lateinit var binding: DialogNotificationBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setStyle(DialogFragment.STYLE_NO_FRAME, R.style.AddContentDialog)
@@ -23,13 +28,12 @@ class NotificationDialog(val day: Int = 0, val hour: Int = 0, val minute: Int = 
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = DialogNotificationBinding.inflate(layoutInflater, container, false)
         val dayPicker = binding.dayBefore
         val hourPicker = binding.hourBefore
         val minutePicker = binding.minuteBefore
 
-        Log.d("Notification","$day, $hour, $minute")
         dayPicker.apply {
             minValue = 0
             maxValue = getMaxDays()

@@ -9,10 +9,9 @@ import androidx.work.WorkerParameters
 import com.wency.petmanager.ManagerApplication
 import com.wency.petmanager.R
 import com.wency.petmanager.data.EventNotification
-import com.wency.petmanager.data.Result
 import com.wency.petmanager.data.source.remote.RemoteDataSource
 import com.wency.petmanager.notification.NotificationReceiver
-import com.wency.petmanager.profile.Today
+import com.wency.petmanager.profile.TimeFormat
 import com.wency.petmanager.profile.UserManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -85,7 +84,7 @@ class EventNotificationWork(val context: Context, workerParameters: WorkerParame
             putExtra(EVENT_TITLE, eventNotification.eventTitle)
             putExtra(EVENT_ID, eventNotification.eventId)
             eventNotification.eventTime?.let {
-                putExtra(EVENT_TIME, Today.notificationFormat.format(it.toDate()))
+                putExtra(EVENT_TIME, TimeFormat.notificationFormat.format(it.toDate()))
             }
 
         }

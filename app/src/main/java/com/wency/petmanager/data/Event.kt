@@ -2,7 +2,6 @@ package com.wency.petmanager.data
 
 import android.os.Parcelable
 import com.google.firebase.Timestamp
-import com.wency.petmanager.profile.Today
 import kotlinx.android.parcel.Parcelize
 import java.util.*
 

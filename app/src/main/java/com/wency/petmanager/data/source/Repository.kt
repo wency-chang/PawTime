@@ -2,9 +2,7 @@ package com.wency.petmanager.data.source
 
 import android.net.Uri
 import androidx.lifecycle.MutableLiveData
-import com.google.firebase.Timestamp
 import com.wency.petmanager.data.*
-import java.net.URI
 
 interface Repository {
 

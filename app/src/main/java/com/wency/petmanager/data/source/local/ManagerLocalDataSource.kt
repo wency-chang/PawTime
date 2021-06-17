@@ -3,9 +3,7 @@ package com.wency.petmanager.data.source.local
 import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.MutableLiveData
-import com.google.firebase.Timestamp
 import com.wency.petmanager.data.*
-import java.net.URI
 
 class ManagerLocalDataSource(val context: Context) : com.wency.petmanager.data.source.DataSource {
 

@@ -6,11 +6,10 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.google.firebase.Timestamp
 import com.wency.petmanager.data.RecordDocument
 import com.wency.petmanager.data.Records
 import com.wency.petmanager.databinding.ItemRecordListBinding
-import com.wency.petmanager.profile.Today
+import com.wency.petmanager.profile.TimeFormat
 
 class RecordListAdapter(val onClickListener: OnClickListener): ListAdapter<RecordDocument, RecordListAdapter.RecordListHolder> (DiffCallback) {
     class RecordListHolder(val binding: ItemRecordListBinding): RecyclerView.ViewHolder(binding.root){
@@ -43,7 +42,7 @@ class RecordListAdapter(val onClickListener: OnClickListener): ListAdapter<Recor
         holder.bind(recordDocument)
         val recordData = mutableListOf<Records>()
         recordDocument.recordData.forEach{(key, value): Map.Entry<String, Double> ->
-            recordData.add(Records(Today.dateFormat.parse(key), value))
+            recordData.add(Records(TimeFormat.dateFormat.parse(key), value))
         }
         recordData.sortBy {
             it.recordDate

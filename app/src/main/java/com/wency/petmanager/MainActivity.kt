@@ -1,46 +1,30 @@
 package com.wency.petmanager
 
-import android.app.AlarmManager
-import android.app.PendingIntent
-import android.content.ComponentName
-import android.content.Context
 import android.content.Intent
 import android.graphics.Color
-import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.*
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContract
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.core.net.toUri
 import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.Observer
 import androidx.navigation.*
-import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
 import com.google.android.libraries.places.api.Places
-import com.theartofdev.edmodo.cropper.CropImage
-import com.wency.petmanager.create.GetImageFromGallery
 import com.wency.petmanager.databinding.ActivityMainBinding
 import com.wency.petmanager.databinding.NavHeaderDrawerBinding
 import com.wency.petmanager.databinding.SubInviteBadgeBinding
 import com.wency.petmanager.ext.getVmFactory
-import com.wency.petmanager.home.HomeFragment
 import com.wency.petmanager.notification.NotificationReceiver
-import com.wency.petmanager.profile.Today
 import com.wency.petmanager.profile.UserManager
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
     lateinit var binding: ActivityMainBinding
     val viewModel by viewModels<MainViewModel> { getVmFactory() }
-    private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var bindingNavHeader: NavHeaderDrawerBinding
 
 
@@ -57,71 +41,59 @@ class MainActivity : AppCompatActivity() {
         window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
         val window = window
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
-
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
 
-
         val navController = findNavController(R.id.navHostNavigation)
-
-
-
 
 //        google place initialize
         Places.initialize(this.applicationContext, UserManager.mapKey)
         Places.createClient(this)
 
 //        get profile
-        viewModel.userInfoProfile.observe(this, Observer {
-
+        viewModel.userInfoProfile.observe(this, {userInfo->
             viewModel.getFriendListLiveData()
             binding.viewModel = viewModel
-
-            if (it.petList.isNullOrEmpty()){
+            if (userInfo.petList.isNullOrEmpty()){
                 viewModel.getPetData()
                 findNavController(R.id.navHostNavigation)
                     .navigate(NavHostDirections.actionGlobalToHomeFragment
-                        (it, null, null)
+                        (userInfo, null, null)
                     )
-            }
-            else {
+            } else {
                 viewModel.getPetData()
             }
-            it.petList?.let {
-                viewModel.petNumber.value = "${it.size}"
+            userInfo.petList?.let {petList->
+                viewModel.petNumber.value = "${petList.size}"
             }
 
-
-            viewModel.inviteListLiveData.observe(this, Observer {
+            viewModel.inviteListLiveData.observe(this, {inviteList->
 //                for badge
-                if (it.size > 0){
-                    viewModel.badgeString.value = "${it.size}"
+                if (inviteList.size > 0){
+                    viewModel.badgeString.value = "${inviteList.size}"
                 } else {
                     viewModel.badgeString.value = ""
                 }
-
             })
 
-            viewModel.friendListLiveData.observe(this, Observer {
+            viewModel.friendListLiveData.observe(this, {list->
                 viewModel.getFriendData()
-                viewModel.friendNumber.value = "${it.size}"
+                viewModel.friendNumber.value = "${list.size}"
             })
         })
 
-        viewModel.userPetList.observe(this, Observer {
-            it?.let {
+        viewModel.userPetList.observe(this, { petList->
+            petList?.let {
                 viewModel.getEventIdList()
                 viewModel.findFriendList()
                 viewModel.getTagList()
                 viewModel.getTodayMissionLiveData(it)
-
             }
-
         })
 
 
-        viewModel.eventIdList.observe(this, Observer {
+        viewModel.eventIdList.observe(this, {eventList->
 
-            if (it.isNullOrEmpty()){
+            if (eventList.isNullOrEmpty()){
                 viewModel.userInfoProfile.value?.let { userProfile->
                     viewModel.userPetList.value?.let { petList->
                         navController
@@ -136,7 +108,7 @@ class MainActivity : AppCompatActivity() {
 
         })
 
-        viewModel.eventDetailList.observe(this, Observer {
+        viewModel.eventDetailList.observe(this, {
 
             if (it.size > 0){
                 viewModel.getTagList()
@@ -167,12 +139,6 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
-
-
-
-
-
-
     }
 
     private fun setUpDrawer(){
@@ -184,6 +150,7 @@ class MainActivity : AppCompatActivity() {
         bindingNavHeader = NavHeaderDrawerBinding.inflate(
             LayoutInflater.from(this), binding.drawerProfile, false
         )
+
         registerForContextMenu(bindingNavHeader.drawerPhoto)
         bindingNavHeader.drawerPhoto.setOnLongClickListener {
             it.showContextMenu()
@@ -193,7 +160,8 @@ class MainActivity : AppCompatActivity() {
         bindingNavHeader.viewModel = viewModel
         binding.drawerNavView.addHeaderView(bindingNavHeader.root)
         val layoutInflater = LayoutInflater.from(this)
-        val badge = SubInviteBadgeBinding.inflate(layoutInflater, binding.drawerProfile, false)
+        val badge =
+            SubInviteBadgeBinding.inflate(layoutInflater, binding.drawerProfile, false)
         badge.lifecycleOwner = this
         badge.mainViewModel = viewModel
         binding.drawerNavView.menu.findItem(R.id.toFriendListButton).actionView = badge.root
@@ -210,19 +178,15 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-
         binding.drawerMemoryButton.setOnClickListener {
-
-            navController.navigate(NavHostDirections.actionGlobalToMemoryListFragment(viewModel.memoryPetList.value?.toTypedArray()))
-
+            navController.navigate(
+                NavHostDirections.actionGlobalToMemoryListFragment(viewModel.memoryPetList.value?.toTypedArray()))
         }
 
     }
 
     private fun hideSystemUI() {
-        // Enables regular immersive mode.
-        // For "lean back" mode, remove SYSTEM_UI_FLAG_IMMERSIVE.
-        // Or for "sticky immersive," replace it with SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+
         window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE)
                 // Set the content to appear under the system bars so that the
                 // content doesn't resize when the system bars hide and show.
@@ -237,9 +201,9 @@ class MainActivity : AppCompatActivity() {
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
         val purpose = intent?.getIntExtra(NotificationReceiver.PURPOSE, 0)
-        Log.d("DEEP LINK", "get intent")
 
-        if (purpose == NotificationReceiver.PURPOSE_EVENT_NEW || purpose == NotificationReceiver.PURPOSE_EVENT_NOTIFICATION){
+        if (purpose == NotificationReceiver.PURPOSE_EVENT_NEW
+            || purpose == NotificationReceiver.PURPOSE_EVENT_NOTIFICATION){
             val eventId = intent.getStringExtra(NotificationReceiver.EVENT_ID)
             eventId?.let {
                 viewModel.getEventDetailToSchedule(it)

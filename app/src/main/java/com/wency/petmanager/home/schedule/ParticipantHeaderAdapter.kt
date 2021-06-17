@@ -1,16 +1,14 @@
 package com.wency.petmanager.home.schedule
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.google.firebase.firestore.auth.User
 import com.wency.petmanager.databinding.SubItemCircleHeaderParticipantBinding
-import com.wency.petmanager.databinding.SubItemMemoTextBinding
 
-class ParticipantHeaderAdapter(val photoList: List<String>): RecyclerView.Adapter<ParticipantHeaderAdapter.UserListHolder>() {
-    val maxNumber = 6
+class ParticipantHeaderAdapter(val photoList: List<String>):
+    RecyclerView.Adapter<ParticipantHeaderAdapter.UserListHolder>() {
+    private val maxNumber = 6
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserListHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
@@ -21,7 +19,6 @@ class ParticipantHeaderAdapter(val photoList: List<String>): RecyclerView.Adapte
         if (position == 0){
             setMargin(holder.layout, 0,0,0,0)
         }
-
         holder.bind(photoList[position])
     }
 
@@ -39,10 +36,8 @@ class ParticipantHeaderAdapter(val photoList: List<String>): RecyclerView.Adapte
         }
     }
 
-    fun setMargin(view: View, left: Int, right: Int, top: Int, bottom: Int){
-        Log.d("setMargin","setMargin Function")
+    private fun setMargin(view: View, left: Int, right: Int, top: Int, bottom: Int){
         if (view.layoutParams is ViewGroup.MarginLayoutParams){
-            Log.d("setMargin","view is ViewGroup MarginLayoutParams")
             val p = view.layoutParams as ViewGroup.MarginLayoutParams
             p.setMargins(left, top, right, bottom)
             view.requestLayout()

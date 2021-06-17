@@ -1,6 +1,5 @@
 package com.wency.petmanager.home.adapter
 
-import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,7 +10,9 @@ import androidx.viewpager2.widget.CompositePageTransformer
 import androidx.viewpager2.widget.MarginPageTransformer
 import androidx.viewpager2.widget.ViewPager2
 import com.wency.petmanager.MainViewModel
-import com.wency.petmanager.data.*
+import com.wency.petmanager.data.DayEvent
+import com.wency.petmanager.data.DayMission
+import com.wency.petmanager.data.TimelineItem
 import com.wency.petmanager.databinding.ItemHomeScheduleCardBinding
 import com.wency.petmanager.databinding.ItemHomeTimelineEventBinding
 import com.wency.petmanager.databinding.ItemTimelineTodayMissionBinding
@@ -19,12 +20,10 @@ import com.wency.petmanager.home.HomeViewModel
 import com.wency.petmanager.home.timeline.ContentCardAdapter
 import com.wency.petmanager.home.timeline.MissionAdapter
 import com.wency.petmanager.home.timeline.ScheduleCardAdapter
-import com.wency.petmanager.profile.Today
-import java.lang.Math.abs
-import java.text.SimpleDateFormat
+import com.wency.petmanager.profile.TimeFormat
 import java.util.*
 
-class TimeLineMainAdapter(val viewModel: HomeViewModel, val mainViewModel: MainViewModel) :
+class TimeLineMainAdapter(private val viewModel: HomeViewModel, private val mainViewModel: MainViewModel) :
     ListAdapter<TimelineItem, RecyclerView.ViewHolder>(DiffCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -64,46 +63,20 @@ class TimeLineMainAdapter(val viewModel: HomeViewModel, val mainViewModel: MainV
 
     private val viewPool = RecyclerView.RecycledViewPool()
 
-
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val item = getItem(position)
         when (holder) {
             is TimeLinePhotoViewHolder -> {
-
                 holder.bind((item as TimelineItem.TimelineEvent).event, viewModel)
-
-//                holder.recyclerPetHeader.apply {
-//                    setRecycledViewPool(viewPool)
-//                }
-//                val compositePageTransformations = CompositePageTransformer()
-//                compositePageTransformations.apply {
-//                    addTransformer(MarginPageTransformer(10))
-//                    addTransformer(ScaleInTransformer())
-//                }
-
-//                holder.pagerContent.apply {
-//                    offscreenPageLimit = 3
-//                    getChildAt(0).overScrollMode = RecyclerView.OVER_SCROLL_NEVER
-//                    getChildAt(0).apply {
-//                        val padding = resources.getDimensionPixelOffset(0)+ resources.getDimensionPixelSize(0)
-//                        setPadding(padding, 0, padding, 0)
-//                        clipToPadding = false
-//                    }
-//                    setPadding(20,0,20,0)
-//                    clipChildren = false
-//                    clipToPadding = false
-//                    setPageTransformer(compositePageTransformations)
-//                }
-
             }
 
             is TimelineTodayViewHolder -> {
                 holder.bind((item as TimelineItem.Today).missionToday)
-                holder.missionAdapter.adapter = item.missionToday.missionList?.let { MissionAdapter(it, viewModel) }
+                holder.missionAdapter.adapter =
+                    item.missionToday.missionList?.let { MissionAdapter(it, viewModel) }
 
             }
             is TimelineCardViewHolder -> {
-
                 holder.bind((item as TimelineItem.TimelineSchedule).event, viewModel, mainViewModel)
                 holder.recyclerScheduleCard.apply {
                     setRecycledViewPool(viewPool)
@@ -124,11 +97,9 @@ class TimeLineMainAdapter(val viewModel: HomeViewModel, val mainViewModel: MainV
 
     class TimeLinePhotoViewHolder(val binding: ItemHomeTimelineEventBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        //            val recyclerPetHeader = binding.petParticipantRecycler
+
         private val viewPager2 = binding.contentCardPager
         fun bind(events: DayEvent, viewModel: HomeViewModel) {
-            val petParticipantPhoto = mutableListOf<String>()
-
             val compositePageTransformations = CompositePageTransformer()
             compositePageTransformations.apply {
                 addTransformer(MarginPageTransformer(10))
@@ -146,34 +117,9 @@ class TimeLineMainAdapter(val viewModel: HomeViewModel, val mainViewModel: MainV
                 adapter = ContentCardAdapter(events.eventList, viewModel)
             }
 
-
-
-//            for(item in events.eventList){
-//                item.petHeaderList.let { petParticipantPhoto.addAll(it) }
-//            }
-//            binding.petParticipantRecycler.adapter = PetParticipantAdapter(petParticipantPhoto)
-//            binding.contentCardPager
-//            binding.contentCardPager.apply {
-//                adapter = ContentCardAdapter(events.eventList, viewModel)
-//                clipToPadding = false
-//                clipChildren = false
-//                offscreenPageLimit = 1
-//                setPageTransformer(compositePageTransformations)
-
-//                getChildAt(0).apply {
-//                    clipToPadding = false
-//                    setPadding(150,10,150,10)
-//
-//                    clipChildren = false
-//                }
-//                setPadding(120,0,120,0)
-
-//                getChildAt(0).overScrollMode = RecyclerView.OVER_SCROLL_NEVER
-
-//            }
-            binding.year = Today.yearOnlyFormat.format(events.date)
-            binding.date = Today.dateOnlyFormat.format(events.date)
-            binding.dayOfWeek = Today.dayOfWeekFormat.format(events.date)
+            binding.year = TimeFormat.yearOnlyFormat.format(events.date)
+            binding.date = TimeFormat.dateOnlyFormat.format(events.date)
+            binding.dayOfWeek = TimeFormat.dayOfWeekFormat.format(events.date)
             binding.executePendingBindings()
         }
     }
@@ -181,11 +127,11 @@ class TimeLineMainAdapter(val viewModel: HomeViewModel, val mainViewModel: MainV
     class TimelineTodayViewHolder(val binding: ItemTimelineTodayMissionBinding) :
         RecyclerView.ViewHolder(binding.root) {
         val missionAdapter = binding.missionRecyclerView
+
         fun bind(mission: DayMission) {
-            binding.year = Today.yearOnlyFormat.format(Date())
-            binding.date = Today.dateOnlyFormat.format(Date())
-            binding.dayOfWeek = Today.dayOfWeekFormat.format(Date())
-//            binding.missionRecyclerView.adapter = mission.missionList?.let { MissionAdapter(it) }
+            binding.year = TimeFormat.yearOnlyFormat.format(Date())
+            binding.date = TimeFormat.dateOnlyFormat.format(Date())
+            binding.dayOfWeek = TimeFormat.dayOfWeekFormat.format(Date())
             binding.missionVisibility = mission.missionList?.isNotEmpty()
             binding.executePendingBindings()
         }
@@ -194,18 +140,16 @@ class TimeLineMainAdapter(val viewModel: HomeViewModel, val mainViewModel: MainV
     class TimelineCardViewHolder(val binding: ItemHomeScheduleCardBinding) :
         RecyclerView.ViewHolder(binding.root) {
         val recyclerScheduleCard = binding.contentCardRecycler
+
         fun bind(events: DayEvent, viewModel: HomeViewModel, mainViewModel: MainViewModel) {
-            binding.year = Today.yearOnlyFormat.format(events.date)
-            binding.date = Today.dateOnlyFormat.format(events.date)
-            binding.dayOfWeek = Today.dayOfWeekFormat.format(events.date)
-            binding.contentCardRecycler.adapter = ScheduleCardAdapter(events.eventList.sortedBy { it.time }, viewModel, mainViewModel)
+            binding.year = TimeFormat.yearOnlyFormat.format(events.date)
+            binding.date = TimeFormat.dateOnlyFormat.format(events.date)
+            binding.dayOfWeek = TimeFormat.dayOfWeekFormat.format(events.date)
+            binding.contentCardRecycler.adapter =
+                ScheduleCardAdapter(events.eventList.sortedBy { it.time }, viewModel, mainViewModel)
             binding.executePendingBindings()
         }
     }
-//    class OnClickListenerToDetail (val clickListener: (event: Event)-> Unit){
-//        fun onClick(event: Event) = clickListener(event)
-//    }
-
 
     companion object DiffCallback : DiffUtil.ItemCallback<TimelineItem>() {
         override fun areItemsTheSame(oldItem: TimelineItem, newItem: TimelineItem): Boolean {
@@ -220,49 +164,13 @@ class TimeLineMainAdapter(val viewModel: HomeViewModel, val mainViewModel: MainV
         private const val ITEM_VIEW_TYPE_PHOTO = 0x01
         private const val ITEM_VIEW_TYPE_SCHEDULE_CARD = 0x02
 
-        @SuppressLint("SimpleDateFormat")
-        val timeFormat = SimpleDateFormat("yyyy.MM.dd E")
     }
 
     class ScaleInTransformer : ViewPager2.PageTransformer {
-        //        private val mMinScale = DEFAULT_MIN_SCALE
         override fun transformPage(view: View, position: Float) {
-//                view.elevation = -abs(position)
-//                val pageWidth = view.width
-//                val pageHeight = view.height
-//                view.pivotY = (pageHeight / 2).toFloat()
-//                view.pivotX = (pageWidth / 2).toFloat()
-//                if (position < -1) {
-//                    view.scaleX = mMinScale
-//                    view.scaleY = mMinScale
-//                    view.pivotX = pageWidth.toFloat()
-//                } else if (position <= 1) {
-//                    if (position < 0) {
-//                        val scaleFactor = (1 + position) * (1 - mMinScale) + mMinScale
-//                        view.scaleX = scaleFactor
-//                        view.scaleY = scaleFactor
-//                        view.pivotX = pageWidth * (DEFAULT_CENTER + DEFAULT_CENTER * -position)
-//                    } else {
-//                        val scaleFactor = (1 - position) * (1 - mMinScale) + mMinScale
-//                        view.scaleX = scaleFactor
-//                        view.scaleY = scaleFactor
-//                        view.pivotX = pageWidth * ((1 - position) * DEFAULT_CENTER)
-//                    }
-//                } else {
-//                    view.pivotX = 0f
-//                    view.scaleX = mMinScale
-//                    view.scaleY = mMinScale
-//                }
-            val r = 1 - abs(position)
+            val r = 1 - kotlin.math.abs(position)
             view.scaleY = (0.8f + (r * 0.2f))
             view.scaleX = (0.8f + (r * 0.2f))
         }
-
-
-//        companion object {
-//            const val DEFAULT_MIN_SCALE = 0.85f
-//            const val DEFAULT_CENTER = 0.5f
-//        }
-
     }
 }

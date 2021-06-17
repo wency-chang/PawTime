@@ -13,9 +13,8 @@ import com.wency.petmanager.databinding.ItemTagExtendBinding
 import com.wency.petmanager.databinding.ItemTagViewBinding
 
 
-class TagListAdapter(private val onClickListener: OnClickListener): ListAdapter<String, RecyclerView.ViewHolder>(
-    DiffCallback
-) {
+class TagListAdapter(private val onClickListener: OnClickListener):
+    ListAdapter<String, RecyclerView.ViewHolder>(DiffCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
@@ -65,26 +64,23 @@ class TagListAdapter(private val onClickListener: OnClickListener): ListAdapter<
             is TagViewHolder -> {
                 val tag = getItem(position)
                 holder.bind(tag)
-
                 holder.chipView.setOnClickListener {
                     onClickListener.onClick(ITEM_TYPE_TAG, tag, holder.chipView.isChecked)
                 }
             }
             is AddTagViewHolder -> {
-                holder.bind(getItem(position))
+
                 holder.itemView.setOnClickListener {
                     onClickListener.onClick(ITEM_TYPE_ADD,"", false)
                 }
 
             }
             is ExtendTagViewHolder -> {
-                holder.bind(getItem(position))
                 holder.itemView.setOnClickListener {
                     onClickListener.onClick(ITEM_TYPE_MORE,"", false)
                 }
             }
             is CloseTagViewHolder -> {
-                holder.bind(getItem(position))
                 holder.itemView.setOnClickListener {
                     onClickListener.onClick(ITEM_TYPE_CLOSE, "", false)
                 }
@@ -98,29 +94,20 @@ class TagListAdapter(private val onClickListener: OnClickListener): ListAdapter<
         fun bind(tag: String?){
             tag?.let {
                 binding.tag = tag
-//                val layoutPrams: ViewGroup.LayoutParams = chipView.layoutParams
                 binding.executePendingBindings()
             }
         }
     }
-    class AddTagViewHolder(val binding: ItemTagAddBinding): RecyclerView.ViewHolder(binding.root) {
-        fun bind(addString: String) {
-        binding.executePendingBindings()
-        }
-    }
-    class ExtendTagViewHolder(val binding: ItemTagExtendBinding): RecyclerView.ViewHolder(binding.root) {
-        fun bind(addString: String) {
-            binding.executePendingBindings()
-        }
-    }
-    class CloseTagViewHolder(val binding: ItemTagCloseBinding): RecyclerView.ViewHolder(binding.root) {
-        fun bind(addString: String) {
-            binding.executePendingBindings()
-        }
-    }
+    class AddTagViewHolder(val binding: ItemTagAddBinding): RecyclerView.ViewHolder(binding.root)
 
-    class OnClickListener(val clickListener: (itemType: Int, itemString: String, itemStatus: Boolean)-> Unit){
-        fun onClick(itemType: Int, itemString: String, itemStatus: Boolean) = clickListener(itemType, itemString, itemStatus)
+    class ExtendTagViewHolder(val binding: ItemTagExtendBinding): RecyclerView.ViewHolder(binding.root)
+
+    class CloseTagViewHolder(val binding: ItemTagCloseBinding): RecyclerView.ViewHolder(binding.root)
+
+    class OnClickListener(
+        val clickListener: (itemType: Int, itemString: String, itemStatus: Boolean)-> Unit){
+        fun onClick(itemType: Int, itemString: String, itemStatus: Boolean) =
+            clickListener(itemType, itemString, itemStatus)
     }
 
 

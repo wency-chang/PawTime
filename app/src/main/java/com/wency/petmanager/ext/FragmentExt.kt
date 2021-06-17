@@ -58,10 +58,10 @@ fun Fragment.getVmFactory(petData: Pet, eventList: Array<Event>): MemoryViewMode
 
 fun Fragment.getVmFactory(missionList: Array<MissionGroup>?, petData: Pet ): MissionListViewModelFactory {
     val repository = (requireContext().applicationContext as ManagerApplication).repository
-    return MissionListViewModelFactory( repository, missionList, petData)
+    return MissionListViewModelFactory(repository, missionList, petData)
 }
 
-fun Fragment.getVmFactory(petData: Pet, recordDocument: RecordDocument ): RecordViewModelFactory {
+fun Fragment.getVmFactory(petData: Pet, recordDocument: RecordDocument): RecordViewModelFactory {
     val repository = (requireContext().applicationContext as ManagerApplication).repository
     return RecordViewModelFactory(repository, petData, recordDocument)
 }

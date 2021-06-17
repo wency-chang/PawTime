@@ -1,12 +1,10 @@
 package com.wency.petmanager.detail
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.lifecycle.LiveData
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.wency.petmanager.create.events.DiaryCreateViewModel
 import com.wency.petmanager.create.events.adapter.TagListAdapter
 import com.wency.petmanager.databinding.ItemTagViewBinding
 import kotlinx.android.synthetic.main.item_tag_view.view.*
@@ -33,9 +31,7 @@ class DetailTagListAdapter(private val editable: LiveData<Boolean>,
         }
 
         holder.tag.setOnClickListener {
-
             onClickListener.onClick(it.chipView.isChecked, it.chipView.text as String)
-
         }
     }
 
@@ -61,6 +57,4 @@ class DetailTagListAdapter(private val editable: LiveData<Boolean>,
     class OnClickListener(val clickListener:(add: Boolean, tag: String)-> Unit){
         fun onClick(add: Boolean, tag: String) = clickListener(add, tag)
     }
-
-
 }

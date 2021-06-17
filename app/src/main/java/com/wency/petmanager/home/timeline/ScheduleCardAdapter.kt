@@ -9,13 +9,17 @@ import com.wency.petmanager.databinding.SubItemTimelineScheduleBinding
 import com.wency.petmanager.home.HomeViewModel
 import com.wency.petmanager.home.schedule.MemoAdapter
 import com.wency.petmanager.home.schedule.ParticipantHeaderAdapter
-import com.wency.petmanager.profile.Today
+import com.wency.petmanager.profile.TimeFormat
 
-class ScheduleCardAdapter(val events: List<Event>, val viewModel: HomeViewModel, val mainViewModel: MainViewModel): RecyclerView.Adapter<ScheduleCardAdapter.ScheduleCardViewHolder>() {
+class ScheduleCardAdapter(
+    private val events: List<Event>,
+    private val viewModel: HomeViewModel,
+    private val mainViewModel: MainViewModel):
+    RecyclerView.Adapter<ScheduleCardAdapter.ScheduleCardViewHolder>() {
 
-    val expendList = MutableListFalse<Boolean>(events.size)
+    private val expendList = mutableListFalse(events.size)
 
-    private fun <T> MutableListFalse(size: Int): MutableList<Boolean> {
+    private fun mutableListFalse(size: Int): MutableList<Boolean> {
         val list = mutableListOf<Boolean>()
         for (i in 0 until size){
             list.add(false)
@@ -23,17 +27,17 @@ class ScheduleCardAdapter(val events: List<Event>, val viewModel: HomeViewModel,
         return list
     }
 
-    class ScheduleCardViewHolder(val binding: SubItemTimelineScheduleBinding): RecyclerView.ViewHolder(binding.root){
+    class ScheduleCardViewHolder(val binding: SubItemTimelineScheduleBinding):
+        RecyclerView.ViewHolder(binding.root){
         val expendButton = binding.expendButton
         fun bind(event: Event){
-            binding.date = Today.dateFormat.format(event.date.toDate()).toString()
+            binding.date = TimeFormat.dateFormat.format(event.date.toDate()).toString()
             event.time?.let {
-                binding.time = Today.timeFormat12.format(it.toDate()).toString()
+                binding.time = TimeFormat.timeFormat12.format(it.toDate()).toString()
             }
             if (!event.memoList.isNullOrEmpty()) {
                 binding.scheduleMemoRecycler.adapter = MemoAdapter(event.memoList)
             }
-
             binding.event = event
             binding.executePendingBindings()
         }
@@ -85,9 +89,9 @@ class ScheduleCardAdapter(val events: List<Event>, val viewModel: HomeViewModel,
             }
         }
 
-        event.petParticipantList?.let {petParticipant->
+        if (event.petParticipantList.isNotEmpty()) {
             val photoList = mutableListOf<String>()
-            for (petId in petParticipant){
+            for (petId in event.petParticipantList){
                 val photo = mainViewModel.petDataForAll.filter {
                     it.id == petId
                 }

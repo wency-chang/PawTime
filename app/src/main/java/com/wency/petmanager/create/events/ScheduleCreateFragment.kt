@@ -1,6 +1,5 @@
 package com.wency.petmanager.create.events
 
-import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.os.Bundle
@@ -13,41 +12,47 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import com.google.android.flexbox.*
+import com.google.android.flexbox.FlexDirection
+import com.google.android.flexbox.FlexWrap
+import com.google.android.flexbox.FlexboxLayoutManager
+import com.google.android.flexbox.JustifyContent
 import com.wency.petmanager.MainViewModel
 import com.wency.petmanager.ManagerApplication
 import com.wency.petmanager.R
-import com.wency.petmanager.databinding.FragmentScheduleCreateBinding
-import com.wency.petmanager.dialog.AddMemoDialog
-import com.wency.petmanager.dialog.AddNewTagDialog
 import com.wency.petmanager.create.CreateEventViewModel
 import com.wency.petmanager.create.GetImageFromGallery
 import com.wency.petmanager.create.GetLocationFromMap
 import com.wency.petmanager.create.events.adapter.*
+import com.wency.petmanager.databinding.FragmentScheduleCreateBinding
+import com.wency.petmanager.dialog.AddMemoDialog
+import com.wency.petmanager.dialog.AddNewTagDialog
 import com.wency.petmanager.dialog.NotificationDialog
 import com.wency.petmanager.ext.getVmFactory
-import com.wency.petmanager.profile.Today
+import com.wency.petmanager.profile.TimeFormat
 import java.time.Instant
 import java.util.*
 
 class ScheduleCreateFragment: Fragment(), AddMemoDialog.MemoDialogListener, AddNewTagDialog.AddNewTagListener, NotificationDialog.NotificationListener {
     lateinit var binding: FragmentScheduleCreateBinding
-    private val viewModel by viewModels<ScheduleCreateViewModel>(){getVmFactory()}
+    private val viewModel by viewModels<ScheduleCreateViewModel> {getVmFactory()}
     private val createEventViewModel by viewModels<CreateEventViewModel> (ownerProducer = { requireParentFragment()})
-    private val mainViewModel by activityViewModels<MainViewModel>() {getVmFactory()}
+    private val mainViewModel by activityViewModels<MainViewModel> {getVmFactory()}
     private val getImage = GetImageFromGallery()
     private val getPhotoActivity =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            viewModel.photoList.value = getImage.onActivityResult(it, CreateEventViewModel.CASE_PICK_PHOTO, viewModel.photoList.value!!)
+            viewModel.photoList.value?.let {photoList->
+                viewModel.photoList.value = getImage.onActivityResult(
+                    it, CreateEventViewModel.CASE_PICK_PHOTO, photoList)
+            }
         }
     private val getLocation = GetLocationFromMap()
     private val getLocationActivity =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
-            getLocation.onActivityResult(it,CreateEventViewModel.CASE_PICK_LOCATION)?.let {
-                viewModel.locationName.value = it.name
-                viewModel.location.locationName = it.name.toString()
-                viewModel.location.locationAddress = it.address.toString()
-                viewModel.location.locationLatlng = it.latLng
+            getLocation.onActivityResult(it,CreateEventViewModel.CASE_PICK_LOCATION)?.let {place->
+                viewModel.locationName.value = place.name
+                viewModel.location.locationName = place.name.toString()
+                viewModel.location.locationAddress = place.address.toString()
+                viewModel.location.locationLatlng = place.latLng
             }
         }
 
@@ -55,40 +60,34 @@ class ScheduleCreateFragment: Fragment(), AddMemoDialog.MemoDialogListener, AddN
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
 
         binding = FragmentScheduleCreateBinding.inflate(layoutInflater, container, false)
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
         binding.createViewModel = createEventViewModel
 
-        viewModel.selectedUser.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
-
+        viewModel.selectedUser.observe(viewLifecycleOwner, {
             viewModel.getPetOption()
             viewModel.setNotification()
-
         })
 
-        viewModel.petOptions.observe(viewLifecycleOwner, androidx.lifecycle.Observer {  petOption->
-
+        viewModel.petOptions.observe(viewLifecycleOwner, { petOption->
             viewModel.updatePetSelector(petOption)
-
         })
 
-        binding.petRecyclerView.adapter = PetSelectorAdapter(PetSelectorAdapter.OnClickListener{ petId: String, status: Boolean ->
+        binding.petRecyclerView.adapter = PetSelectorAdapter(
+            PetSelectorAdapter.OnClickListener{ petId: String, status: Boolean ->
             viewModel.selectedPet(petId, status)
         })
 
-
-        viewModel.userOptionListLiveData.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+        viewModel.userOptionListLiveData.observe(viewLifecycleOwner, {
             viewModel.getPetOption()
         })
 
-
-
 //      get my pet option from createFragment
         viewModel.myPet = createEventViewModel.myPetList.toList()
-        viewModel.me = mainViewModel.userInfoProfile.value!!
+        mainViewModel.userInfoProfile.value?.let { viewModel.me = it }
 
 
 //      get user select state
@@ -100,79 +99,70 @@ class ScheduleCreateFragment: Fragment(), AddMemoDialog.MemoDialogListener, AddN
             viewModel.getUserOption(it)
         }
 
-//        createEventViewModel.selectUserOptionList.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
-//            viewModel.getUserOption(it)
-//            viewModel.getPetOption()
-//        })
-
-
-
         return binding.root
     }
 
-    @SuppressLint("WrongConstant")
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val manager = FlexboxLayoutManager(ManagerApplication.instance)
         manager.flexDirection = FlexDirection.ROW
         manager.flexWrap = FlexWrap.WRAP
         manager.justifyContent = JustifyContent.FLEX_START
-        manager.alignItems = AlignContent.FLEX_START
+
 
         val tagAdapter = TagListAdapter(TagListAdapter.OnClickListener{ it: Int, tag: String, checked: Boolean ->
             when (it){
                 TagListAdapter.ITEM_TYPE_TAG -> viewModel.selectedTag(tag, checked)
 
                 TagListAdapter.ITEM_TYPE_ADD -> {
-                    val addNewTagDialog = createEventViewModel.tagListLiveData.value?.let { it ->
+                    val addNewTagDialog = createEventViewModel.tagListLiveData.value?.let { tagList ->
                         AddNewTagDialog(this,
-                            it
+                            tagList
                         )
                     }
-                    addNewTagDialog?.show(childFragmentManager,"add new tag")
+                    addNewTagDialog?.show(childFragmentManager,
+                        ManagerApplication.instance.getString(R.string.TAG_TAG)
+                    )
                 }
                 TagListAdapter.ITEM_TYPE_MORE -> viewModel.switchExtendStatus()
-
                 TagListAdapter.ITEM_TYPE_CLOSE ->  viewModel.switchExtendStatus()
 
-                else -> { Log.d("tagListAdapter","$it")}
-
+                else ->  Log.d(this.getString(R.string.app_name),"$it")
             }
-        }
-        )
-
+        })
 
         binding.tagRecyclerView.layoutManager = manager
         binding.tagRecyclerView.adapter = tagAdapter
 
-        var calendar = Calendar.getInstance()
-        val year = calendar.get(Calendar.YEAR)
-        val month = calendar.get(Calendar.MONTH)
-        val date = calendar.get(Calendar.DAY_OF_MONTH)
-        val hour = calendar.get(Calendar.HOUR_OF_DAY)
-        val minutes = calendar.get(Calendar.MINUTE)
-
-
+        val calendar = Calendar.getInstance()
         binding.dateSelectButton.setOnClickListener {
-            val datePicker = DatePickerDialog(requireContext(), R.style.datePickDialog,  DatePickerDialog.OnDateSetListener { view, pickYear, pickMonth, pickDayOfMonth ->
-                calendar.set(pickYear, pickMonth, pickDayOfMonth)
-                viewModel.pickDate.value = Today.dateFormat.format(calendar.time)
-            }, year, month, date)
+            val year = calendar.get(Calendar.YEAR)
+            val month = calendar.get(Calendar.MONTH)
+            val date = calendar.get(Calendar.DAY_OF_MONTH)
+            val datePicker = DatePickerDialog(requireContext(), R.style.datePickDialog,
+                { _, pickYear, pickMonth, pickDayOfMonth ->
+                    calendar.set(pickYear, pickMonth, pickDayOfMonth)
+                    viewModel.pickDate.value = TimeFormat.dateFormat.format(calendar.time)
+                }, year, month, date)
             datePicker.datePicker.minDate = Instant.now().toEpochMilli()
             datePicker.show()
-
         }
 
         binding.timeSelectButton.setOnClickListener {
-            val timePicker = TimePickerDialog(requireContext(), R.style.datePickDialog,  TimePickerDialog.OnTimeSetListener { view, hourOfDay, minute ->
+            val hour = calendar.get(Calendar.HOUR_OF_DAY)
+            val minutes = calendar.get(Calendar.MINUTE)
+            val timePicker = TimePickerDialog(requireContext(),
+                R.style.datePickDialog, { _, hourOfDay, minute ->
                 calendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
                 calendar.set(Calendar.MINUTE, minute)
-                viewModel.pickTime.value = Today.timeFormat12.format(calendar.time)
+                viewModel.pickTime.value = TimeFormat.timeFormat12.format(calendar.time)
             }, hour, minutes, false)
             timePicker.show()
         }
+
         binding.memoRecycler.adapter = MemoListAdapter(MemoListAdapter.OnClickListener{
             val addMemoDialog = AddMemoDialog(this)
-            addMemoDialog.show(childFragmentManager, "add memo")
+            addMemoDialog.show(childFragmentManager, this.getString(R.string.MEMO_TAG))
         })
 
         binding.photoRecyclerView.adapter = PhotoListAdapter(
@@ -188,62 +178,57 @@ class ScheduleCreateFragment: Fragment(), AddMemoDialog.MemoDialogListener, AddN
             getLocationActivity.launch(intent)
         }
 
-        viewModel.photoList.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+        viewModel.photoList.observe(viewLifecycleOwner, {
             (binding.photoRecyclerView.adapter as PhotoListAdapter).notifyDataSetChanged()
         })
 
         createEventViewModel.tagListLiveData.observe(
-            viewLifecycleOwner, androidx.lifecycle.Observer {
-
+            viewLifecycleOwner, {
                 viewModel._originTagList = it
                 viewModel.createTagList()
-
                 tagAdapter.notifyDataSetChanged()
             }
         )
 
-        createEventViewModel.isConfirmButtonClick.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
-            if (it && createEventViewModel.navigateDestination.value == CreateEventViewModel.SCHEDULE_CREATE_PAGE){
+        createEventViewModel.isConfirmButtonClick.observe(viewLifecycleOwner, {
+            if (it && createEventViewModel.navigateDestination.value ==
+                CreateEventViewModel.SCHEDULE_CREATE_PAGE){
                 viewModel.checkCompleteStatus()
                 createEventViewModel.isConfirmButtonClick.value = false
             }
         })
 
-        viewModel.checkingStatus.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
-            it?.let {
+        viewModel.checkingStatus.observe(viewLifecycleOwner, {checkStatus->
+            checkStatus?.let {
                 if (it){
                     if (viewModel.photoList.value?.size!! > 1){
                         viewModel.getUrlPhotoList()
-
                     } else {
                         viewModel.createSchedule()
                     }
-                    Toast.makeText(requireContext(),"Start Update", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(),
+                        this.getString(R.string.START_UPDATE), Toast.LENGTH_SHORT).show()
                     viewModel.startLoading()
                     createEventViewModel.loadingStatus.value = true
-
-
                     viewModel.checkingStatus.value = null
                 } else {
-                    Toast.makeText(requireContext(),"Need Participant", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(),
+                        this.getString(R.string.LACK_PARTICIPANT), Toast.LENGTH_SHORT).show()
                     viewModel.checkingStatus.value = null
                 }
             }
         })
 
-
-
-        binding.participantPeopleRecycler.adapter = UserListAdapter(UserListAdapter.OnClickListener{ userId: String, status: Boolean ->
-            if (userId == "TYPE_ADDER"){
+        binding.participantPeopleRecycler.adapter =
+            UserListAdapter(UserListAdapter.OnClickListener{ userId: String, status: Boolean ->
+            if (userId == UserListAdapter.TYPE_ADDER_STRING){
                 createEventViewModel.navigateToChooseFriend(viewModel.participantUser.toMutableList())
             }else {
                 viewModel.selectedUser(userId, status)
             }
-
-
         }, viewModel)
 
-        viewModel.navigateBackToHome.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+        viewModel.navigateBackToHome.observe(viewLifecycleOwner, {
             if (it){
                 createEventViewModel.loadingStatus.value = false
                 createEventViewModel.backHome()
@@ -251,10 +236,17 @@ class ScheduleCreateFragment: Fragment(), AddMemoDialog.MemoDialogListener, AddN
         })
 
         binding.setNotification.setOnClickListener {
-            val notificationDialog = NotificationDialog(
-                targetDate = Today.dateFormat.parse(viewModel.pickDate.value), listener = this
-            )
-            notificationDialog.show(childFragmentManager, "Notification")
+            viewModel.pickDate.value?.let { dateString->
+                TimeFormat.dateFormat.parse(dateString)?.let { date->
+                    val notificationDialog = NotificationDialog(
+                        targetDate = date, listener = this
+                    )
+                    notificationDialog.show(childFragmentManager,
+                        this.getString(R.string.NOTIFICATION_TAG)
+                    )
+                }
+            }
+
         }
 
 
@@ -266,7 +258,7 @@ class ScheduleCreateFragment: Fragment(), AddMemoDialog.MemoDialogListener, AddN
         }
     }
     override fun getTag(tag: String) {
-        createEventViewModel.myPetList?.let {
+        createEventViewModel.myPetList.let {
             createEventViewModel.updateNewTag(tag, it.toList())
         }
         binding.tagRecyclerView.adapter?.notifyDataSetChanged()

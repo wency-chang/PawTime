@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.wency.petmanager.NavHostDirections
 import com.wency.petmanager.R
@@ -24,21 +23,21 @@ class RecordDialog: DialogFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setStyle(DialogFragment.STYLE_NO_FRAME, R.style.AddContentDialog)
+        setStyle(STYLE_NO_FRAME, R.style.AddContentDialog)
     }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = DialogRecordInputBinding.inflate(layoutInflater, container, false)
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
 
         binding.recordDatePicker.maxDate = Date().time
 
-        viewModel.updateDone.observe(viewLifecycleOwner, Observer {
+        viewModel.updateDone.observe(viewLifecycleOwner, {
             if (it){
                 findNavController().navigate(NavHostDirections.actionGlobalToRecordListFragment(
                     viewModel.petData
@@ -48,7 +47,7 @@ class RecordDialog: DialogFragment() {
 
         })
 
-        viewModel.updateData.observe(viewLifecycleOwner, Observer {
+        viewModel.updateData.observe(viewLifecycleOwner, {
             if (it.isNotEmpty()){
                 viewModel.updateRecord()
             }
@@ -66,7 +65,8 @@ class RecordDialog: DialogFragment() {
                         binding.editRecordInputNumber.text.toString()
                     )
                 } else {
-                    Toast.makeText(this.requireContext(), "Please fill the number", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this.requireContext(),
+                        this.getString(R.string.LACK_INFORMATION), Toast.LENGTH_SHORT).show()
                 }
             }
         }

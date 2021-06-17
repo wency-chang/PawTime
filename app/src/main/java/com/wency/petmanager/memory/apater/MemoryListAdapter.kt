@@ -8,7 +8,7 @@ import com.wency.petmanager.data.Pet
 import com.wency.petmanager.databinding.ItemMemoryListHolderBinding
 import com.wency.petmanager.home.adapter.PetHeaderAdapter
 import com.wency.petmanager.memory.MemoryListViewModel
-import com.wency.petmanager.profile.Today
+import com.wency.petmanager.profile.TimeFormat
 
 class MemoryListAdapter(val viewModel: MemoryListViewModel): ListAdapter<Pet, MemoryListAdapter.MemoryPetListViewHolder> (PetHeaderAdapter.DiffCallback) {
 
@@ -31,12 +31,12 @@ class MemoryListAdapter(val viewModel: MemoryListViewModel): ListAdapter<Pet, Me
         val birthDayString = if (pet.birth == null){
             ""
         } else {
-            Today.birthFormat.format(pet.birth!!.toDate())
+            TimeFormat.birthFormat.format(pet.birth!!.toDate())
         }
         val memoryDate = if (pet.memoryDate == null){
             ""
         } else {
-            Today.dateFormat.format(pet.memoryDate!!.toDate())
+            TimeFormat.dateFormat.format(pet.memoryDate!!.toDate())
         }
         holder.bind(pet, "$birthDayString - $memoryDate")
         holder.itemView.setOnClickListener {

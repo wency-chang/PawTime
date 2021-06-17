@@ -3,14 +3,11 @@ package com.wency.petmanager.profile
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
-import androidx.recyclerview.widget.RecyclerView
 import com.wency.petmanager.create.events.adapter.TagListAdapter
-import com.wency.petmanager.create.pet.CategoryAdapter
 import com.wency.petmanager.databinding.ItemDetailPhotoPagerBinding
 import com.wency.petmanager.detail.PhotoPagerAdapter
 
-class CoverPhotoAdapter(): ListAdapter<String, PhotoPagerAdapter.PhotoPagerViewHolder>(TagListAdapter.DiffCallback) {
-
+class CoverPhotoAdapter: ListAdapter<String, PhotoPagerAdapter.PhotoPagerViewHolder>(TagListAdapter.DiffCallback) {
 
     override fun onCreateViewHolder(
         parent: ViewGroup,

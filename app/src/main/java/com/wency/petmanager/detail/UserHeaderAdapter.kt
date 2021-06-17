@@ -1,6 +1,5 @@
 package com.wency.petmanager.detail
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
@@ -14,6 +13,7 @@ class UserHeaderAdapter(
     private val viewModel: ScheduleDetailViewModel,
     private val onClickListener: OnClickListener
 ) : ListAdapter<UserInfo, UserHeaderAdapter.UserHeaderViewHolder>(UserListAdapter.DiffCallback) {
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserHeaderViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
         return UserHeaderViewHolder(

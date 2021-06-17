@@ -1,10 +1,8 @@
 package com.wency.petmanager.create.events.adapter
 
 import android.net.Uri
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.core.net.toUri
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -12,18 +10,19 @@ import com.bumptech.glide.Glide
 import com.wency.petmanager.ManagerApplication
 import com.wency.petmanager.create.events.MissionCreateViewModel
 import com.wency.petmanager.databinding.ItemAddContentHolderBinding
-import com.wency.petmanager.databinding.ItemMemoHolderBinding
 import com.wency.petmanager.databinding.ItemPhotoHolderBinding
 
 class PhotoListAdapter(private val onClickListener: MemoListAdapter.OnClickListener
-            , val onCancelClickListener: OnCancelClickListener): ListAdapter<String, RecyclerView.ViewHolder>(
-    DiffCallback
-) {
+                       , private val onCancelClickListener: OnCancelClickListener)
+    : ListAdapter<String, RecyclerView.ViewHolder>(DiffCallback) {
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
         return when(viewType){
-            TYPE_PHOTO_HOLDER -> PhotoHolder(ItemPhotoHolderBinding.inflate(layoutInflater, parent, false))
-            TYPE_ADD_HOLDER -> NeedAddHolder(ItemAddContentHolderBinding.inflate(layoutInflater, parent, false))
+            TYPE_PHOTO_HOLDER ->
+                PhotoHolder(ItemPhotoHolderBinding.inflate(layoutInflater, parent, false))
+            TYPE_ADD_HOLDER ->
+                NeedAddHolder(ItemAddContentHolderBinding.inflate(layoutInflater, parent, false))
             else -> throw ClassCastException("Unknown viewType $viewType")
         }
     }

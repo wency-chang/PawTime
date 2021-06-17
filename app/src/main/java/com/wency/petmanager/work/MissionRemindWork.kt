@@ -3,14 +3,8 @@ package com.wency.petmanager.work
 import android.app.*
 import android.content.Context
 import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.util.Log
-import androidx.core.net.toUri
 import androidx.work.Worker
 import androidx.work.WorkerParameters
-import com.android.volley.toolbox.ImageLoader
-import com.android.volley.toolbox.ImageRequest
 import com.google.android.material.badge.BadgeDrawable
 import com.wency.petmanager.MainActivity
 import com.wency.petmanager.ManagerApplication
@@ -18,7 +12,7 @@ import com.wency.petmanager.R
 import com.wency.petmanager.data.*
 import com.wency.petmanager.data.source.remote.RemoteDataSource
 import com.wency.petmanager.notification.NotificationReceiver
-import com.wency.petmanager.profile.Today
+import com.wency.petmanager.profile.TimeFormat
 import com.wency.petmanager.profile.UserManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -92,7 +86,7 @@ class MissionRemindWork(val context: Context, workerParameters: WorkerParameters
                                                 it.recordDate
                                             )
                                         )
-                                    } else if (it.complete && it.recordDate != Today.timeStamp8am){
+                                    } else if (it.complete && it.recordDate != TimeFormat.timeStamp8amToday){
                                         unCompletedMission.add(
                                             MissionToday(
                                                 it.missionId,

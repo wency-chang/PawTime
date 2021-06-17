@@ -7,13 +7,13 @@ import com.wency.petmanager.data.Event
 import com.wency.petmanager.databinding.SubItemTimelinePhotoBinding
 import com.wency.petmanager.home.HomeViewModel
 
-class ContentCardAdapter(private val eventToday: MutableList<Event>, val viewModel: HomeViewModel): RecyclerView.Adapter<ContentCardAdapter.PhotoCardViewHolder>() {
-
-
+class ContentCardAdapter(private val eventToday: MutableList<Event>, val viewModel: HomeViewModel):
+    RecyclerView.Adapter<ContentCardAdapter.PhotoCardViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PhotoCardViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
-        return PhotoCardViewHolder(SubItemTimelinePhotoBinding.inflate(layoutInflater, parent, false))
+        return PhotoCardViewHolder(
+            SubItemTimelinePhotoBinding.inflate(layoutInflater, parent, false))
     }
 
     override fun onBindViewHolder(holder: PhotoCardViewHolder, position: Int) {
@@ -24,10 +24,11 @@ class ContentCardAdapter(private val eventToday: MutableList<Event>, val viewMod
         }
     }
 
-    class PhotoCardViewHolder(val binding: SubItemTimelinePhotoBinding): RecyclerView.ViewHolder(binding.root){
+    class PhotoCardViewHolder(val binding: SubItemTimelinePhotoBinding):
+        RecyclerView.ViewHolder(binding.root){
         fun bind(event: Event){
-            event.photoList?.let {
-                binding.image = it[0]
+            if (event.photoList.isNotEmpty()){
+                binding.image = event.photoList[0]
                 binding.title = event.title
                 binding.executePendingBindings()
             }

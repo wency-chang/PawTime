@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.wency.petmanager.data.Event
 import com.wency.petmanager.data.Gallery
 import com.wency.petmanager.data.Pet
-import com.wency.petmanager.profile.Today
+import com.wency.petmanager.profile.TimeFormat
 import com.wency.petmanager.profile.UserManager
 
 class MemoryViewModel(val petData: Pet, val eventList: Array<Event>?) : ViewModel() {
@@ -27,7 +27,7 @@ class MemoryViewModel(val petData: Pet, val eventList: Array<Event>?) : ViewMode
             val list = mutableListOf<Gallery>()
             var count = 0
             for (event in eventList){
-                val dateString = Today.dateFormat.format(event.date.toDate())
+                val dateString = TimeFormat.dateFormat.format(event.date.toDate())
                 if (event.userParticipantList != null && event.private){
                     if (event.userParticipantList!!.contains(UserManager.userID!!)){
                         for (photo in event.photoList){

@@ -1,9 +1,11 @@
 package com.wency.petmanager.dialog
 
-import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.wency.petmanager.ManagerApplication
+import com.wency.petmanager.R
 import com.wency.petmanager.data.Pet
 import com.wency.petmanager.data.Result
 import com.wency.petmanager.data.UserInfo
@@ -24,27 +26,23 @@ class FindFriendViewModel(
         INVITE_SENT("INVITED"),
         ACCEPT_INVITE ("ACCEPT"),
         ALREADY_FRIEND ("FRIEND")
-
     }
     val buttonString = MutableLiveData<String>(InviteStatus.AVAILABLE.value)
     val buttonClickable = MutableLiveData<Boolean>(true)
     private var viewModelJob = Job()
     private val coroutineScope = CoroutineScope(viewModelJob + Dispatchers.Main)
-
     private val _petList = MutableLiveData<MutableList<Pet>>()
-
     val petList : LiveData<MutableList<Pet>>
             get() = _petList
 
-
     var inviteMeAlready = false
 
-    val _loadingStatus = MutableLiveData<Boolean>(false)
+    private val _loadingStatus = MutableLiveData<Boolean>(false)
     val loadingStatus : LiveData<Boolean>
         get() = _loadingStatus
 
 
-    val _back = MutableLiveData<Boolean>(false)
+    private val _back = MutableLiveData<Boolean>(false)
     val back : LiveData<Boolean>
         get() = _back
 
@@ -52,8 +50,6 @@ class FindFriendViewModel(
         checkFriendStatus()
         getFriendPet()
     }
-
-
 
     private fun checkFriendStatus(){
         userInfo.friendList?.let {friendList->
@@ -76,6 +72,25 @@ class FindFriendViewModel(
                             buttonClickable.value = false
                         }
                     }
+                    is Result.Fail -> {
+                        Toast.makeText(
+                            ManagerApplication.instance,
+                            result.error,
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                    is Result.Error -> {
+                        Toast.makeText(
+                            ManagerApplication.instance,
+                            result.exception.toString(),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                    else -> Toast.makeText(
+                        ManagerApplication.instance,
+                        ManagerApplication.instance.getString(R.string.UNKNOWN_REASON),
+                        Toast.LENGTH_SHORT
+                    ).show()
 
                 }
 //                check is friend already in my invite list
@@ -88,6 +103,25 @@ class FindFriendViewModel(
                             inviteMeAlready = true
                         }
                     }
+                    is Result.Fail -> {
+                        Toast.makeText(
+                            ManagerApplication.instance,
+                            result.error,
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                    is Result.Error -> {
+                        Toast.makeText(
+                            ManagerApplication.instance,
+                            result.exception.toString(),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                    else -> Toast.makeText(
+                        ManagerApplication.instance,
+                        ManagerApplication.instance.getString(R.string.UNKNOWN_REASON),
+                        Toast.LENGTH_SHORT
+                    ).show()
 
                 }
 
@@ -101,14 +135,37 @@ class FindFriendViewModel(
         friendInfo.petList?.let { petList->
             coroutineScope.launch {
                 val list = mutableListOf<Pet>()
+                var count = 0
                 for (pet in petList){
                     when (val result = firebaseRepository.getPetData(pet)){
                         is Result.Success ->{
                             list.add(result.data)
-                            if (list.size == petList.size){
-                                _petList.value = list
-                            }
+                            count += 1
                         }
+                        is Result.Fail -> {
+                            count += 1
+                            Toast.makeText(
+                                ManagerApplication.instance,
+                                result.error,
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                        is Result.Error -> {
+                            count += 1
+                            Toast.makeText(
+                                ManagerApplication.instance,
+                                result.exception.toString(),
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                        else -> Toast.makeText(
+                            ManagerApplication.instance,
+                            ManagerApplication.instance.getString(R.string.UNKNOWN_REASON),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                    if (count == petList.size){
+                        _petList.value = list
                     }
                 }
             }
@@ -116,10 +173,6 @@ class FindFriendViewModel(
     }
 
     fun confirmButtonClick(){
-
-
-        Log.d("send invite","confirmButton click")
-
 
         coroutineScope.launch {
             _loadingStatus.value = true
@@ -130,27 +183,61 @@ class FindFriendViewModel(
                         _loadingStatus.value = false
                         if (result.data){
                             back()
-
                         }
                     }
+                    is Result.Fail -> {
+                        Toast.makeText(
+                            ManagerApplication.instance,
+                            result.error,
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                    is Result.Error -> {
+                        Toast.makeText(
+                            ManagerApplication.instance,
+                            result.exception.toString(),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                    else -> Toast.makeText(
+                        ManagerApplication.instance,
+                        ManagerApplication.instance.getString(R.string.UNKNOWN_REASON),
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             } else {
                 when (val result = firebaseRepository.sendFriendInvite(userInfo, friendInfo.userId)){
                     is Result.Success -> {
-                        Log.d("send invite","send invite success")
                         _loadingStatus.value = false
                         if (result.data){
                             back()
                         }
                     }
+                    is Result.Fail -> {
+                        Toast.makeText(
+                            ManagerApplication.instance,
+                            result.error,
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                    is Result.Error -> {
+                        Toast.makeText(
+                            ManagerApplication.instance,
+                            result.exception.toString(),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                    else -> Toast.makeText(
+                        ManagerApplication.instance,
+                        ManagerApplication.instance.getString(R.string.UNKNOWN_REASON),
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
         }
     }
 
     fun negativeButtonClick(){
-
-        Log.d("send invite","negativeButton click")
         coroutineScope.launch {
             _loadingStatus.value = true
             if (inviteMeAlready){
@@ -160,6 +247,25 @@ class FindFriendViewModel(
                             back()
                         }
                     }
+                    is Result.Fail -> {
+                        Toast.makeText(
+                            ManagerApplication.instance,
+                            result.error,
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                    is Result.Error -> {
+                        Toast.makeText(
+                            ManagerApplication.instance,
+                            result.exception.toString(),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                    else -> Toast.makeText(
+                        ManagerApplication.instance,
+                        ManagerApplication.instance.getString(R.string.UNKNOWN_REASON),
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             } else {
                 back()

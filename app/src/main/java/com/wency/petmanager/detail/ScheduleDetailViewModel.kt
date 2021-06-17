@@ -4,30 +4,28 @@ import android.net.Uri
 import android.util.Log
 import android.view.View
 import android.widget.CheckBox
+import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.libraries.places.api.model.Place
 import com.google.firebase.Timestamp
+import com.wency.petmanager.ManagerApplication
+import com.wency.petmanager.R
 import com.wency.petmanager.create.events.ScheduleCreateViewModel
 import com.wency.petmanager.create.pet.PetCreateViewModel
 import com.wency.petmanager.data.*
 import com.wency.petmanager.data.source.Repository
-import com.wency.petmanager.notification.NotificationReceiver
-import com.wency.petmanager.profile.Today
+import com.wency.petmanager.profile.TimeFormat
 import com.wency.petmanager.profile.UserManager
 import com.wency.petmanager.work.EventNotificationWork
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
-import java.io.ObjectInputStream
-import java.io.ObjectOutputStream
-import java.lang.Exception
 import java.util.*
+import kotlin.math.floor
 
 class ScheduleDetailViewModel(val repository: Repository, val eventDetail: Event) : ViewModel() {
 
@@ -46,7 +44,7 @@ class ScheduleDetailViewModel(val repository: Repository, val eventDetail: Event
     val locationNameLiveData = MutableLiveData<String>(eventDetail.locationName)
 
     private val _tagListLiveData =
-        MutableLiveData<MutableList<String>>(eventDetail.tagList.toMutableList())
+        MutableLiveData(eventDetail.tagList.toMutableList())
     val tagListLiveData: LiveData<MutableList<String>>
         get() = _tagListLiveData
 
@@ -70,17 +68,19 @@ class ScheduleDetailViewModel(val repository: Repository, val eventDetail: Event
     val photoListLiveData: LiveData<MutableList<String>>
         get() = _photoListLiveData
 
-    val _notificationString = MutableLiveData<String>("NONE")
+    private val _notificationString = MutableLiveData(
+        ManagerApplication.instance.getString(R.string.NONE)
+    )
     val notificationString: LiveData<String>
         get() = _notificationString
 
     //    editable switcher
-    private val _editable = MutableLiveData<Boolean>(false)
+    private val _editable = MutableLiveData(false)
     val editable: LiveData<Boolean>
         get() = _editable
 
     //    loading status
-    private val _loadingStatus = MutableLiveData<LoadStatus>(LoadStatus.Done)
+    private val _loadingStatus = MutableLiveData(LoadStatus.Done)
     val loadingStatus: LiveData<LoadStatus>
         get() = _loadingStatus
 
@@ -88,8 +88,8 @@ class ScheduleDetailViewModel(val repository: Repository, val eventDetail: Event
     var friendListForOption = listOf<UserInfo>()
 
     //    all pet list for participant
-    val _petListForOption = mutableListOf<Pet>()
-    val petListForOption: List<Pet>
+    private val _petListForOption = mutableListOf<Pet>()
+    private val petListForOption: List<Pet>
         get() = _petListForOption
 
     //    private state
@@ -101,7 +101,7 @@ class ScheduleDetailViewModel(val repository: Repository, val eventDetail: Event
 
     private var notificationTime: Long = 0
 
-    val notificationTimeList = mutableMapOf<String, Int>(
+    val notificationTimeList = mutableMapOf(
         ScheduleCreateViewModel.DAY to 0,
         ScheduleCreateViewModel.HOUR to 0,
         ScheduleCreateViewModel.MINUTE to 0
@@ -113,12 +113,12 @@ class ScheduleDetailViewModel(val repository: Repository, val eventDetail: Event
         getDateLiveData()
         getLatLng()
         getUserData()
+
         if (!eventDetail.tagList.isNullOrEmpty()) {
             getTagLiveData()
         }
         if (!eventDetail.memoList.isNullOrEmpty()) {
             getMemoLiveData()
-            Log.d("memo", "get memo live data : ${memoListLiveData.value}")
         }
         if (!eventDetail.photoList.isNullOrEmpty()) {
             getPhotoLiveData()
@@ -131,7 +131,6 @@ class ScheduleDetailViewModel(val repository: Repository, val eventDetail: Event
         getAllTagOption()
         checkLockState()
 
-
     }
 
 
@@ -139,19 +138,35 @@ class ScheduleDetailViewModel(val repository: Repository, val eventDetail: Event
 
         val petList = mutableListOf<Pet>()
         coroutineScope.launch {
-
+            var count = 0
             for (pet in currentDetailData.petParticipantList) {
                 when (val result = repository.getPetData(pet)) {
                     is Result.Success -> {
                         petList.add(result.data)
-                        if (petList.size == currentDetailData.petParticipantList.size) {
-                            _petDataList.value = petList
-                        }
+                        count += 1
                     }
-
+                    is Result.Fail -> {
+                        Toast.makeText(
+                            ManagerApplication.instance, result.error, Toast.LENGTH_SHORT
+                        ).show()
+                        count += 1
+                    }
                     is Result.Error -> {
-
+                        Toast.makeText(
+                            ManagerApplication.instance,
+                            result.exception.toString(),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        count += 1
                     }
+                    else -> Toast.makeText(
+                        ManagerApplication.instance,
+                        ManagerApplication.instance.getString(R.string.UNKNOWN_REASON),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+                if (count == currentDetailData.petParticipantList.size) {
+                    _petDataList.value = petList
                 }
 
             }
@@ -175,12 +190,11 @@ class ScheduleDetailViewModel(val repository: Repository, val eventDetail: Event
     private fun getLatLng() {
         if (!eventDetail.locationAddress.isNullOrEmpty()) {
             val latLng = eventDetail.locationLatLng?.split(",")
-            latLng?.let {
+            latLng?.let { lagLng ->
                 try {
-                    it[0].toDouble()
-                    latLngToMap.value = LatLng(latLng[0].toDouble(), it[1].toDouble())
+                    latLngToMap.value = LatLng(latLng[0].toDouble(), lagLng[1].toDouble())
                 } catch (e: Exception) {
-                    Log.d("lagLng format", "$e")
+                    Log.e(ManagerApplication.instance.getString(R.string.APP_NAME), "$e")
                 }
 
             }
@@ -189,7 +203,6 @@ class ScheduleDetailViewModel(val repository: Repository, val eventDetail: Event
 
     private fun getTagLiveData() {
         _tagListLiveData.value = eventDetail.tagList.toMutableList()
-        Log.d("TAG", "TAGLIST LIVE DATA: ${tagListLiveData.value}")
     }
 
     private fun getMemoLiveData() {
@@ -197,36 +210,33 @@ class ScheduleDetailViewModel(val repository: Repository, val eventDetail: Event
     }
 
     private fun getDateLiveData() {
-        _dateLiveData.value = Today.dateFormat.format(eventDetail.date.toDate())
+        _dateLiveData.value = TimeFormat.dateFormat.format(eventDetail.date.toDate())
         eventDetail.time?.let {
-            _timeLiveData.value = Today.timeFormat12.format(it.toDate())
+            _timeLiveData.value = TimeFormat.timeFormat12.format(it.toDate())
         }
     }
 
     private fun getNotificationString(currentDate: Date, notificationDate: Date) {
 
         notificationTime = currentDate.time - notificationDate.time
-
         _notificationString.value = countTimeToString(notificationTime)
-
-
     }
 
     private fun countTimeToString(time: Long): String {
 
-        val day = Math.floor((time / (24 * 60 * 60 * 1000)).toDouble())
-        val hour = Math.floor((time % (24 * 60 * 60 * 1000) / (60 * 60 * 1000).toDouble()))
+        val day = floor((time / (24 * 60 * 60 * 1000)).toDouble())
+        val hour = floor((time % (24 * 60 * 60 * 1000) / (60 * 60 * 1000).toDouble()))
         val minute =
-            Math.floor((time % (24 * 60 * 60 * 1000) % (60 * 60 * 1000) / (60 * 1000).toDouble()))
+            floor((time % (24 * 60 * 60 * 1000) % (60 * 60 * 1000) / (60 * 1000).toDouble()))
 
         notificationTimeList[ScheduleCreateViewModel.DAY] = day.toInt()
         notificationTimeList[ScheduleCreateViewModel.HOUR] = hour.toInt()
         notificationTimeList[ScheduleCreateViewModel.MINUTE] = minute.toInt()
 
-        if (day == 0.0 && hour == 0.0 && minute == 0.0) {
-            return "NONE"
+        return if (day == 0.0 && hour == 0.0 && minute == 0.0) {
+            ManagerApplication.instance.getString(R.string.NONE)
         } else {
-            return "${day.toInt()} days ${hour.toInt()} : ${minute.toInt()} before"
+            "${day.toInt()} days ${hour.toInt()} : ${minute.toInt()} before"
         }
 
     }
@@ -239,30 +249,39 @@ class ScheduleDetailViewModel(val repository: Repository, val eventDetail: Event
         coroutineScope.launch {
             eventDetail.userParticipantList?.let { userList ->
                 val totalList = mutableListOf<UserInfo>()
+                var count = 0
                 for (user in userList) {
                     when (val result = repository.getUserProfile(user)) {
                         is Result.Success -> {
                             totalList.add(result.data)
-                            if (totalList.size == userList.size) {
-                                _participantUserInfo.value = totalList
-                                Log.d("UserHeader", "Create Live data list $totalList")
-                            }
+                            count += 1
                         }
-
                         is Result.Fail -> {
-
+                            Toast.makeText(
+                                ManagerApplication.instance, result.error, Toast.LENGTH_SHORT
+                            ).show()
+                            count += 1
                         }
                         is Result.Error -> {
-
+                            Toast.makeText(
+                                ManagerApplication.instance,
+                                result.exception.toString(),
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            count += 1
                         }
+                        else -> Toast.makeText(
+                            ManagerApplication.instance,
+                            ManagerApplication.instance.getString(R.string.UNKNOWN_REASON),
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
-
+                    if (count == userList.size) {
+                        _participantUserInfo.value = totalList
+                    }
                 }
             }
-
-
         }
-
     }
 
     fun deleteSchedule() {
@@ -270,27 +289,56 @@ class ScheduleDetailViewModel(val repository: Repository, val eventDetail: Event
         coroutineScope.launch {
             var count = 0
             for (petId in eventDetail.petParticipantList) {
-                when (repository.deleteEventFromPetData(petId, eventDetail.eventID)) {
+                when (val result = repository.deleteEventFromPetData(petId, eventDetail.eventID)) {
                     is Result.Success -> {
                         count += 1
-                        if (count == eventDetail.petParticipantList.size) {
-                            when (repository.deleteEvent(eventDetail.eventID)) {
-                                is Result.Success -> {
-                                    if (eventDetail.notification != null) {
-                                        Log.d("Delete", "${eventDetail.notification}")
-                                        deleteNotification()
-                                    } else {
-                                        _loadingStatus.value = LoadStatus.DoneNBack
-                                    }
-                                }
-                            }
-                        }
                     }
                     is Result.Fail -> {
-
+                        Toast.makeText(
+                            ManagerApplication.instance, result.error, Toast.LENGTH_SHORT
+                        ).show()
+                        count += 1
                     }
                     is Result.Error -> {
-
+                        Toast.makeText(
+                            ManagerApplication.instance,
+                            result.exception.toString(),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        count += 1
+                    }
+                    else -> Toast.makeText(
+                        ManagerApplication.instance,
+                        ManagerApplication.instance.getString(R.string.UNKNOWN_REASON),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+                if (count == eventDetail.petParticipantList.size) {
+                    when (val resultDelete = repository.deleteEvent(eventDetail.eventID)) {
+                        is Result.Success -> {
+                            if (eventDetail.notification != null) {
+                                deleteNotification()
+                            } else {
+                                _loadingStatus.value = LoadStatus.DoneNBack
+                            }
+                        }
+                        is Result.Fail -> {
+                            Toast.makeText(
+                                ManagerApplication.instance, resultDelete.error, Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                        is Result.Error -> {
+                            Toast.makeText(
+                                ManagerApplication.instance,
+                                resultDelete.exception.toString(),
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                        else -> Toast.makeText(
+                            ManagerApplication.instance,
+                            ManagerApplication.instance.getString(R.string.UNKNOWN_REASON),
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 }
 
@@ -305,34 +353,42 @@ class ScheduleDetailViewModel(val repository: Repository, val eventDetail: Event
                 val oldNotification = getEventNotification(eventDetail)
                 var count = 0
                 for (user in it) {
-                    when (repository.addNotificationDeleteToUser(user, oldNotification)) {
+                    when (val result =
+                        repository.addNotificationDeleteToUser(user, oldNotification)) {
                         is Result.Success -> {
                             count += 1
-                            if (count == it.size) {
-                                _loadingStatus.value = LoadStatus.DoneNBack
-                            }
-
                         }
+                        is Result.Fail -> {
+                            Toast.makeText(
+                                ManagerApplication.instance, result.error, Toast.LENGTH_SHORT
+                            ).show()
+                            count += 1
+                        }
+                        is Result.Error -> {
+                            Toast.makeText(
+                                ManagerApplication.instance,
+                                result.exception.toString(),
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            count += 1
+                        }
+                        else -> Toast.makeText(
+                            ManagerApplication.instance,
+                            ManagerApplication.instance.getString(R.string.UNKNOWN_REASON),
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
-
+                    if (count == it.size) {
+                        _loadingStatus.value = LoadStatus.DoneNBack
+                    }
                 }
             }
-
-        }
-    }
-
-
-    private fun checkComplete(completeCount: Int) {
-        Log.d("UpdateDetail","checkComplete: $completeCount")
-        if (completeCount == 4) {
-            _loadingStatus.value = LoadStatus.DoneUpdate
         }
     }
 
 
     private fun updateSchedule() {
-        Log.d("UpdateDetail", "Start update: $currentDetailData")
-        var completeCount = 0
+
         _loadingStatus.value = LoadStatus.Upload
         val deleteList = eventDetail.petParticipantList.filter {
             !currentDetailData.petParticipantList.contains(it)
@@ -340,140 +396,237 @@ class ScheduleDetailViewModel(val repository: Repository, val eventDetail: Event
         val adderList = currentDetailData.petParticipantList.filter {
             !eventDetail.petParticipantList.contains(it)
         }
-
         val oldEventNotification = getEventNotification(eventDetail)
         val newEventNotification = getEventNotification(currentDetailData)
+        deletePetEvent(deleteList, adderList, oldEventNotification, newEventNotification)
+    }
 
-
-        coroutineScope.launch {
-//              deal with the delete user
-            if (deleteList.isNotEmpty()) {
+    private fun deletePetEvent(
+        deleteList: List<String>,
+        adderList: List<String>,
+        oldEventNotification: EventNotification,
+        newEventNotification: EventNotification
+    ) {
+        if (deleteList.isNotEmpty()) {
+            coroutineScope.launch {
+                var deleteCount = 0
                 for (delete in deleteList) {
-                    var deleteCount = 0
-                    when (repository.updatePetEventList(delete, eventDetail.eventID, false)) {
+                    when (val result =
+                        repository.updatePetEventList(delete, eventDetail.eventID, false)) {
                         is Result.Success -> {
-                            when (repository.addNotificationDeleteToUser(
+                            when (val resultDelete = repository.addNotificationDeleteToUser(
                                 delete,
                                 oldEventNotification
                             )) {
                                 is Result.Success -> {
                                     deleteCount += 1
-                                    if (deleteCount == deleteList.size) {
-                                        completeCount += 1
-                                        checkComplete(completeCount)
-                                    }
-
                                 }
-                                else -> {
-
+                                is Result.Fail -> {
+                                    Toast.makeText(
+                                        ManagerApplication.instance,
+                                        resultDelete.error,
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                    deleteCount += 1
                                 }
+                                is Result.Error -> {
+                                    Toast.makeText(
+                                        ManagerApplication.instance,
+                                        resultDelete.exception.toString(),
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                    deleteCount += 1
+                                }
+                                else -> Toast.makeText(
+                                    ManagerApplication.instance,
+                                    ManagerApplication.instance.getString(R.string.UNKNOWN_REASON),
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
-
-
-                        }
-                        is Result.Error -> {
-
                         }
                         is Result.Fail -> {
-
+                            Toast.makeText(
+                                ManagerApplication.instance, result.error, Toast.LENGTH_SHORT
+                            ).show()
+                            deleteCount += 1
                         }
+                        is Result.Error -> {
+                            Toast.makeText(
+                                ManagerApplication.instance,
+                                result.exception.toString(),
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            deleteCount += 1
+                        }
+                        else -> Toast.makeText(
+                            ManagerApplication.instance,
+                            ManagerApplication.instance.getString(R.string.UNKNOWN_REASON),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                    if (deleteCount == deleteList.size) {
+                        addPetEvent(adderList, oldEventNotification, newEventNotification)
                     }
                 }
-            } else {
-                completeCount += 1
-                Log.d("UpdateDetail", "deleteList is Empty: $deleteList")
             }
+        } else {
+            addPetEvent(adderList, oldEventNotification, newEventNotification)
+        }
+    }
 
-            if (adderList.isNotEmpty()) {
-                Log.d("UpdateDetail", "adderList is Not Empty: $adderList")
+    private fun addPetEvent(
+        adderList: List<String>,
+        oldEventNotification: EventNotification,
+        newEventNotification: EventNotification
+    ) {
+        if (adderList.isNotEmpty()) {
+            coroutineScope.launch {
                 var addCount = 0
                 for (add in adderList) {
-                    when (repository.updatePetEventList(add, eventDetail.eventID, true)) {
+                    when (val result =
+                        repository.updatePetEventList(add, eventDetail.eventID, true)) {
                         is Result.Success -> {
                             addCount += 1
-                            if (addCount == adderList.size) {
-                                completeCount += 1
-                                checkComplete(completeCount)
-                            }
                         }
                         is Result.Error -> {
-
+                            Toast.makeText(
+                                ManagerApplication.instance,
+                                result.exception.toString(),
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            addCount += 1
                         }
                         is Result.Fail -> {
-
+                            Toast.makeText(
+                                ManagerApplication.instance, result.error, Toast.LENGTH_SHORT
+                            ).show()
+                            addCount += 1
                         }
+                        else -> Toast.makeText(
+                            ManagerApplication.instance,
+                            ManagerApplication.instance.getString(R.string.UNKNOWN_REASON),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                    if (addCount == adderList.size) {
+                        addNotification(oldEventNotification, newEventNotification)
                     }
                 }
-            } else {
-                Log.d("UpdateDetail", "adderList is Empty: $adderList")
-                completeCount += 1
             }
+        } else {
+            addNotification(oldEventNotification, newEventNotification)
+        }
 
-            when (repository.updateEvent(currentDetailData)) {
+    }
+
+    private fun updateEvent() {
+        coroutineScope.launch {
+            when (val result = repository.updateEvent(currentDetailData)) {
                 is Result.Success -> {
-                    Log.d("UpdateDetail", "update data: ${currentDetailData.notification}")
-                    completeCount += 1
-                    checkComplete(completeCount)
+                    _loadingStatus.value = LoadStatus.DoneUpdate
                 }
                 is Result.Error -> {
+                    Toast.makeText(
+                        ManagerApplication.instance, result.exception.toString(), Toast.LENGTH_SHORT
+                    ).show()
 
                 }
-
+                is Result.Fail -> {
+                    Toast.makeText(
+                        ManagerApplication.instance, result.error, Toast.LENGTH_SHORT
+                    ).show()
+                }
+                else -> Toast.makeText(
+                    ManagerApplication.instance,
+                    ManagerApplication.instance.getString(R.string.UNKNOWN_REASON),
+                    Toast.LENGTH_SHORT
+                ).show()
             }
+        }
+    }
+
+    private fun addNotification(
+        oldEventNotification: EventNotification,
+        newEventNotification: EventNotification
+    ) {
+        coroutineScope.launch {
             currentDetailData.userParticipantList?.let {
                 var userCount = 0
                 for (user in it) {
-                    when (repository.addNotificationDeleteToUser(user, oldEventNotification)) {
+                    when (val result =
+                        repository.addNotificationDeleteToUser(user, oldEventNotification)) {
                         is Result.Success -> {
                             if (currentDetailData.notification == null) {
-                                completeCount += 1
-                                checkComplete(completeCount)
-                                Log.d("UpdateDetail","delete Notification Success")
+                                userCount += 1
                             } else {
-                                when (repository.updateEventNotification(
+                                when (val notificationResult = repository.updateEventNotification(
                                     user,
                                     newEventNotification
                                 )) {
                                     is Result.Success -> {
                                         userCount += 1
-                                        if (userCount == it.size) {
-                                            Log.d("UpdateDetail","update Notification Success")
-                                            completeCount += 1
-                                            checkComplete(completeCount)
-                                        }
                                     }
-                                    else -> {
-
+                                    is Result.Error -> {
+                                        Toast.makeText(
+                                            ManagerApplication.instance,
+                                            notificationResult.exception.toString(),
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                        userCount += 1
                                     }
+                                    is Result.Fail -> {
+                                        Toast.makeText(
+                                            ManagerApplication.instance,
+                                            notificationResult.error,
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                        userCount += 1
+                                    }
+                                    else -> Toast.makeText(
+                                        ManagerApplication.instance,
+                                        ManagerApplication.instance.getString(R.string.UNKNOWN_REASON),
+                                        Toast.LENGTH_SHORT
+                                    ).show()
                                 }
                             }
                         }
-                        else -> {
-
+                        is Result.Error -> {
+                            Toast.makeText(
+                                ManagerApplication.instance,
+                                result.exception.toString(),
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            userCount += 1
                         }
-
+                        is Result.Fail -> {
+                            Toast.makeText(
+                                ManagerApplication.instance, result.error, Toast.LENGTH_SHORT
+                            ).show()
+                            userCount += 1
+                        }
+                        else -> Toast.makeText(
+                            ManagerApplication.instance,
+                            ManagerApplication.instance.getString(R.string.UNKNOWN_REASON),
+                            Toast.LENGTH_SHORT
+                        ).show()
 
                     }
-
-
+                    if (userCount == it.size) {
+                        updateEvent()
+                    }
                 }
             }
-            checkComplete(completeCount)
-
-
         }
-
-
     }
 
-    private fun getEventNotification(event: Event): EventNotification {
-        val result = UserManager.userID?.let {
 
+    private fun getEventNotification(event: Event): EventNotification {
+        val result = UserManager.userID?.let { userId ->
             EventNotification(
                 event.eventID,
                 event.eventID,
                 false,
-                it,
+                userId,
                 EventNotificationWork.TYPE_EVENT_ALARM,
                 alarmTime = event.notification,
                 eventTime = event.date
@@ -507,22 +660,6 @@ class ScheduleDetailViewModel(val repository: Repository, val eventDetail: Event
         }
     }
 
-    fun statusDone() {
-        _loadingStatus.value = LoadStatus.Done
-    }
-
-    private fun <T> T.clone(): T {
-        val byteArrayOutputStream = ByteArrayOutputStream()
-        ObjectOutputStream(byteArrayOutputStream).use { outputStream ->
-            outputStream.writeObject(this)
-        }
-
-        val bytes = byteArrayOutputStream.toByteArray()
-
-        ObjectInputStream(ByteArrayInputStream(bytes)).use { inputStream ->
-            return inputStream.readObject() as T
-        }
-    }
 
     fun getNewPhotos(photoList: List<Uri>) {
         if (photoList.isNotEmpty()) {
@@ -533,24 +670,34 @@ class ScheduleDetailViewModel(val repository: Repository, val eventDetail: Event
                     when (val result =
                         repository.updateImage(uri, PetCreateViewModel.COVER_UPLOAD)) {
                         is Result.Success -> {
-
                             newList.add(result.data)
                             if (newList.size == photoList.size) {
                                 val list = currentDetailData.photoList.toMutableList()
                                 list.addAll(newList)
-                                Log.d("PhotoList Updated", "photoList: $list")
                                 currentDetailData.photoList = list
                                 _photoListLiveData.value = list
                                 _loadingStatus.value = LoadStatus.Done
                             }
                         }
                         is Result.Error -> {
-
-
+                            Toast.makeText(
+                                ManagerApplication.instance,
+                                result.exception.toString(),
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            _loadingStatus.value = LoadStatus.Done
                         }
                         is Result.Fail -> {
-
+                            Toast.makeText(
+                                ManagerApplication.instance, result.error, Toast.LENGTH_SHORT
+                            ).show()
+                            _loadingStatus.value = LoadStatus.Done
                         }
+                        else -> Toast.makeText(
+                            ManagerApplication.instance,
+                            ManagerApplication.instance.getString(R.string.UNKNOWN_REASON),
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 }
             }
@@ -562,7 +709,7 @@ class ScheduleDetailViewModel(val repository: Repository, val eventDetail: Event
 
     fun getNewLocation(location: Place) {
         location.latLng?.let {
-            currentDetailData?.locationLatLng = "${it.latitude},${it.longitude}"
+            currentDetailData.locationLatLng = "${it.latitude},${it.longitude}"
         }
         currentDetailData.locationName = location.name
         currentDetailData.locationAddress = location.address
@@ -585,13 +732,10 @@ class ScheduleDetailViewModel(val repository: Repository, val eventDetail: Event
     private fun insertAdderHolder() {
 
 //        participant adder
-
         if (!friendListForOption.isNullOrEmpty()) {
             val totalList = friendListForOption.toMutableList()
             participantUserInfo.value?.let { participantList ->
-                Log.d("Bug","participantList -> $participantList")
                 totalList.removeAll(participantList)
-                Log.d("Bug","totalList -> $totalList")
                 _participantUserInfo.value?.addAll(totalList)
             }
         }
@@ -600,8 +744,40 @@ class ScheduleDetailViewModel(val repository: Repository, val eventDetail: Event
             getPetOption(it)
         }
 //        tag
-
         _tagListLiveData.value = tagOptionList
+    }
+
+
+    private fun removeAdderHolder() {
+
+//        participant adder
+
+        currentDetailData.userParticipantList?.let { participantList ->
+            val list = participantUserInfo.value?.filter {
+                participantList.contains(it.userId)
+            }
+            if (list.isNullOrEmpty()) {
+                _participantUserInfo.value = mutableListOf()
+            } else {
+                _participantUserInfo.value = list.toMutableList()
+            }
+
+        }
+
+//      pet participant
+
+        currentDetailData.petParticipantList.let { petParticipantList ->
+            petParticipantList.toMutableList()
+            val list = petDataList.value?.filter {
+                petParticipantList.contains(it.id)
+            }
+            if (list != null) {
+                _petDataList.value = list.toMutableList()
+            }
+        }
+//        tag
+
+        _tagListLiveData.value = currentDetailData.tagList.toMutableList()
     }
 
     fun modifyParticipantUser(add: Boolean, user: UserInfo) {
@@ -626,39 +802,6 @@ class ScheduleDetailViewModel(val repository: Repository, val eventDetail: Event
             tempList.remove(pet.id)
         }
         currentDetailData.petParticipantList = tempList.toList()
-    }
-
-    private fun removeAdderHolder() {
-
-//        participant adder
-
-        currentDetailData.userParticipantList?.let { participantList ->
-            val list = participantUserInfo.value?.filter {
-                participantList.contains(it.userId)
-            }
-            Log.d("Bug","list for selected -> $list")
-            if (list.isNullOrEmpty()) {
-                _participantUserInfo.value = mutableListOf()
-            } else {
-                _participantUserInfo.value = list.toMutableList()
-            }
-
-        }
-
-//      pet participant
-
-        currentDetailData.petParticipantList?.let { petParticipantList ->
-            petParticipantList.toMutableList()
-            val list = petDataList.value?.filter {
-                petParticipantList.contains(it.id)
-            }
-            if (list != null) {
-                _petDataList.value = list.toMutableList()
-            }
-        }
-//        tag
-
-        _tagListLiveData.value = currentDetailData.tagList.toMutableList()
     }
 
     private fun getPetOption(selectedUserId: List<String>) {
@@ -726,43 +869,55 @@ class ScheduleDetailViewModel(val repository: Repository, val eventDetail: Event
             }
 
             val petData = mutableListOf<Pet>()
+            var count = 0
             for (petId in petIdList) {
                 when (val result = repository.getPetData(petId)) {
                     is Result.Success -> {
-
-                        result.data?.let {
-                            petData.add(it)
-                        }
-                        if (petData.size == petIdList.size) {
-                            _petListForOption.addAll(petData)
-                            getAllTagOption()
-                        }
+                        petData.add(result.data)
+                        count += 1
                     }
                     is Result.Error -> {
-                        petData.add(Pet())
+                        Toast.makeText(
+                            ManagerApplication.instance,
+                            result.exception.toString(),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        count += 1
                     }
                     is Result.Fail -> {
-                        petData.add(Pet())
+                        Toast.makeText(
+                            ManagerApplication.instance, result.error, Toast.LENGTH_SHORT
+                        ).show()
+                        count += 1
                     }
+                    else -> Toast.makeText(
+                        ManagerApplication.instance,
+                        ManagerApplication.instance.getString(R.string.UNKNOWN_REASON),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+                if (count == petIdList.size) {
+                    _petListForOption.addAll(petData)
+                    getAllTagOption()
                 }
             }
         }
     }
 
     fun getNewDate(newDate: Date) {
-        val dateString = Today.dateFormat.format(newDate)
+        val dateString = TimeFormat.dateFormat.format(newDate)
         _dateLiveData.value = dateString
-        val newDateInDate = Today.dateNTimeFormat.parse("$dateString ${timeLiveData.value}")
+        val newDateInDate = TimeFormat.dateNTimeFormat.parse("$dateString ${timeLiveData.value}")
         currentDetailData.date = Timestamp(newDateInDate!!)
         updateNotification()
     }
 
     fun getNewTime(newTime: Date) {
-        val timeString = Today.timeFormat12.format(newTime)
+        val timeString = TimeFormat.timeFormat12.format(newTime)
         _timeLiveData.value = timeString
         currentDetailData.time = Timestamp(newTime)
         val newDateInDate =
-            Today.dateNTimeFormat.parse("${dateLiveData.value} ${timeLiveData.value}")
+            TimeFormat.dateNTimeFormat.parse("${dateLiveData.value} ${timeLiveData.value}")
         currentDetailData.date = Timestamp(newDateInDate!!)
         updateNotification()
     }
@@ -813,7 +968,8 @@ class ScheduleDetailViewModel(val repository: Repository, val eventDetail: Event
         } else {
             _notificationString.value = "$day days $hour : $minute before"
             val minusTime: Long =
-                (day * 24 * 60 * 60 * 1000).toLong() + (hour * 60 * 60 * 1000).toLong() + (minute * 60 * 1000).toLong()
+                (day * 24 * 60 * 60 * 1000).toLong()
+            + (hour * 60 * 60 * 1000).toLong() + (minute * 60 * 1000).toLong()
             notificationTime = minusTime
 
         }
@@ -829,6 +985,5 @@ class ScheduleDetailViewModel(val repository: Repository, val eventDetail: Event
                 Timestamp(Date(currentDetailData.date.toDate().time - notificationTime))
         }
     }
-
 
 }
