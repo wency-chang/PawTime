@@ -14,14 +14,19 @@ import java.util.concurrent.TimeUnit
 class SystemAlarmSetting {
 
     fun assignWorkForDailyMission(){
-        val alarmManager = ManagerApplication.instance.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val alarmManager =
+            ManagerApplication.instance.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val intent = Intent(ManagerApplication.instance, NotificationReceiver::class.java)
-        intent.putExtra(NotificationReceiver.PURPOSE, NotificationReceiver.PURPOSE_MISSION_NOTIFICATION)
+        intent.putExtra(NotificationReceiver.PURPOSE,
+            NotificationReceiver.PURPOSE_MISSION_NOTIFICATION)
         val pendingIntent = PendingIntent.getBroadcast(
-            ManagerApplication.instance, NotificationReceiver.MISSION_REQUEST_CODE, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+            ManagerApplication.instance,
+            NotificationReceiver.MISSION_REQUEST_CODE, intent,
+            PendingIntent.FLAG_UPDATE_CURRENT)
         val time = TimeFormat.alarmTime
         time?.let {
-            alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, it.time, AlarmManager.INTERVAL_DAY, pendingIntent)
+            alarmManager.setInexactRepeating(
+                AlarmManager.RTC_WAKEUP, it.time, AlarmManager.INTERVAL_DAY, pendingIntent)
         }
     }
     fun assignWorkForEventCheck(){
@@ -29,7 +34,8 @@ class SystemAlarmSetting {
             .setRequiredNetworkType(NetworkType.CONNECTED)
             .build()
 
-        val checkNotificationWorkRequest: WorkRequest = PeriodicWorkRequestBuilder<EventNotificationWork>(
+        val checkNotificationWorkRequest: WorkRequest =
+            PeriodicWorkRequestBuilder<EventNotificationWork>(
             CHECK_HOUR, TimeUnit.HOURS)
             .setConstraints(constrains)
             .build()
@@ -43,7 +49,8 @@ class SystemAlarmSetting {
             .setRequiredNetworkType(NetworkType.CONNECTED)
             .build()
 
-        val resetNotificationWorkRequest: WorkRequest = OneTimeWorkRequestBuilder<EventNotificationResetWork>()
+        val resetNotificationWorkRequest: WorkRequest =
+            OneTimeWorkRequestBuilder<EventNotificationResetWork>()
             .setConstraints(constrains)
             .build()
 

@@ -34,6 +34,8 @@
     <string name="EMPTY_TAG">No Tag</string>
     <string name="REPEAT_TAG">Tag already Existed</string>
     <string name="TAG_ADDED">Tag added success</string>
+    <string name="REMINDER_TITLE">PAW TIME Mission Reminder</string>
+    <string name="SCHEDULE_NEW_REMINDER_TITLE">PAW TIME New Schedule Reminder</string>
     <string name="COVER_PHOTO_EMPTY">Cover photo is already empty</string>
     <string name="USER_PHOTO_HOLDER">https://pbs.twimg.com/profile_images/1128713017569316865/ITPoN3di_400x400.jpg</string>
     <string name="PRIVACY_POLICY"><h1>Privacy Policy</h1><p>Last updated: June 08, 2021</p>

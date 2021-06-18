@@ -222,12 +222,23 @@ class ScheduleDetailViewModel(val repository: Repository, val eventDetail: Event
         _notificationString.value = countTimeToString(notificationTime)
     }
 
+    private fun getDay(time: Long): Double {
+        return floor((time / (24 * 60 * 60 * 1000)).toDouble())
+    }
+
+    private fun getHour(time: Long) : Double {
+        return floor((time % (24 * 60 * 60 * 1000) / (60 * 60 * 1000).toDouble()))
+    }
+
+    private fun getMinute(time: Long) : Double {
+        return floor((time % (24 * 60 * 60 * 1000) % (60 * 60 * 1000) / (60 * 1000).toDouble()))
+    }
+
     private fun countTimeToString(time: Long): String {
 
-        val day = floor((time / (24 * 60 * 60 * 1000)).toDouble())
-        val hour = floor((time % (24 * 60 * 60 * 1000) / (60 * 60 * 1000).toDouble()))
-        val minute =
-            floor((time % (24 * 60 * 60 * 1000) % (60 * 60 * 1000) / (60 * 1000).toDouble()))
+        val day = getDay(time)
+        val hour = getHour(time)
+        val minute = getMinute(time)
 
         notificationTimeList[ScheduleCreateViewModel.DAY] = day.toInt()
         notificationTimeList[ScheduleCreateViewModel.HOUR] = hour.toInt()

@@ -1,57 +1,30 @@
 package com.wency.petmanager
 
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.net.Uri
-import android.view.View
 import android.widget.ImageView
 import androidx.core.net.toUri
 import androidx.databinding.BindingAdapter
-import androidx.databinding.BindingConversion
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.wency.petmanager.create.events.adapter.*
 import com.wency.petmanager.create.pet.CategoryAdapter
 import com.wency.petmanager.data.*
-import com.wency.petmanager.home.adapter.PetHeaderAdapter
-import com.wency.petmanager.home.adapter.TimeLineMainAdapter
 import com.wency.petmanager.detail.DetailMemoAdapter
 import com.wency.petmanager.detail.DetailTagListAdapter
 import com.wency.petmanager.detail.UserHeaderAdapter
 import com.wency.petmanager.dialog.mission.MissionAdapter
 import com.wency.petmanager.friend.FriendChooseAdapter
-import com.wency.petmanager.friend.InviteListAdapter
 import com.wency.petmanager.friend.FriendGridListAdapter
 import com.wency.petmanager.friend.FriendPetListAdapter
+import com.wency.petmanager.friend.InviteListAdapter
+import com.wency.petmanager.home.adapter.PetHeaderAdapter
 import com.wency.petmanager.home.adapter.TagQueryAdapter
+import com.wency.petmanager.home.adapter.TimeLineMainAdapter
 import com.wency.petmanager.memory.apater.MemoryListAdapter
-import com.wency.petmanager.network.LoadApiStatus
 import com.wency.petmanager.profile.CoverPhotoAdapter
 import com.wency.petmanager.profile.record.RecordListAdapter
 
-@BindingAdapter("HomeAPIStatus")
-fun bindStatus(statusImageView: ImageView, status: LoadApiStatus?){
-    when (status){
-        LoadApiStatus.LOADING -> {
-            statusImageView.visibility = View.VISIBLE
-
-        }
-        LoadApiStatus.ERROR -> {
-            statusImageView.visibility = View.VISIBLE
-
-
-        }
-        LoadApiStatus.DONE -> {
-            statusImageView.visibility = View.GONE
-        }
-    }
-}
-
-@BindingConversion
-fun convertStringToColorDrawable(color: String): ColorDrawable {
-    return ColorDrawable(Color.parseColor(color))
-}
 
 @BindingAdapter("imageUrlCircle")
 fun bindImageCircle(imgView: ImageView, imgUrl: String?) {
@@ -62,15 +35,12 @@ fun bindImageCircle(imgView: ImageView, imgUrl: String?) {
             .circleCrop()
             .apply(
                 RequestOptions()
-                    .placeholder(R.drawable.ic_paw_time__ui__06))
-//            .apply(
-//                RequestOptions()
-//                    .placeholder(R.drawable.image_placeholder)
-//                    .error(R.drawable.image_strikethrough))
+                    .placeholder(R.drawable.ic_paw_time__ui__06)
+                    .error(R.drawable.ic_baseline_error_outline_24))
             .into(imgView)
-
     }
 }
+
 @BindingAdapter("imageUrl")
 fun bindImage(imgView: ImageView, imgUrl: String?) {
     imgUrl?.let {
@@ -80,8 +50,8 @@ fun bindImage(imgView: ImageView, imgUrl: String?) {
             .centerCrop()
             .apply(
                 RequestOptions()
-                    .placeholder(R.drawable.ic_paw_time__ui__06))
-//                    .error(R.drawable.ic_placeholder))
+                    .placeholder(R.drawable.ic_paw_time__ui__06)
+                    .error(R.drawable.ic_baseline_error_outline_24))
             .into(imgView)
     }
 }
@@ -89,17 +59,14 @@ fun bindImage(imgView: ImageView, imgUrl: String?) {
 @BindingAdapter("imageUriCircle")
 fun bindImageCircle(imgView: ImageView, imgUri: Uri?) {
     imgUri?.let {
-        val imgUri = imgUri.path
+        val uri = imgUri.path
         Glide.with(imgView.context)
-            .load(imgUri)
+            .load(uri)
             .circleCrop()
             .apply(
                 RequestOptions()
-                    .placeholder(R.drawable.ic_paw_time__ui__06))
-//            .apply(
-//                RequestOptions()
-//                    .placeholder(R.drawable.image_placeholder)
-//                    .error(R.drawable.image_strikethrough))
+                    .placeholder(R.drawable.ic_paw_time__ui__06)
+                    .error(R.drawable.ic_baseline_error_outline_24))
             .into(imgView)
 
     }
@@ -115,8 +82,8 @@ fun bindImageTest(imgView: ImageView, imgUrl: String?) {
             .centerCrop()
             .apply(
                 RequestOptions()
-                    .placeholder(R.drawable.ic_paw_time__ui__06))
-//                    .error(R.drawable.ic_placeholder))
+                    .placeholder(R.drawable.ic_paw_time__ui__06)
+                    .error(R.drawable.ic_baseline_error_outline_24))
             .into(imgView)
     }
 }
@@ -142,7 +109,6 @@ fun petSelectorBindRecyclerView(recyclerView: RecyclerView, data: List<PetSelect
     data?.let {
         recyclerView.adapter?.apply {
             when(this){
-
                 is PetSelectorAdapter -> submitList(it)
             }
         }

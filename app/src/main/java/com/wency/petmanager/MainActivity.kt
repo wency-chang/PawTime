@@ -28,9 +28,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var bindingNavHeader: NavHeaderDrawerBinding
 
 
-
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 

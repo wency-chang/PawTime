@@ -52,8 +52,12 @@
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
                 android:adjustViewBounds="true"
-                android:scaleType="fitCenter"
                 android:background="@drawable/bg_timeline_event_image"
+                android:scaleType="fitCenter"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
                 tools:src="@drawable/ic_launcher_foreground" />
 
             <androidx.constraintlayout.widget.ConstraintLayout

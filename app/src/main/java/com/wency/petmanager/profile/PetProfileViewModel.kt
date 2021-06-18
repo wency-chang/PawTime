@@ -28,7 +28,7 @@ import java.util.*
 
 class PetProfileViewModel(val firebaseRepository: Repository, val petProfile: Pet) : ViewModel() {
     val coverPhoto = MutableLiveData<MutableList<String>>(petProfile.coverPhotos)
-    val profilePhoto = MutableLiveData<String>(petProfile.profilePhoto)
+    val profilePhoto = MutableLiveData(petProfile.profilePhoto)
     val ownerNumber = petProfile.users.size.toString()
     var missionList = mutableListOf<MissionGroup>()
     val missionListNumber = MutableLiveData<String>()
@@ -36,15 +36,15 @@ class PetProfileViewModel(val firebaseRepository: Repository, val petProfile: Pe
     val livingPlace = MutableLiveData<String>(petProfile.livingLocationName)
     val petDataBeUpdate = petProfile.copy(coverPhotos = petProfile.coverPhotos.clone())
 
-    val petNameLiveData = MutableLiveData<String>(petProfile.name)
+    val petNameLiveData = MutableLiveData(petProfile.name)
 
-    private val _editable = MutableLiveData<Boolean>(false)
+    private val _editable = MutableLiveData(false)
     val editable : LiveData<Boolean>
         get() = _editable
 
-    val buttonString = MutableLiveData<String>(UNEDITABLE)
+    val buttonString = MutableLiveData(UNEDITABLE)
 
-    private val _navigateBackHome = MutableLiveData<Boolean>(false)
+    private val _navigateBackHome = MutableLiveData(false)
     val navigateBackHome: LiveData<Boolean>
         get() = _navigateBackHome
 
@@ -56,13 +56,13 @@ class PetProfileViewModel(val firebaseRepository: Repository, val petProfile: Pe
     val navigateToChooseFriend : LiveData<Pet?>
         get()=_navigateToChooseFriend
 
-    private val _loading = MutableLiveData<Boolean>(false)
+    private val _loading = MutableLiveData(false)
     val loading : LiveData<Boolean>
         get() = _loading
 
-    val imageUpdateStatus = MutableLiveData<Boolean>(false)
+    val imageUpdateStatus = MutableLiveData(false)
 
-    private val _doneUpdate = MutableLiveData<Boolean>(false)
+    private val _doneUpdate = MutableLiveData(false)
     val doneUpdate : LiveData<Boolean>
         get() = _doneUpdate
 
@@ -99,8 +99,8 @@ class PetProfileViewModel(val firebaseRepository: Repository, val petProfile: Pe
 
     fun clickButton(){
         _editable.value?.let {
-            petNameLiveData.value?.let {
-                petDataBeUpdate.name = it
+            petNameLiveData.value?.let {name->
+                petDataBeUpdate.name = name
             }
             if (it){
                 if (petDataBeUpdate != petProfile || petDataBeUpdate.coverPhotos != petProfile.coverPhotos){
@@ -110,7 +110,7 @@ class PetProfileViewModel(val firebaseRepository: Repository, val petProfile: Pe
                             ManagerApplication.instance.getString(R.string.LACK_INFORMATION),
                             Toast.LENGTH_SHORT
                         ).show()
-                        updateSuccess()
+                        return@let
                     } else {
                         _loading.value = true
                         updateData()
@@ -124,11 +124,11 @@ class PetProfileViewModel(val firebaseRepository: Repository, val petProfile: Pe
     private fun updateData(){
         petNameLiveData.value?.let {
             if (it.isNotEmpty()){
-                petDataBeUpdate?.name = it
+                petDataBeUpdate.name = it
             }
         }
         coroutineScope.launch {
-            petDataBeUpdate?.let {
+            petDataBeUpdate.let {
                 when (val result = firebaseRepository.updatePetData(petProfile.id, it)){
                     is Result.Success -> {
                         updateSuccess()
@@ -175,25 +175,26 @@ class PetProfileViewModel(val firebaseRepository: Repository, val petProfile: Pe
     }
 
     fun getNewBirth(birth: Date){
-        petDataBeUpdate?.birth = Timestamp(birth)
+        petDataBeUpdate.birth = Timestamp(birth)
         countYears()
     }
 
     fun getNewLocation(location: Place){
         location.latLng?.let {
-            petDataBeUpdate?.livingLocationLatLng = "${it.latitude},${it.longitude}"
+            petDataBeUpdate.livingLocationLatLng = "${it.latitude},${it.longitude}"
         }
-        petDataBeUpdate?.livingLocationName = location.name
-        petDataBeUpdate?.livingLocationAddress = location.address
+        petDataBeUpdate.livingLocationName = location.name
+        petDataBeUpdate.livingLocationAddress = location.address
         livingPlace.value = location.name
     }
 
     fun getNewProfilePhoto(photoUri: Uri){
         coroutineScope.launch {
-            when (val result = firebaseRepository.updateImage(photoUri, PetCreateViewModel.HEADER_UPLOAD)){
+            when (val result =
+                firebaseRepository.updateImage(photoUri, PetCreateViewModel.HEADER_UPLOAD)){
                 is Result.Success -> {
-                    result.data?.let {
-                        petDataBeUpdate?.profilePhoto = it
+                    result.data.let {
+                        petDataBeUpdate.profilePhoto = it
                         profilePhoto.value = it
                     }
                 }
@@ -227,7 +228,8 @@ class PetProfileViewModel(val firebaseRepository: Repository, val petProfile: Pe
                 val newList = mutableListOf<String>()
                 var count = 0
                 for (uri in photoList){
-                    when(val result = firebaseRepository.updateImage(uri, PetCreateViewModel.COVER_UPLOAD)){
+                    when(val result =
+                        firebaseRepository.updateImage(uri, PetCreateViewModel.COVER_UPLOAD)){
                         is Result.Success -> {
                             newList.add(result.data)
                             count += 1
@@ -255,11 +257,11 @@ class PetProfileViewModel(val firebaseRepository: Repository, val petProfile: Pe
                         ).show()
                     }
                     if (count == photoList.size){
-                        petDataBeUpdate?.coverPhotos?.addAll(newList)
-                        if (petDataBeUpdate?.coverPhotos == null){
-                            petDataBeUpdate?.coverPhotos = newList
+                        petDataBeUpdate.coverPhotos?.addAll(newList)
+                        if (petDataBeUpdate.coverPhotos == null){
+                            petDataBeUpdate.coverPhotos = newList
                         }
-                        petDataBeUpdate?.coverPhotos?.let {
+                        petDataBeUpdate.coverPhotos?.let {
                             coverPhoto.value = it
                         }
                         imageUpdateStatus.value = false
@@ -270,7 +272,7 @@ class PetProfileViewModel(val firebaseRepository: Repository, val petProfile: Pe
     }
 
     fun deleteCoverPhoto(currentPage: Int){
-        petDataBeUpdate?.coverPhotos?.let {
+        petDataBeUpdate.coverPhotos?.let {
             it.removeAt(currentPage)
             coverPhoto.value = it
         }
@@ -297,7 +299,7 @@ class PetProfileViewModel(val firebaseRepository: Repository, val petProfile: Pe
     fun updateIntoMemoryMode(memoryDate: Date){
         petNameLiveData.value?.let {
             if (it.isNotEmpty()){
-                petDataBeUpdate?.name = it
+                petDataBeUpdate.name = it
             }
         }
 
@@ -305,7 +307,7 @@ class PetProfileViewModel(val firebaseRepository: Repository, val petProfile: Pe
         petDataBeUpdate.memoryMode = true
 
         coroutineScope.launch {
-            petDataBeUpdate?.let {
+            petDataBeUpdate.let {
                 when (val result = firebaseRepository.updatePetData(petProfile.id, it)){
                     is Result.Success -> {
                         _navigateBackHome.value = true

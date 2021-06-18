@@ -100,6 +100,7 @@
             android:layout_width="wrap_content"
             android:layout_height="55dp"
             android:layout_marginBottom="12dp"
+            android:minWidth="20dp"
             android:background="@null"
             android:backgroundTint="@{viewModel.editable?@color/blue_light:@color/transparent}"
             android:clickable="@{viewModel.editable?true:false}"

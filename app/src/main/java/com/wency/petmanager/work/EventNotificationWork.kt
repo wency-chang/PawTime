@@ -18,16 +18,16 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
-class EventNotificationWork(val context: Context, workerParameters: WorkerParameters): Worker(context, workerParameters) {
+class EventNotificationWork(val context: Context, workerParameters: WorkerParameters):
+    Worker(context, workerParameters) {
     private var workJob = Job()
     private val coroutineScope = CoroutineScope(workJob + Dispatchers.Main)
     override fun doWork(): Result {
-
         checkNotification()
-
         return Result.success()
     }
-    private val alarmManager = ManagerApplication.instance.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+    private val alarmManager =
+        ManagerApplication.instance.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
     private fun checkNotification(){
         UserManager.userID?.let {
@@ -38,7 +38,6 @@ class EventNotificationWork(val context: Context, workerParameters: WorkerParame
                         if (result.data.isNotEmpty()){
                             verifyNotification(result.data)
                         }
-
                     }
                 }
 
@@ -104,13 +103,12 @@ class EventNotificationWork(val context: Context, workerParameters: WorkerParame
                     registerAlarmNotification(it)
                 }
             }
-
         }
-
     }
 
     private fun sendNewEventNotification(notion: EventNotification ){
-        val detailEventIntent: Intent = Uri.parse("pawtime://schedule.detail").let {
+        val detailEventIntent: Intent = Uri.parse(
+            ManagerApplication.instance.getString(R.string.URI_STRING_DETAIL)).let {
             Intent(Intent.ACTION_VIEW, it)
         }
         detailEventIntent.putExtra(EVENT_ID, notion.eventId)
@@ -122,9 +120,9 @@ class EventNotificationWork(val context: Context, workerParameters: WorkerParame
         val pendingIntent: PendingIntent =
             PendingIntent.getActivity(context,
                 NotificationReceiver.EVENT_NEW_REQUEST_CODE, detailEventIntent, PendingIntent.FLAG_CANCEL_CURRENT)
-        val builder = Notification.Builder(context, "${notion.eventId}")
+        val builder = Notification.Builder(context, notion.eventId)
 
-        builder.setContentTitle("${notion.eventTitle}")
+        builder.setContentTitle(notion.eventTitle)
             .setSmallIcon(R.drawable.ic_paw_time__ui__06)
             .setContentText("${notion.userName} just create a new schedule ${notion.eventTitle} \n " +
                     "Click for more")
@@ -133,14 +131,17 @@ class EventNotificationWork(val context: Context, workerParameters: WorkerParame
 
         val manager = context.getSystemService(Service.NOTIFICATION_SERVICE) as NotificationManager
         val channel = NotificationChannel(
-            "${notion.eventId}", "Paw Time New Schedule Reminder", NotificationManager.IMPORTANCE_DEFAULT
+            notion.eventId,
+            ManagerApplication.instance.getString(R.string.SCHEDULE_NEW_REMINDER_TITLE),
+            NotificationManager.IMPORTANCE_DEFAULT
         )
         channel.enableLights(true)
         channel.enableVibration(true)
         manager.createNotificationChannel(channel)
         manager.notify(NotificationReceiver.EVENT_NEW_REQUEST_CODE, builder.build())
         coroutineScope.launch {
-            RemoteDataSource.completeNotificationSetting(UserManager.userID!!, notion.notificationId, true)
+            RemoteDataSource.completeNotificationSetting(
+                UserManager.userID!!, notion.notificationId, true)
         }
 
     }
@@ -158,15 +159,15 @@ class EventNotificationWork(val context: Context, workerParameters: WorkerParame
             if (notion.alarmTime == null){
                 alarmManager.cancel(pendingIntent)
             } else {
-                alarmManager.set(AlarmManager.RTC_WAKEUP, notion.alarmTime!!.toDate().time, pendingIntent)
+                alarmManager.set(
+                    AlarmManager.RTC_WAKEUP, notion.alarmTime!!.toDate().time, pendingIntent)
             }
 
             coroutineScope.launch {
-                RemoteDataSource.completeNotificationSetting(UserManager.userID!!, notion.notificationId, false)
+                RemoteDataSource.completeNotificationSetting(
+                    UserManager.userID!!, notion.notificationId, false)
             }
         }
-
-
     }
     companion object{
         const val TYPE_NEW_EVENT = "newSchedule"

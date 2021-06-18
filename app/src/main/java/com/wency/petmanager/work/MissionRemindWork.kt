@@ -9,7 +9,8 @@ import com.google.android.material.badge.BadgeDrawable
 import com.wency.petmanager.MainActivity
 import com.wency.petmanager.ManagerApplication
 import com.wency.petmanager.R
-import com.wency.petmanager.data.*
+import com.wency.petmanager.data.MissionToday
+import com.wency.petmanager.data.UserInfo
 import com.wency.petmanager.data.source.remote.RemoteDataSource
 import com.wency.petmanager.notification.NotificationReceiver
 import com.wency.petmanager.profile.TimeFormat
@@ -19,24 +20,23 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
-class MissionRemindWork(val context: Context, workerParameters: WorkerParameters): Worker(context, workerParameters) {
+class MissionRemindWork(val context: Context, workerParameters: WorkerParameters):
+    Worker(context, workerParameters) {
     private var workJob = Job()
     private val coroutineScope = CoroutineScope(workJob + Dispatchers.Main)
 
     lateinit var userInfo: UserInfo
 
-
     override fun doWork(): Result {
         getUserProfile()
-
         return Result.success()
     }
 
     private fun getUserProfile(){
 
         coroutineScope.launch {
-            UserManager.userID?.let {
-                when(val result = RemoteDataSource.getUserProfile(it)){
+            UserManager.userID?.let { userId ->
+                when(val result = RemoteDataSource.getUserProfile(userId)){
                     is com.wency.petmanager.data.Result.Success -> {
                         if (result.data.userId.isNotEmpty()) {
                             userInfo = result.data
@@ -45,7 +45,6 @@ class MissionRemindWork(val context: Context, workerParameters: WorkerParameters
                         }
                     }
                 }
-
             }
 
         }
@@ -68,9 +67,9 @@ class MissionRemindWork(val context: Context, workerParameters: WorkerParameters
                 when (val result = RemoteDataSource.getPetData(petId)){
                     is com.wency.petmanager.data.Result.Success -> {
                         val petData = result.data
-                        when(val result = RemoteDataSource.getTodayMission(petId)){
+                        when(val missionResult = RemoteDataSource.getTodayMission(petId)){
                             is com.wency.petmanager.data.Result.Success -> {
-                                result.data.forEach {
+                                missionResult.data.forEach {
                                     if (!it.complete){
                                         unCompletedMission.add(
                                             MissionToday(
@@ -127,19 +126,22 @@ class MissionRemindWork(val context: Context, workerParameters: WorkerParameters
             val pendingIntent: PendingIntent =
                 PendingIntent.getActivity(context,
                     NotificationReceiver.MISSION_REQUEST_CODE, serviceIntent, PendingIntent.FLAG_CANCEL_CURRENT)
-            val builder = Notification.Builder(context, "${it.missionId}")
+            val builder = Notification.Builder(context, it.missionId)
 
             builder
                 .setBadgeIconType(BadgeDrawable.TOP_END)
-                .setContentTitle("${it.title}")
+                .setContentTitle(it.title)
                 .setSmallIcon(R.drawable.ic_paw_time__ui__06)
                 .setContentText("${it.petName} needs ${it.title}")
                 .setContentIntent(pendingIntent)
                 .setAutoCancel(true)
 
-            val manager = ManagerApplication.instance.getSystemService(Service.NOTIFICATION_SERVICE) as NotificationManager
+            val manager =
+                ManagerApplication.instance.getSystemService(Service.NOTIFICATION_SERVICE) as NotificationManager
             val channel = NotificationChannel(
-                "${it.missionId}", "Paw Time Mission Reminder", NotificationManager.IMPORTANCE_HIGH
+                it.missionId,
+                ManagerApplication.instance.getString(R.string.REMINDER_TITLE),
+                NotificationManager.IMPORTANCE_HIGH
             )
             channel.enableLights(true)
             channel.lockscreenVisibility
@@ -148,8 +150,5 @@ class MissionRemindWork(val context: Context, workerParameters: WorkerParameters
             manager.notify(count, builder.build())
             count += 1
         }
-
-
     }
-
 }

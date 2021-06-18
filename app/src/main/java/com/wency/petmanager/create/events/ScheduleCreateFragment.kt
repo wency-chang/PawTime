@@ -61,7 +61,6 @@ class ScheduleCreateFragment: Fragment(), AddMemoDialog.MemoDialogListener, AddN
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-
         binding = FragmentScheduleCreateBinding.inflate(layoutInflater, container, false)
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
@@ -89,11 +88,11 @@ class ScheduleCreateFragment: Fragment(), AddMemoDialog.MemoDialogListener, AddN
         viewModel.myPet = createEventViewModel.myPetList.toList()
         mainViewModel.userInfoProfile.value?.let { viewModel.me = it }
 
-
 //      get user select state
         createEventViewModel.participantUserIdList.value?.let {
             viewModel.initUserSelectState(it)
         }
+
 //        get user option list
         createEventViewModel.selectUserOptionList.value?.let {
             viewModel.getUserOption(it)

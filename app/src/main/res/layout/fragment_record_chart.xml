@@ -71,14 +71,34 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/constraintLayout10">
 
-            <lecho.lib.hellocharts.view.LineChartView
+            <com.github.mikephil.charting.charts.LineChart
                 android:id="@+id/recordLinearChart"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_margin="10dp"/>
 
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/recordBarChartCard"
+            android:layout_width="0dp"
+            android:layout_height="200dp"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="30dp"
+            app:cardCornerRadius="10dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/recordChartCard">
+
+            <com.github.mikephil.charting.charts.BarChart
+                android:id="@+id/recordBarChart"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="10dp"/>
 
         </androidx.cardview.widget.CardView>
+
+
 
 
         <ImageButton

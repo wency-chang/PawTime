@@ -68,8 +68,8 @@ class HomeFragment : Fragment() {
         mainViewModel.missionListToday.observe(requireActivity(), {
                 viewModel.createMissionTimeItem(it)
                 viewModel.getMissionToday(it)
-
         })
+
         viewModel.evenForTimeline.observe(viewLifecycleOwner, { eventForTimeline ->
             eventForTimeline?.let {
                 viewModel.createTimelineItem(it)
