@@ -1,6 +1,5 @@
 package com.wency.petmanager.home
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -151,7 +150,6 @@ class HomeViewModel(
         }
     }
 
-
     fun clickForCreate(id: Int) {
         _navigateToCreateDestination.value = id
     }
@@ -174,7 +172,6 @@ class HomeViewModel(
     //    about create timeline
     //    get pet data by profile pet id list
 
-
     init {
         onStatusQuery = false
         if (!userPetList.isNullOrEmpty()) {
@@ -185,7 +182,6 @@ class HomeViewModel(
         if (!petEventList.isNullOrEmpty()) {
             _eventForTimeline.value = petEventList.toMutableList()
         }
-
     }
 
     fun refresh() {
@@ -230,7 +226,6 @@ class HomeViewModel(
     }
 
     private fun updateMissionStatus(petId: String, mission: MissionGroup) {
-        Log.d("MISSION", "UPDATE MISSION : $mission")
         coroutineScope.launch {
             when (val result = repository.updateMission(petId, mission)) {
                 is Result.Success -> {
@@ -294,7 +289,6 @@ class HomeViewModel(
                             mission.completeUserPhoto
                         )
                     )
-
                 } else {
                     initMission(it[0].id, mission)
                 }
@@ -307,20 +301,14 @@ class HomeViewModel(
         if (petEventList.isNullOrEmpty() || timeline.value.isNullOrEmpty()) {
             _timeline.value = mutableListOf(
                 TimelineItem.Today(
-                    DayMission(
-                        Date(),
-                        todayMissionListForTimeline.value
-                    )
+                    DayMission(Date(), todayMissionListForTimeline.value)
                 )
             )
         } else {
-            scrollToToday.value?.let {
+            scrollToToday.value?.let {todayPosition->
                 _timeline.value?.let { timeline ->
-                    timeline[it] = TimelineItem.Today(
-                        DayMission(
-                            Date(),
-                            todayMissionListForTimeline.value
-                        )
+                    timeline[todayPosition] = TimelineItem.Today(
+                        DayMission(Date(), todayMissionListForTimeline.value)
                     )
                 }
                 _timeline.value = _timeline.value
@@ -346,10 +334,7 @@ class HomeViewModel(
                     if (today.before(eventList[count].date.toDate()) && !isTodayAdd) {
                         listTimelineItem.add(
                             TimelineItem.Today(
-                                DayMission(
-                                    today,
-                                    todayMissionListForTimeline.value
-                                )
+                                DayMission(today, todayMissionListForTimeline.value)
                             )
                         )
                         isTodayAdd = true
@@ -363,24 +348,27 @@ class HomeViewModel(
                 val listCardHolder = mutableListOf<Event>()
                 val listPhotoHolder = mutableListOf<Event>()
 
+//              check if the date is same
                 while (countDay ==
                     TimeFormat.dateNTimeFormat
                         .parse("${TimeFormat.dateFormat.format(eventList[count].date.toDate())} ${TimeFormat.EIGHT_AM_STRING}")
                     && count < eventList.size
                 ) {
-
-                    if (eventList[count].private
-                        && eventList[count].userParticipantList?.contains(userInfoProfile?.userId) == false
+                    if (!(eventList[count].private
+                        && eventList[count].userParticipantList?.contains(userInfoProfile?.userId) == false)
                     ) {
+//                      if event is not locked
+//                      sorting events to photo or schedule card
 
-                    } else if (eventList[count].type == EVENT_TYPE_SCHEDULE && eventList[count].complete
-                        && !eventList[count].photoList.isNullOrEmpty()
-                    ) {
-                        listPhotoHolder.add(eventList[count])
-                    } else if (eventList[count].type == EVENT_TYPE_DIARY) {
-                        listPhotoHolder.add(eventList[count])
-                    } else {
-                        listCardHolder.add(eventList[count])
+                        if (eventList[count].type == EVENT_TYPE_SCHEDULE && eventList[count].complete
+                            && !eventList[count].photoList.isNullOrEmpty()
+                        ) {
+                            listPhotoHolder.add(eventList[count])
+                        } else if (eventList[count].type == EVENT_TYPE_DIARY) {
+                            listPhotoHolder.add(eventList[count])
+                        } else {
+                            listCardHolder.add(eventList[count])
+                        }
                     }
                     count += 1
                     if (count == eventList.size) {
@@ -391,11 +379,7 @@ class HomeViewModel(
                 if (!listCardHolder.isNullOrEmpty()) {
                     listTimelineItem.add(
                         TimelineItem.TimelineSchedule(
-                            DayEvent(
-                                countDay,
-                                EVENT_TYPE_SCHEDULE,
-                                listCardHolder
-                            )
+                            DayEvent(countDay, EVENT_TYPE_SCHEDULE, listCardHolder)
                         )
                     )
                     timelineCount += 1
@@ -404,11 +388,7 @@ class HomeViewModel(
                 if (!listPhotoHolder.isNullOrEmpty()) {
                     listTimelineItem.add(
                         TimelineItem.TimelineEvent(
-                            DayEvent(
-                                countDay,
-                                EVENT_TYPE_DIARY,
-                                listPhotoHolder
-                            )
+                            DayEvent(countDay, EVENT_TYPE_DIARY, listPhotoHolder)
                         )
                     )
                     timelineCount += 1
@@ -418,10 +398,7 @@ class HomeViewModel(
                     today?.let { today->
                         listTimelineItem.add(
                             TimelineItem.Today(
-                                DayMission(
-                                    today,
-                                    todayMissionListForTimeline.value
-                                )
+                                DayMission(today, todayMissionListForTimeline.value)
                             )
                         )
                         isTodayAdd = true
@@ -449,6 +426,7 @@ class HomeViewModel(
                         }?.toMutableList()
                     }
                     onStatusQuery = true
+
                     missionListToday.value?.let { todayMission ->
                         createMissionTimeItem(todayMission.filter {
                             it.petId == pet.id
@@ -471,19 +449,17 @@ class HomeViewModel(
     }
 
     fun clickQuery(tag: String, add: Boolean) {
-
         if (add) {
             _tagQueryList.value?.add(tag)
         } else {
             _tagQueryList.value?.remove(tag)
         }
         _tagQueryList.value = _tagQueryList.value
-
     }
 
     fun queryByTag() {
-
         resetTimeline()
+
         if (tagQueryList.value?.size != tagList.value?.size) {
             val list = mutableSetOf<Event>()
             if (tagQueryList.value.isNullOrEmpty()) {
@@ -501,16 +477,17 @@ class HomeViewModel(
                         })
                     }
                 }
-
             }
             _eventForTimeline.value = list.toMutableList()
+
         } else {
             if (petQueryPosition.value == null) {
                 _eventForTimeline.value = petEventList?.toMutableList()
             } else {
-                queryByPet(petQueryPosition.value!!, true)
+                petQueryPosition.value?.let { queryPosition->
+                    queryByPet(queryPosition, true)
+                }
             }
-
         }
     }
 

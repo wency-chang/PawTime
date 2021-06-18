@@ -18,6 +18,7 @@ import com.wency.petmanager.MainViewModel
 import com.wency.petmanager.ManagerApplication
 import com.wency.petmanager.NavHostDirections
 import com.wency.petmanager.R
+import com.wency.petmanager.create.CreateEventViewModel
 import com.wency.petmanager.databinding.FragmentHomeBinding
 import com.wency.petmanager.ext.getVmFactory
 import com.wency.petmanager.home.adapter.PetHeaderAdapter
@@ -25,7 +26,6 @@ import com.wency.petmanager.home.adapter.TagQueryAdapter
 import com.wency.petmanager.home.adapter.TimeLineMainAdapter
 
 class HomeFragment : Fragment() {
-
 
     private val viewModel by viewModels<HomeViewModel> {
         getVmFactory(
@@ -44,11 +44,9 @@ class HomeFragment : Fragment() {
                 .setAspectRatio(1,1)
                 .getIntent(ManagerApplication.instance)
         }
-
         override fun parseResult(resultCode: Int, intent: Intent?): Uri? {
             return CropImage.getActivityResult(intent)?.uri
         }
-
     }
     private lateinit var cropActivityResultLauncher : ActivityResultLauncher<Any?>
 
@@ -63,6 +61,7 @@ class HomeFragment : Fragment() {
         binding.viewModel = viewModel
         binding.mainViewModel = mainViewModel
         binding.todayFloatingActionButton.hide()
+
         viewModel.friendList = mainViewModel.allUsersList
 
         mainViewModel.missionListToday.observe(requireActivity(), {
@@ -75,8 +74,8 @@ class HomeFragment : Fragment() {
                 viewModel.createTimelineItem(it)
             }
         })
-        viewModel.initButtonStatus()
 
+        viewModel.initButtonStatus()
         return binding.root
     }
 
@@ -93,7 +92,6 @@ class HomeFragment : Fragment() {
             it?.let {
                 mainViewModel.getNewHeaderPhoto(uri = it)
             }
-
         }
 
         viewModel.isCreateButtonVisible.observe(viewLifecycleOwner, {
@@ -108,9 +106,6 @@ class HomeFragment : Fragment() {
                 binding.createMissionEventButton.startAnimation(closeAnim)
             }
         })
-
-
-
 
         viewModel.tagExpand.observe(viewLifecycleOwner, {
             if (it){
@@ -129,7 +124,6 @@ class HomeFragment : Fragment() {
                 )
             }
         })
-
 
         timelineRecycler.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
@@ -155,8 +149,7 @@ class HomeFragment : Fragment() {
                     }
                 }
             }
-        }
-        )
+        })
 
         val tagQueryRecycler = binding.tagQueryRecycler
 
@@ -187,14 +180,14 @@ class HomeFragment : Fragment() {
         })
 
         viewModel.navigateToCreateDestination.observe(viewLifecycleOwner, {
-            it?.let {
+            it?.let {destination->
                 when {
-                    it < 3 -> {
+                    destination <= CreateEventViewModel.MISSION_CREATE_PAGE -> {
                         mainViewModel.userInfoProfile.value?.let { userInfo ->
                             mainViewModel.userPetList.value?.let { petList ->
                                 this.findNavController().navigate(
                                     NavHostDirections.actionGlobalToCreateFragment(
-                                        it,
+                                        destination,
                                         petList.toTypedArray(),
                                         arrayOf(userInfo.userId)
                                     )
@@ -203,7 +196,7 @@ class HomeFragment : Fragment() {
                         }
                         viewModel.onNavigated()
                     }
-                    it == HomeViewModel.PAGE_PET_CREATE -> {
+                    destination == HomeViewModel.PAGE_PET_CREATE -> {
                         viewModel.userInfoProfile?.let { userInfo ->
                             findNavController().navigate(
                                 NavHostDirections.actionGlobalToPetCreate(
@@ -217,42 +210,30 @@ class HomeFragment : Fragment() {
                         viewModel.onNavigated()
                     }
                 }
-
             }
         })
 
         viewModel.navigateToDetailDestination.observe(viewLifecycleOwner, {
-            it?.let {
-                when (it.type) {
+            it?.let {event->
+                when (event.type) {
                     HomeViewModel.EVENT_TYPE_DIARY -> findNavController().navigate(
-                        NavHostDirections.actionGlobalToDiaryDetailFragment(
-                            it
-                        )
+                        NavHostDirections.actionGlobalToDiaryDetailFragment(event)
                     )
                     HomeViewModel.EVENT_TYPE_SCHEDULE -> {
-                        if (it.complete && it.photoList.isNotEmpty()) {
+                        if (event.complete && event.photoList.isNotEmpty()) {
                             findNavController().navigate(
-                                NavHostDirections.actionGlobalToDiaryDetailFragment(
-                                    it
-                                )
+                                NavHostDirections.actionGlobalToDiaryDetailFragment(event)
                             )
                         } else {
                             findNavController().navigate(
-                                NavHostDirections.actionGlobalToScheduleDetail(
-                                    it
-                                )
+                                NavHostDirections.actionGlobalToScheduleDetail(event)
                             )
                         }
                     }
-
                 }
-
                 viewModel.onNavigated()
             }
-
         })
-
-
 
         viewModel.missionListToday.observe(viewLifecycleOwner, {
             if (it.isNotEmpty()) {
@@ -260,13 +241,9 @@ class HomeFragment : Fragment() {
             }
         })
 
-
         viewModel.todayMissionListForTimeline.observe(viewLifecycleOwner, {
-
             viewModel.insertMissionToTimeline()
-
         })
-
 
         binding.homeRefresher.setOnRefreshListener {
             viewModel.refresh()
@@ -292,7 +269,6 @@ class HomeFragment : Fragment() {
                 timelineRecycler.scrollToPosition(it)
             }
         })
-
     }
 
     override fun onCreateContextMenu(
@@ -308,7 +284,6 @@ class HomeFragment : Fragment() {
         if (item.itemId == R.id.changeUserHeader) {
             cropActivityResultLauncher.launch(null)
         } else {
-
             viewModel.navigateToPetProfileDestination.value?.let {
                 findNavController().navigate(
                     NavHostDirections.actionGlobalToPetProfileFragment(
@@ -318,7 +293,6 @@ class HomeFragment : Fragment() {
                 viewModel.onNavigated()
             }
         }
-
         return true
     }
 
@@ -326,7 +300,6 @@ class HomeFragment : Fragment() {
         super.onResume()
         viewModel.scrollToToday.value?.let {
             binding.timelineRecycler.scrollToPosition(it)
-
         }
     }
 

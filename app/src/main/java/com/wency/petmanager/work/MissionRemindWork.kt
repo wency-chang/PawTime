@@ -9,6 +9,7 @@ import com.google.android.material.badge.BadgeDrawable
 import com.wency.petmanager.MainActivity
 import com.wency.petmanager.ManagerApplication
 import com.wency.petmanager.R
+import com.wency.petmanager.data.MissionGroup
 import com.wency.petmanager.data.MissionToday
 import com.wency.petmanager.data.UserInfo
 import com.wency.petmanager.data.source.remote.RemoteDataSource
@@ -62,7 +63,7 @@ class MissionRemindWork(val context: Context, workerParameters: WorkerParameters
     private fun getMissionToday(petList: List<String>){
         coroutineScope.launch {
             var count = 0
-            val unCompletedMission = mutableListOf<MissionToday>()
+            val inCompletedMission = mutableListOf<MissionToday>()
             for (petId in petList){
                 when (val result = RemoteDataSource.getPetData(petId)){
                     is com.wency.petmanager.data.Result.Success -> {
@@ -70,23 +71,8 @@ class MissionRemindWork(val context: Context, workerParameters: WorkerParameters
                         when(val missionResult = RemoteDataSource.getTodayMission(petId)){
                             is com.wency.petmanager.data.Result.Success -> {
                                 missionResult.data.forEach {
-                                    if (!it.complete){
-                                        unCompletedMission.add(
-                                            MissionToday(
-                                                it.missionId,
-                                                it.title,
-                                                petData.id,
-                                                petData.profilePhoto,
-                                                petData.name,
-                                                it.complete,
-                                                it.completeUserId,
-                                                it.completeUserName,
-                                                it.completeUserPhoto,
-                                                it.recordDate
-                                            )
-                                        )
-                                    } else if (it.complete && it.recordDate != TimeFormat.timeStamp8amToday){
-                                        unCompletedMission.add(
+                                    if (checkNeedComplete(it)){
+                                        inCompletedMission.add(
                                             MissionToday(
                                                 it.missionId,
                                                 it.title,
@@ -101,10 +87,10 @@ class MissionRemindWork(val context: Context, workerParameters: WorkerParameters
                                             )
                                         )
                                     }
+                                    count += 1
                                 }
-                                count += 1
                                 if (count == petList.size){
-                                    sendNotification(unCompletedMission)
+                                    sendNotification(inCompletedMission)
                                 }
                             }
                         }
@@ -113,6 +99,10 @@ class MissionRemindWork(val context: Context, workerParameters: WorkerParameters
 
            }
         }
+    }
+
+    private fun checkNeedComplete(mission: MissionGroup): Boolean{
+        return !mission.complete || mission.recordDate != TimeFormat.timeStamp8amToday
     }
 
     private fun sendNotification(missions: List<MissionToday>){

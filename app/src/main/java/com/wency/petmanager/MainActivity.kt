@@ -1,7 +1,6 @@
 package com.wency.petmanager
 
 import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
 import android.view.*
 import androidx.activity.viewModels
@@ -34,51 +33,43 @@ class MainActivity : AppCompatActivity() {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         setUpDrawer()
         hideSystemUI()
-
-        window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
-        val window = window
-        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+        setPlaceAPI()
 
         val navController = findNavController(R.id.navHostNavigation)
-
-//        google place initialize
-        Places.initialize(this.applicationContext, UserManager.mapKey)
-        Places.createClient(this)
-
 //        get profile
-        viewModel.userInfoProfile.observe(this, {userInfo->
+        viewModel.userInfoProfile.observe(this, { userInfo ->
             viewModel.getFriendListLiveData()
             binding.viewModel = viewModel
-            if (userInfo.petList.isNullOrEmpty()){
+            if (userInfo.petList.isNullOrEmpty()) {
                 viewModel.getPetData()
                 findNavController(R.id.navHostNavigation)
-                    .navigate(NavHostDirections.actionGlobalToHomeFragment
-                        (userInfo, null, null)
+                    .navigate(
+                        NavHostDirections.actionGlobalToHomeFragment
+                            (userInfo, null, null)
                     )
             } else {
                 viewModel.getPetData()
             }
-            userInfo.petList?.let {petList->
+            userInfo.petList?.let { petList ->
                 viewModel.petNumber.value = "${petList.size}"
             }
 
-            viewModel.inviteListLiveData.observe(this, {inviteList->
+            viewModel.inviteListLiveData.observe(this, { inviteList ->
 //                for badge
-                if (inviteList.size > 0){
+                if (inviteList.isNotEmpty()) {
                     viewModel.badgeString.value = "${inviteList.size}"
                 } else {
                     viewModel.badgeString.value = ""
                 }
             })
 
-            viewModel.friendListLiveData.observe(this, {list->
+            viewModel.friendListLiveData.observe(this, { list ->
                 viewModel.getFriendData()
                 viewModel.friendNumber.value = "${list.size}"
             })
         })
 
-        viewModel.userPetList.observe(this, { petList->
+        viewModel.userPetList.observe(this, { petList ->
             petList?.let {
                 viewModel.getEventIdList()
                 viewModel.findFriendList()
@@ -87,16 +78,16 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
-
-        viewModel.eventIdList.observe(this, {eventList->
-
-            if (eventList.isNullOrEmpty()){
-                viewModel.userInfoProfile.value?.let { userProfile->
-                    viewModel.userPetList.value?.let { petList->
+        viewModel.eventIdList.observe(this, { eventList ->
+            if (eventList.isNullOrEmpty()) {
+                viewModel.userInfoProfile.value?.let { userProfile ->
+                    viewModel.userPetList.value?.let { petList ->
                         navController
-                            .navigate(NavHostDirections.actionGlobalToHomeFragment(
-                            userProfile, petList.toTypedArray(), null)
-                        )
+                            .navigate(
+                                NavHostDirections.actionGlobalToHomeFragment(
+                                    userProfile, petList.toTypedArray(), null
+                                )
+                            )
                     }
                 }
             } else {
@@ -107,13 +98,15 @@ class MainActivity : AppCompatActivity() {
 
         viewModel.eventDetailList.observe(this, {
 
-            if (it.size > 0){
+            if (it.size > 0) {
                 viewModel.getTagList()
-                viewModel.userInfoProfile.value?.let { userProfile->
-                    viewModel.userPetList.value?.let { petList->
+                viewModel.userInfoProfile.value?.let { userProfile ->
+                    viewModel.userPetList.value?.let { petList ->
                         navController
-                            .navigate(NavHostDirections.actionGlobalToHomeFragment(
-                                userProfile, petList.toTypedArray(), it.toTypedArray())
+                            .navigate(
+                                NavHostDirections.actionGlobalToHomeFragment(
+                                    userProfile, petList.toTypedArray(), it.toTypedArray()
+                                )
                             )
                     }
                 }
@@ -122,7 +115,7 @@ class MainActivity : AppCompatActivity() {
         })
 
         viewModel.signOut.observe(this, Observer {
-            if (it){
+            if (it) {
                 binding.drawerProfile.close()
                 navController.navigate(NavHostDirections.actionGlobalToLoginFragment())
                 viewModel.signOuted()
@@ -130,7 +123,7 @@ class MainActivity : AppCompatActivity() {
         })
 
         viewModel.navigateToScheduleDetail.observe(this, Observer {
-            if (it!= null){
+            if (it != null) {
                 navController.navigate(NavHostDirections.actionGlobalToScheduleDetail(it))
                 viewModel.doneNavigated()
             }
@@ -138,29 +131,28 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    private fun setUpDrawer(){
-        val navController = this.findNavController(R.id.navHostNavigation)
-        NavigationUI.setupWithNavController(binding.drawerNavView, navController)
-        binding.drawerProfile.fitsSystemWindows = true
-        binding.drawerProfile.clipToPadding = false
+    private fun setUpDrawer() {
+        registerForContextMenu(bindingNavHeader.drawerPhoto)
 
         bindingNavHeader = NavHeaderDrawerBinding.inflate(
             LayoutInflater.from(this), binding.drawerProfile, false
         )
 
-        registerForContextMenu(bindingNavHeader.drawerPhoto)
-        bindingNavHeader.drawerPhoto.setOnLongClickListener {
-            it.showContextMenu()
-        }
+        val navController = this.findNavController(R.id.navHostNavigation)
+        NavigationUI.setupWithNavController(binding.drawerNavView, navController)
+
+        binding.drawerProfile.fitsSystemWindows = true
+        binding.drawerProfile.clipToPadding = false
+        binding.drawerNavView.addHeaderView(bindingNavHeader.root)
 
         bindingNavHeader.lifecycleOwner = this
         bindingNavHeader.viewModel = viewModel
-        binding.drawerNavView.addHeaderView(bindingNavHeader.root)
-        val layoutInflater = LayoutInflater.from(this)
+
         val badge =
             SubInviteBadgeBinding.inflate(layoutInflater, binding.drawerProfile, false)
         badge.lifecycleOwner = this
         badge.mainViewModel = viewModel
+
         binding.drawerNavView.menu.findItem(R.id.toFriendListButton).actionView = badge.root
         binding.drawerNavView.menu.findItem(R.id.toFriendListButton).setOnMenuItemClickListener {
             navController.navigate(NavHostDirections.actionGlobalToFriendFragment())
@@ -168,31 +160,30 @@ class MainActivity : AppCompatActivity() {
         }
 
         navController.addOnDestinationChangedListener { controller, destination, arguments ->
-            if (destination.id == R.id.homeFragment){
+            if (destination.id == R.id.homeFragment) {
                 binding.drawerProfile.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
             } else {
                 binding.drawerProfile.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
             }
         }
 
-        binding.drawerMemoryButton.setOnClickListener {
-            navController.navigate(
-                NavHostDirections.actionGlobalToMemoryListFragment(viewModel.memoryPetList.value?.toTypedArray()))
+        bindingNavHeader.drawerPhoto.setOnLongClickListener {
+            it.showContextMenu()
         }
 
+        binding.drawerMemoryButton.setOnClickListener {
+            navController.navigate(
+                NavHostDirections.actionGlobalToMemoryListFragment(viewModel.memoryPetList.value?.toTypedArray())
+            )
+        }
     }
 
     private fun hideSystemUI() {
-
+        val window = window
+        window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE)
-                // Set the content to appear under the system bars so that the
-                // content doesn't resize when the system bars hide and show.
-//                or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-//                or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-//                or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-//                // Hide the nav bar and status bar
-//                or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-//                or View.SYSTEM_UI_FLAG_FULLSCREEN)
     }
 
     override fun onNewIntent(intent: Intent?) {
@@ -200,7 +191,8 @@ class MainActivity : AppCompatActivity() {
         val purpose = intent?.getIntExtra(NotificationReceiver.PURPOSE, 0)
 
         if (purpose == NotificationReceiver.PURPOSE_EVENT_NEW
-            || purpose == NotificationReceiver.PURPOSE_EVENT_NOTIFICATION){
+            || purpose == NotificationReceiver.PURPOSE_EVENT_NOTIFICATION
+        ) {
             val eventId = intent.getStringExtra(NotificationReceiver.EVENT_ID)
             eventId?.let {
                 viewModel.getEventDetailToSchedule(it)
@@ -208,31 +200,24 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
     override fun onCreateContextMenu(
         menu: ContextMenu?,
         v: View?,
         menuInfo: ContextMenu.ContextMenuInfo?
     ) {
-        if (v != null && v == bindingNavHeader.drawerPhoto){
+        if (v != null && v == bindingNavHeader.drawerPhoto) {
             this.menuInflater.inflate(R.menu.item_change_profile_photo, menu)
         }
     }
 
-    private fun setupStatusBar() {
-        window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
-
-        val window = window
-        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
-        window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR)
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-        window.statusBarColor = Color.TRANSPARENT // calculateStatusColor(Color.WHITE, (int) alphaValue)
+    private fun setPlaceAPI(){
+        //        google place initialize
+        Places.initialize(this.applicationContext, UserManager.mapKey)
+        Places.createClient(this)
     }
 
     override fun onBackPressed() {
-        if (binding.drawerProfile.isDrawerOpen(GravityCompat.START)){
+        if (binding.drawerProfile.isDrawerOpen(GravityCompat.START)) {
             binding.drawerProfile.close()
         } else {
             super.onBackPressed()

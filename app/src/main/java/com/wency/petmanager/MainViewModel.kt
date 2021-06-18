@@ -18,14 +18,12 @@ import kotlinx.coroutines.*
 
 class MainViewModel(private val firebaseRepository: Repository) : ViewModel() {
 
-
     private val _userProfile = MutableLiveData<UserInfo>()
     val userInfoProfile : LiveData<UserInfo>
      get() = _userProfile
 
     private var viewModelJob = Job()
     private val coroutineScope = CoroutineScope(viewModelJob + Dispatchers.Main)
-
 
     private val _status = MutableLiveData<LoadApiStatus>()
 
@@ -37,7 +35,6 @@ class MainViewModel(private val firebaseRepository: Repository) : ViewModel() {
 
     val error: LiveData<String?>
         get() = _error
-
 
     private val _userPetList = MutableLiveData<MutableList<Pet>>()
     val userPetList : LiveData<MutableList<Pet>>
@@ -57,7 +54,6 @@ class MainViewModel(private val firebaseRepository: Repository) : ViewModel() {
     private var _missionListToday = MutableLiveData<List<MissionGroup>>()
     val missionListToday: LiveData<List<MissionGroup>>
         get() = _missionListToday
-
 
     var friendListLiveData = MutableLiveData<List<String>>()
 
@@ -81,8 +77,6 @@ class MainViewModel(private val firebaseRepository: Repository) : ViewModel() {
     private val _memoryPetList = MutableLiveData<MutableList<Pet>>()
     val memoryPetList : LiveData<MutableList<Pet>>
         get() = _memoryPetList
-
-
 
     private val _signOut = MutableLiveData(false)
     val signOut : LiveData<Boolean>
@@ -123,12 +117,9 @@ class MainViewModel(private val firebaseRepository: Repository) : ViewModel() {
                             _status.value = LoadApiStatus.ERROR
                             null
                         }
-
                     }
                 }
             }
-
-
         }
     }
 
@@ -138,9 +129,7 @@ class MainViewModel(private val firebaseRepository: Repository) : ViewModel() {
         userInfoProfile.value?.petList?.let { petList ->
             if (petList.isNotEmpty()) {
                 coroutineScope.async {
-
                     for (petId in petList) {
-
                         when (val result = firebaseRepository.getPetData(petId)) {
                             is Result.Success -> {
                                 _error.value = null
@@ -148,7 +137,6 @@ class MainViewModel(private val firebaseRepository: Repository) : ViewModel() {
                                 petDataList.add(result.data)
 
                                 if (petDataList.size == petList.size) {
-
                                     val petListForHome = petDataList.filter {
                                         !it.memoryMode
                                     }
@@ -181,8 +169,6 @@ class MainViewModel(private val firebaseRepository: Repository) : ViewModel() {
             }
         }
     }
-
-
 
     fun getEventIdList() {
         val eventIDList = mutableSetOf<String>()
@@ -229,7 +215,6 @@ class MainViewModel(private val firebaseRepository: Repository) : ViewModel() {
                 }
             }
         }
-
     }
 
     fun findFriendList() {
@@ -351,7 +336,6 @@ class MainViewModel(private val firebaseRepository: Repository) : ViewModel() {
                 }
             }
         }
-
     }
 
     private fun checkPetList(petList: List<String>){
@@ -367,7 +351,6 @@ class MainViewModel(private val firebaseRepository: Repository) : ViewModel() {
                 getRestPetData(it)
             }
         }
-
     }
 
     fun updatePetData(newPetData: Pet){
@@ -407,7 +390,6 @@ class MainViewModel(private val firebaseRepository: Repository) : ViewModel() {
                     _eventDetailList.value = eventList
                 }
         }
-
     }
 
     fun logOut(){
@@ -430,9 +412,7 @@ class MainViewModel(private val firebaseRepository: Repository) : ViewModel() {
                         ManagerApplication.instance.getString(R.string.ERROR_MESSAGE)
                 }
             }
-
         }
-
     }
 
     fun signOuted(){
@@ -463,10 +443,8 @@ class MainViewModel(private val firebaseRepository: Repository) : ViewModel() {
         _navigateToScheduleDetail.value = null
     }
 
-
     fun getNewHeaderPhoto(uri: Uri){
         coroutineScope.launch {
-
             when(val result = firebaseRepository.updateImage(uri, USER_PROFILE_PHOTO)){
                 is Result.Success -> {
                     _userProfile.value?.let {
@@ -500,7 +478,6 @@ class MainViewModel(private val firebaseRepository: Repository) : ViewModel() {
                 }
             }
         }
-
     }
 
     companion object{
@@ -509,12 +486,9 @@ class MainViewModel(private val firebaseRepository: Repository) : ViewModel() {
 
     private fun clearWork(){
         val alarmManager = ManagerApplication.instance.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-
         WorkManager.getInstance(ManagerApplication.instance).cancelAllWork()
-
         coroutineScope.launch {
             UserManager.userID?.let {
-
                 when (val result = firebaseRepository.getAllNotificationAlreadyUpdated(it)){
                     is Result.Success -> {
                         if (result.data.isEmpty()){
@@ -556,9 +530,7 @@ class MainViewModel(private val firebaseRepository: Repository) : ViewModel() {
                     }
                 }
             }
-
         }
-
     }
 
     private fun clearWorkSuccess(){
