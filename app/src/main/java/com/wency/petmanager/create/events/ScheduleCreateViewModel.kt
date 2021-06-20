@@ -80,7 +80,7 @@ class ScheduleCreateViewModel(val repository: Repository) : ViewModel() {
     //    pet option for recycler list
     val petSelector = MutableLiveData<MutableList<PetSelector>>()
 
-    private var notificationTime = mutableMapOf<String, Long>(DAY to 0, HOUR to 0, MINUTE to 0)
+    var notificationTime = mutableMapOf<String, Int>(DAY to 0, HOUR to 0, MINUTE to 0)
 
     var informSetting = MutableLiveData(false)
 
@@ -336,7 +336,7 @@ class ScheduleCreateViewModel(val repository: Repository) : ViewModel() {
                 calendar.time = it
             }
             val minusTime: Long = (
-                    (notificationTime[DAY]?.times(24) ?: 0)
+                    (notificationTime[DAY]?.toLong()?.times(24) ?: 0)
                             * 60 * 60 * 1000 + (notificationTime[HOUR]?.times(60) ?: 0) * 60 * 1000
                             + (notificationTime[MINUTE]?.times(60) ?: 0) * 1000)
 
@@ -618,9 +618,9 @@ class ScheduleCreateViewModel(val repository: Repository) : ViewModel() {
             _notificationString.value = NONE
         } else {
             _notificationString.value = "$day days $hour : $minute before"
-            notificationTime.put(DAY, day.toLong())
-            notificationTime.put(HOUR, hour.toLong())
-            notificationTime.put(MINUTE, minute.toLong())
+            notificationTime.put(DAY, day)
+            notificationTime.put(HOUR, hour)
+            notificationTime.put(MINUTE, minute)
         }
 
 

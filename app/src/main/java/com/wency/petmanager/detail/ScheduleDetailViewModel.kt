@@ -953,17 +953,18 @@ class ScheduleDetailViewModel(val repository: Repository, val eventDetail: Event
     }
 
     fun updateNotificationSetting(day: Int, hour: Int, minute: Int) {
+        notificationTimeList[ScheduleCreateViewModel.DAY] = day
+        notificationTimeList[ScheduleCreateViewModel.HOUR] = hour
+        notificationTimeList[ScheduleCreateViewModel.MINUTE] = minute
+
         if (day == 0 && hour == 0 && minute == 0) {
             _notificationString.value = ScheduleCreateViewModel.NONE
             notificationTime = 0
         } else {
             _notificationString.value = "$day days $hour : $minute before"
-            val minusTime: Long =
-                (day * 24 * 60 * 60 * 1000).toLong()
-            + (hour * 60 * 60 * 1000).toLong() + (minute * 60 * 1000).toLong()
+            val minusTime: Long =  (day * 24 * 60 * 60 * 1000).toLong() + (hour * 60 * 60 * 1000).toLong() + (minute * 60 * 1000).toLong()
             notificationTime = minusTime
         }
-        countTimeToString(notificationTime)
         updateNotification()
     }
 

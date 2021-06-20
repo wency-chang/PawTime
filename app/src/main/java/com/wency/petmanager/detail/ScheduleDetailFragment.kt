@@ -5,6 +5,7 @@ import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.DialogInterface
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -266,6 +267,7 @@ class ScheduleDetailFragment : Fragment(), OnMapReadyCallback, AddMemoDialog.Mem
         }
 
         binding.notificationModify.setOnClickListener {
+            Log.d("Debug","${viewModel.notificationTimeList[ScheduleCreateViewModel.HOUR]}")
             val notificationDialog = NotificationDialog(
                 viewModel.notificationTimeList[ScheduleCreateViewModel.DAY]!!,
                 viewModel.notificationTimeList[ScheduleCreateViewModel.HOUR]!!,

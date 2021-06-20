@@ -238,6 +238,9 @@ class ScheduleCreateFragment: Fragment(), AddMemoDialog.MemoDialogListener, AddN
             viewModel.pickDate.value?.let { dateString->
                 TimeFormat.dateFormat.parse(dateString)?.let { date->
                     val notificationDialog = NotificationDialog(
+                        viewModel.notificationTime[ScheduleCreateViewModel.DAY]!!,
+                        viewModel.notificationTime[ScheduleCreateViewModel.HOUR]!!,
+                        viewModel.notificationTime[ScheduleCreateViewModel.MINUTE]!!,
                         targetDate = date, listener = this
                     )
                     notificationDialog.show(childFragmentManager,
