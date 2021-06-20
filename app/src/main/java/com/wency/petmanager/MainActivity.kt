@@ -132,11 +132,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setUpDrawer() {
-        registerForContextMenu(bindingNavHeader.drawerPhoto)
+
 
         bindingNavHeader = NavHeaderDrawerBinding.inflate(
             LayoutInflater.from(this), binding.drawerProfile, false
         )
+        registerForContextMenu(bindingNavHeader.drawerPhoto)
 
         val navController = this.findNavController(R.id.navHostNavigation)
         NavigationUI.setupWithNavController(binding.drawerNavView, navController)

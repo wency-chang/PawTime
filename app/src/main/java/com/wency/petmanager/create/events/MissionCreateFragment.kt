@@ -40,7 +40,6 @@ class MissionCreateFragment: Fragment(), AddMemoDialog.MemoDialogListener {
         })
 
         return binding.root
-
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

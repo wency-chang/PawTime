@@ -1,6 +1,5 @@
 package com.wency.petmanager.memory
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -15,43 +14,46 @@ import com.wency.petmanager.profile.UserManager
 class MemoryViewModel(val petData: Pet, val eventList: Array<Event>?) : ViewModel() {
     var galleryList = MutableLiveData<List<Gallery>>()
 
-    val _galleryPosition = MutableLiveData<Int>(0)
+    private val _galleryPosition = MutableLiveData(0)
     val galleryPosition: LiveData<Int>
         get() = _galleryPosition
 
 
-
-    fun getGalleryList(){
+    fun getGalleryList() {
 
         if (eventList != null) {
             val list = mutableListOf<Gallery>()
-            var count = 0
-            for (event in eventList){
+            for (event in eventList) {
                 val dateString = TimeFormat.dateFormat.format(event.date.toDate())
-                if (event.userParticipantList != null && event.private){
-                    if (event.userParticipantList!!.contains(UserManager.userID!!)){
-                        for (photo in event.photoList){
-                            list.add(Gallery(photo, event.locationName, dateString))
-                        }
-                    }
-                } else {
-                    for (photo in event.photoList){
+                if (checkVisible(event)) {
+                    for (photo in event.photoList) {
                         list.add(Gallery(photo, event.locationName, dateString))
                     }
                 }
             }
-            Log.d("Debug","eventList :${eventList.size}")
-            Log.d("Debug","list :$list")
             galleryList.value = list
-
         }
     }
 
-    fun updateScrollPosition(layoutManager: RecyclerView.LayoutManager?, linearSanpHelper: LinearSnapHelper){
-        val snapView = linearSanpHelper.findSnapView(layoutManager)
+    private fun checkVisible(event: Event): Boolean {
+        UserManager.userID?.let { userId ->
+            event.userParticipantList?.let { users ->
+                if (event.private && !users.contains(userId)) {
+                    return false
+                }
+            }
+        }
+        return true
+    }
+
+    fun updateScrollPosition(
+        layoutManager: RecyclerView.LayoutManager?,
+        linearSnapHelper: LinearSnapHelper
+    ) {
+        val snapView = linearSnapHelper.findSnapView(layoutManager)
         snapView?.let {
             layoutManager?.getPosition(snapView)?.let {
-                if (it != galleryPosition.value){
+                if (it != galleryPosition.value) {
                     _galleryPosition.value = it
                 }
             }

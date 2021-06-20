@@ -39,7 +39,6 @@ class DiaryCreateViewModel(val repository: Repository) : ViewModel() {
     val checkingStatus = MutableLiveData<Boolean?>(null)
 
     private val photoListToUpdate = mutableListOf<String>()
-
     private var participantPet = mutableSetOf<String>()
     private var chosenTagList = mutableSetOf<String>()
 
@@ -52,9 +51,12 @@ class DiaryCreateViewModel(val repository: Repository) : ViewModel() {
         get() = _petSelector
 
     private val _error = MutableLiveData<String?>()
-
     val error: LiveData<String?>
         get() = _error
+
+
+    var location : Location = Location("","", null)
+    val locationName = MutableLiveData(NONE)
 
 
     fun getTagList(tag: List<String>){
@@ -62,7 +64,6 @@ class DiaryCreateViewModel(val repository: Repository) : ViewModel() {
     }
 
     fun createTagList(){
-
         originTagList.let {
             when {
                 originTagList.isNullOrEmpty() -> {
@@ -77,7 +78,6 @@ class DiaryCreateViewModel(val repository: Repository) : ViewModel() {
                         add(ADD_TAG_STRING)
                     }
                     needExtend.value = false
-
                 }
                 isTagExtend.value == true -> {
                     val totalTag = originTagList
@@ -97,20 +97,15 @@ class DiaryCreateViewModel(val repository: Repository) : ViewModel() {
                         add(EXTEND_TAG_STRING)
                     }
                     needExtend.value = true
-
                 }
             }
-
         }
-
-
     }
+
     fun cancelPhoto(position: Int){
         photoList.value?.removeAt(position)
     }
 
-    var location : Location = Location("","", null)
-    val locationName = MutableLiveData(NONE)
 
     fun switchExtendStatus(){
         isTagExtend.value = isTagExtend.value != true
@@ -118,12 +113,12 @@ class DiaryCreateViewModel(val repository: Repository) : ViewModel() {
     }
 
     companion object{
-        const val ADD_TAG_STRING = "tagAdd"
+        val ADD_TAG_STRING = ManagerApplication.instance.getString(R.string.ADD_HOLDER)
         const val EXTEND_TAG_STRING = "needToExtendIt"
         const val CLOSE_TAG_STRING = "needToCloseTheList"
         const val TAG_OPTION_LIMIT = 0x0A
-        const val NONE = "NONE"
-        private const val IMAGE_FOLDER_NAME = "DIARY/PHOTO"
+        val NONE = ManagerApplication.instance.getString(R.string.NONE)
+        private val IMAGE_FOLDER_NAME = ManagerApplication.instance.getString(R.string.DIARY_PHOTO_FOLDER)
     }
 
     private fun updateImage(uri: Uri){
@@ -145,11 +140,9 @@ class DiaryCreateViewModel(val repository: Repository) : ViewModel() {
                 else -> {
                     _error.value =
                         ManagerApplication.instance.getString(R.string.ERROR_MESSAGE)
-
                 }
             }
         }
-
     }
 
     fun checkCompleteStatus(){
@@ -162,10 +155,9 @@ class DiaryCreateViewModel(val repository: Repository) : ViewModel() {
     private fun createDiary() {
 
         coroutineScope.launch {
+
 //            update image to firebase
-
 //            arrange data
-
             val dataToUpdate = pickDate.value?.let { dateString ->
                 TimeFormat.dateFormat.parse(dateString)?.let { date->
                     Event(
@@ -175,11 +167,8 @@ class DiaryCreateViewModel(val repository: Repository) : ViewModel() {
                         petParticipantList = participantPet.toList(),
                         title = title.value
                     )
-
                 }
-
             }
-
 
 //            optional information
             memoList.value?.let {
@@ -193,7 +182,6 @@ class DiaryCreateViewModel(val repository: Repository) : ViewModel() {
                 dataToUpdate?.locationName = location.locationName
                 dataToUpdate?.locationLatLng =
                     "${location.locationLatlng?.latitude},${location.locationLatlng?.longitude}"
-
             }
 
             if (chosenTagList.isNotEmpty()){
@@ -201,11 +189,9 @@ class DiaryCreateViewModel(val repository: Repository) : ViewModel() {
             }
 
 //            update data to firebase
-
             if (dataToUpdate != null) {
                 updateDiary(dataToUpdate)
             }
-
         }
     }
 
@@ -216,9 +202,7 @@ class DiaryCreateViewModel(val repository: Repository) : ViewModel() {
                 for (index in 1 until it.size){
                     updateImage(Uri.parse(it[index]))
                 }
-
             }
-
         }
     }
 
@@ -228,7 +212,6 @@ class DiaryCreateViewModel(val repository: Repository) : ViewModel() {
         } else {
             chosenTagList.remove(tag)
         }
-
     }
 
     fun selectedPet (petId: String, status: Boolean){
@@ -243,23 +226,21 @@ class DiaryCreateViewModel(val repository: Repository) : ViewModel() {
          coroutineScope.launch {
              when (val result = repository.createEvent(data)){
                  is Result.Success -> {
-                     Toast.makeText(ManagerApplication.instance
-                         , ManagerApplication.instance.getString(R.string.UPDATE_SUCCESS)
-                         , Toast.LENGTH_SHORT).show()
+                     Toast.makeText(ManagerApplication.instance,
+                         ManagerApplication.instance.getString(R.string.UPDATE_SUCCESS),
+                         Toast.LENGTH_SHORT).show()
                      addEventIdToPet(result.data)
                  }
                  is Result.Fail -> {
-                     Toast.makeText(ManagerApplication.instance
-                         , result.error
-                         , Toast.LENGTH_SHORT).show()
+                     _error.value = result.error
                  }
                  is Result.Error -> {
-                     Toast.makeText(ManagerApplication.instance
-                         , result.exception.toString(), Toast.LENGTH_SHORT).show()
+                     _error.value = result.exception.toString()
                  }
-                 else -> Toast.makeText(ManagerApplication.instance
-                     , ManagerApplication.instance.getString(R.string.UNKNOWN_REASON),
-                     Toast.LENGTH_SHORT).show()
+                 else -> {
+                     _error.value =
+                         ManagerApplication.instance.getString(R.string.UNKNOWN_REASON)
+                 }
              }
          }
      }
@@ -272,40 +253,26 @@ class DiaryCreateViewModel(val repository: Repository) : ViewModel() {
                 when (val result = repository.addEventID(petId, eventId)){
                     is Result.Success -> {
                         count += 1
-                        if (count == participantPet.size){
-                            _navigateBackToHome.value = true
-                        }
                     }
-
                     is Result.Fail -> {
-                        Toast.makeText(ManagerApplication.instance, result.error, Toast.LENGTH_SHORT).show()
+                        _error.value = result.error
                         count += 1
-                        if (count == participantPet.size){
-                            _navigateBackToHome.value = true
-                        }
                     }
                     is Result.Error -> {
-                        Toast.makeText(ManagerApplication.instance
-                            , result.exception.toString(), Toast.LENGTH_SHORT).show()
+                        _error.value = result.exception.toString()
                         count += 1
-                        if (count == participantPet.size){
-                            _navigateBackToHome.value = true
-                        }
                     }
                     else -> {
-                        Toast.makeText(ManagerApplication.instance
-                            , "Unknown", Toast.LENGTH_SHORT).show()
                         count += 1
-                        if (count == participantPet.size){
-                            _navigateBackToHome.value = true
-                        }
+                        _error.value =
+                            ManagerApplication.instance.getString(R.string.UNKNOWN_REASON)
                     }
-
+                }
+                if (count == participantPet.size){
+                    _navigateBackToHome.value = true
                 }
             }
-
         }
-
     }
 
     fun updatePetSelector(petList: MutableList<Pet>) {

@@ -27,6 +27,7 @@ import java.text.DecimalFormat
 import java.util.*
 
 class PetProfileViewModel(val firebaseRepository: Repository, val petProfile: Pet) : ViewModel() {
+
     val coverPhoto = MutableLiveData<MutableList<String>>(petProfile.coverPhotos)
     val profilePhoto = MutableLiveData(petProfile.profilePhoto)
     val ownerNumber = petProfile.users.size.toString()

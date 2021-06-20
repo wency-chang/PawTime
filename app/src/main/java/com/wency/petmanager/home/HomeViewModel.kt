@@ -212,7 +212,6 @@ class HomeViewModel(
         _missionListToday.value = missionList
     }
 
-
     private fun initMission(petId: String, mission: MissionGroup) {
         TimeFormat.timeStamp8amToday?.let { today ->
             mission.complete = false
@@ -222,7 +221,6 @@ class HomeViewModel(
             mission.recordDate = today
             updateMissionStatus(petId, mission)
         }
-
     }
 
     private fun updateMissionStatus(petId: String, mission: MissionGroup) {
@@ -294,7 +292,9 @@ class HomeViewModel(
                 }
             }
         }
-        _todayMissionListForTimeline.value = list
+        if (list != todayMissionListForTimeline.value){
+            _todayMissionListForTimeline.value = list
+        }
     }
 
     fun insertMissionToTimeline() {
@@ -459,7 +459,6 @@ class HomeViewModel(
 
     fun queryByTag() {
         resetTimeline()
-
         if (tagQueryList.value?.size != tagList.value?.size) {
             val list = mutableSetOf<Event>()
             if (tagQueryList.value.isNullOrEmpty()) {
@@ -514,5 +513,4 @@ class HomeViewModel(
             _tagExpand.value = false
         }
     }
-
 }

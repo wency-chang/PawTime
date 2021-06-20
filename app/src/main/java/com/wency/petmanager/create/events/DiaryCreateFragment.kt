@@ -95,7 +95,7 @@ class DiaryCreateFragment: Fragment(), AddMemoDialog.MemoDialogListener, AddNewT
                             it
                         )
                     }
-                    addNewTagDialog?.show(childFragmentManager,"add new tag")
+                    addNewTagDialog?.show(childFragmentManager,this.getString(R.string.TAG_TAG))
                 }
                 TagListAdapter.ITEM_TYPE_MORE -> viewModel.switchExtendStatus()
 
@@ -113,11 +113,8 @@ class DiaryCreateFragment: Fragment(), AddMemoDialog.MemoDialogListener, AddNewT
 
         } )
 
-
         binding.tagRecyclerView.layoutManager = manager
         binding.tagRecyclerView.adapter = tagAdapter
-
-
 
         binding.dateButton.setOnClickListener {
             val calendar = Calendar.getInstance()
@@ -135,7 +132,7 @@ class DiaryCreateFragment: Fragment(), AddMemoDialog.MemoDialogListener, AddNewT
 
         binding.memoRecycler.adapter = MemoListAdapter(MemoListAdapter.OnClickListener{
             val addMemoDialog = AddMemoDialog(this)
-            addMemoDialog.show(childFragmentManager, "add memo")
+            addMemoDialog.show(childFragmentManager, this.getString(R.string.MEMO_TAG))
 
         })
 
@@ -186,7 +183,8 @@ class DiaryCreateFragment: Fragment(), AddMemoDialog.MemoDialogListener, AddNewT
                     createEventViewModel.loadingStatus.value = true
 
                 } else {
-                    Toast.makeText(requireContext(),"Choose one photo", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(),this.getString(R.string.CHOOSE_PHOTO),
+                        Toast.LENGTH_SHORT).show()
                     viewModel.checkingStatus.value = null
                 }
             }
@@ -204,7 +202,6 @@ class DiaryCreateFragment: Fragment(), AddMemoDialog.MemoDialogListener, AddNewT
                 Toast.makeText(this.requireContext(), it, Toast.LENGTH_LONG).show()
             }
         })
-
     }
 
     override fun getMemo(memo: String, position: Int?) {
@@ -218,11 +215,7 @@ class DiaryCreateFragment: Fragment(), AddMemoDialog.MemoDialogListener, AddNewT
         createEventViewModel.myPetList.let {
             createEventViewModel.updateNewTag(tag, it.toList())
         }
-
         binding.tagRecyclerView.adapter?.notifyDataSetChanged()
-
     }
-
-
 }
 

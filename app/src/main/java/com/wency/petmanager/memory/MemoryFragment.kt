@@ -1,8 +1,6 @@
 package com.wency.petmanager.memory
 
-import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -29,13 +27,12 @@ class MemoryFragment: Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentMemoryBinding.inflate(layoutInflater, container, false)
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
         viewModel.galleryList.observe(viewLifecycleOwner, Observer {
             if (it.isNotEmpty()){
-                Log.d("Debug","bind adapter")
                 binding.galleryRecycler.adapter = GalleryAdapter(it)
             }
         })
@@ -66,19 +63,8 @@ class MemoryFragment: Fragment() {
         )
 
         binding.audioButton.setOnClickListener {
-            val intent = Intent()
 
         }
-
-
-
-
-
-
-
-
-
-
     }
 
     override fun onStop() {

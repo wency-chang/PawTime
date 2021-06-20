@@ -95,7 +95,7 @@ class PetProfileFragment: Fragment() {
         viewModel.petProfile.coverPhotos?.let {
             coverPager.adapter = PhotoPagerAdapter(it)
         }
-        TabLayoutMediator(binding.petProfileCoverTab, binding.petCoverPicture){ tab, position ->
+        TabLayoutMediator(binding.petProfileCoverTab, binding.petCoverPicture){ _, _ ->
         }.attach()
 
         cropActivityResultLauncher = registerForActivityResult(cropActivityResultContracts){
@@ -123,9 +123,7 @@ class PetProfileFragment: Fragment() {
 
             if (it != null) {
                 mainViewModel.userInfoProfile.value?.let { userInfo->
-
-                    viewModel.petProfile.users?.let { owners->
-
+                    viewModel.petProfile.users.let { owners->
                         findNavController().navigate(NavHostDirections.actionGlobalToChooseFriend(
                             userInfo,
                             owners.toTypedArray(),
@@ -135,9 +133,7 @@ class PetProfileFragment: Fragment() {
                         viewModel.onNavigated()
                     }
                 }
-
             }
-
         })
 
         binding.petOldText.setOnClickListener {

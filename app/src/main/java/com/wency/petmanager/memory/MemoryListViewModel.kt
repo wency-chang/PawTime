@@ -1,8 +1,11 @@
 package com.wency.petmanager.memory
 
+import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.wency.petmanager.ManagerApplication
+import com.wency.petmanager.R
 import com.wency.petmanager.data.Event
 import com.wency.petmanager.data.LoadStatus
 import com.wency.petmanager.data.Pet
@@ -17,7 +20,7 @@ class MemoryListViewModel(val repository: Repository, val memoryPetList: Array<P
     val memoryList : LiveData<List<Pet>>
         get() = MutableLiveData<List<Pet>>(memoryPetList?.toList())
 
-    val _navigateEventList = MutableLiveData<List<Event>?>(null)
+    private val _navigateEventList = MutableLiveData<List<Event>?>(null)
     val navigateEventList : LiveData<List<Event>?>
         get() = _navigateEventList
 
@@ -29,7 +32,6 @@ class MemoryListViewModel(val repository: Repository, val memoryPetList: Array<P
 
     private var viewModelJob = Job()
     private val coroutineScope = CoroutineScope(viewModelJob + Dispatchers.Main)
-
 
     fun selectPet(pet: Pet){
         loadingState.value = LoadStatus.DownLoad
@@ -44,27 +46,39 @@ class MemoryListViewModel(val repository: Repository, val memoryPetList: Array<P
                         is Result.Success -> {
                             list.add(result.data)
                             count += 1
-                            if (count == pet.eventList.size){
-                                _navigateEventList.value = list
-                            }
                         }
-                        else -> {
+                        is Result.Fail -> {
+                            Toast.makeText(
+                                ManagerApplication.instance,
+                                result.error,
+                                Toast.LENGTH_SHORT
+                            ).show()
                             count += 1
                         }
+                        is Result.Error -> {
+                            Toast.makeText(
+                                ManagerApplication.instance,
+                                result.exception.toString(),
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            count += 1
+                        }
+                        else -> Toast.makeText(
+                            ManagerApplication.instance,
+                            ManagerApplication.instance.getString(R.string.UNKNOWN_REASON),
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
-
-
+                    if (count == pet.eventList.size){
+                        _navigateEventList.value = list
+                    }
                 }
-
-
             }
         }
-
     }
 
     fun doneNavigated(){
         _navigatePetDate.value = null
         _navigateEventList.value = null
     }
-
 }

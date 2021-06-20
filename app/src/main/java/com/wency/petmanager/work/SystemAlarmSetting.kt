@@ -23,7 +23,7 @@ class SystemAlarmSetting {
             ManagerApplication.instance,
             NotificationReceiver.MISSION_REQUEST_CODE, intent,
             PendingIntent.FLAG_UPDATE_CURRENT)
-        val time = TimeFormat.alarmTime
+        val time = TimeFormat.missionAlarmTime
         time?.let {
             alarmManager.setInexactRepeating(
                 AlarmManager.RTC_WAKEUP, it.time, AlarmManager.INTERVAL_DAY, pendingIntent)

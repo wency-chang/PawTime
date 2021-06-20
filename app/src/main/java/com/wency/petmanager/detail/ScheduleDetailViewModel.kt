@@ -68,7 +68,7 @@ class ScheduleDetailViewModel(val repository: Repository, val eventDetail: Event
     val photoListLiveData: LiveData<MutableList<String>>
         get() = _photoListLiveData
 
-    private val _notificationString = MutableLiveData(
+    private val _notificationString = MutableLiveData<String>(
         ManagerApplication.instance.getString(R.string.NONE)
     )
     val notificationString: LiveData<String>
@@ -101,7 +101,7 @@ class ScheduleDetailViewModel(val repository: Repository, val eventDetail: Event
 
     private var notificationTime: Long = 0
 
-    val notificationTimeList = mutableMapOf(
+    var notificationTimeList = mutableMapOf(
         ScheduleCreateViewModel.DAY to 0,
         ScheduleCreateViewModel.HOUR to 0,
         ScheduleCreateViewModel.MINUTE to 0
@@ -234,22 +234,18 @@ class ScheduleDetailViewModel(val repository: Repository, val eventDetail: Event
         return floor((time % (24 * 60 * 60 * 1000) % (60 * 60 * 1000) / (60 * 1000).toDouble()))
     }
 
-    private fun countTimeToString(time: Long): String {
-
+    fun countTimeToString(time: Long): String {
         val day = getDay(time)
         val hour = getHour(time)
         val minute = getMinute(time)
-
         notificationTimeList[ScheduleCreateViewModel.DAY] = day.toInt()
         notificationTimeList[ScheduleCreateViewModel.HOUR] = hour.toInt()
         notificationTimeList[ScheduleCreateViewModel.MINUTE] = minute.toInt()
-
         return if (day == 0.0 && hour == 0.0 && minute == 0.0) {
             ManagerApplication.instance.getString(R.string.NONE)
         } else {
             "${day.toInt()} days ${hour.toInt()} : ${minute.toInt()} before"
         }
-
     }
 
     private fun getPhotoLiveData() {
@@ -620,7 +616,6 @@ class ScheduleDetailViewModel(val repository: Repository, val eventDetail: Event
                             ManagerApplication.instance.getString(R.string.UNKNOWN_REASON),
                             Toast.LENGTH_SHORT
                         ).show()
-
                     }
                     if (userCount == it.size) {
                         updateEvent()
@@ -656,7 +651,6 @@ class ScheduleDetailViewModel(val repository: Repository, val eventDetail: Event
         return result ?: EventNotification()
     }
 
-
     fun clickEditButton() {
         editable.value?.let {
             _editable.value = _editable.value == false
@@ -670,7 +664,6 @@ class ScheduleDetailViewModel(val repository: Repository, val eventDetail: Event
             }
         }
     }
-
 
     fun getNewPhotos(photoList: List<Uri>) {
         if (photoList.isNotEmpty()) {
@@ -712,10 +705,7 @@ class ScheduleDetailViewModel(val repository: Repository, val eventDetail: Event
                     }
                 }
             }
-
-
         }
-
     }
 
     fun getNewLocation(location: Place) {
@@ -762,7 +752,6 @@ class ScheduleDetailViewModel(val repository: Repository, val eventDetail: Event
     private fun removeAdderHolder() {
 
 //        participant adder
-
         currentDetailData.userParticipantList?.let { participantList ->
             val list = participantUserInfo.value?.filter {
                 participantList.contains(it.userId)
@@ -772,7 +761,6 @@ class ScheduleDetailViewModel(val repository: Repository, val eventDetail: Event
             } else {
                 _participantUserInfo.value = list.toMutableList()
             }
-
         }
 
 //      pet participant
@@ -786,8 +774,8 @@ class ScheduleDetailViewModel(val repository: Repository, val eventDetail: Event
                 _petDataList.value = list.toMutableList()
             }
         }
-//        tag
 
+//        tag
         _tagListLiveData.value = currentDetailData.tagList.toMutableList()
     }
 
@@ -796,7 +784,6 @@ class ScheduleDetailViewModel(val repository: Repository, val eventDetail: Event
             val tempList = it.toMutableSet()
             if (add) {
                 tempList.add(user.userId)
-
             } else {
                 tempList.remove(user.userId)
             }
@@ -848,7 +835,6 @@ class ScheduleDetailViewModel(val repository: Repository, val eventDetail: Event
         tempList.removeAt(position)
         currentDetailData.memoList = tempList
         memoListLiveData.value?.removeAt(position)
-
     }
 
     fun addMemo(memo: String, position: Int?) {
@@ -870,15 +856,12 @@ class ScheduleDetailViewModel(val repository: Repository, val eventDetail: Event
         }
     }
 
-
     fun getPetOptionData() {
         coroutineScope.launch {
             val petIdList = mutableSetOf<String>()
-
             for (user in friendListForOption) {
                 user.petList?.let { petIdList.addAll(it) }
             }
-
             val petData = mutableListOf<Pet>()
             var count = 0
             for (petId in petIdList) {
@@ -933,13 +916,11 @@ class ScheduleDetailViewModel(val repository: Repository, val eventDetail: Event
         updateNotification()
     }
 
-
     private fun checkLockState() {
         eventDetail.userParticipantList?.let {
             _lockStatus.value = !it.contains(UserManager.userID)
         }
     }
-
 
     fun clickCompleteButton(view: View) {
         if (view is CheckBox) {
@@ -959,7 +940,6 @@ class ScheduleDetailViewModel(val repository: Repository, val eventDetail: Event
         } else {
             _tagListLiveData.value?.add(tag)
         }
-
     }
 
     fun modifyTagList(add: Boolean, tag: String) {
@@ -982,7 +962,6 @@ class ScheduleDetailViewModel(val repository: Repository, val eventDetail: Event
                 (day * 24 * 60 * 60 * 1000).toLong()
             + (hour * 60 * 60 * 1000).toLong() + (minute * 60 * 1000).toLong()
             notificationTime = minusTime
-
         }
         countTimeToString(notificationTime)
         updateNotification()

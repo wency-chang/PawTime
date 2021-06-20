@@ -24,7 +24,7 @@ class MemoryListFragment: Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentMemoryListBinding.inflate(layoutInflater, container, false)
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
@@ -39,8 +39,6 @@ class MemoryListFragment: Fragment() {
                 }
             }
         })
-
         return binding.root
     }
-
 }

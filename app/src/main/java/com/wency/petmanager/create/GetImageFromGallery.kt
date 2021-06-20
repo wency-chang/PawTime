@@ -4,12 +4,14 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import androidx.activity.result.ActivityResult
+import com.wency.petmanager.ManagerApplication
+import com.wency.petmanager.R
 
 class GetImageFromGallery {
 
     fun pickImageIntent(): Intent {
         val intent = Intent()
-        intent.type = "image/*"
+        intent.type = ManagerApplication.instance.getString(R.string.IMAGE_TYPE_INTENT)
         intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
         intent.action = Intent.ACTION_GET_CONTENT
 
@@ -35,7 +37,8 @@ class GetImageFromGallery {
                             photoList.add(1, it.data.toString())
                         }
                     }
-                    else -> throw Exception("unknown case")
+                    else -> throw Exception(
+                        ManagerApplication.instance.getString(R.string.UNKNOWN_REASON))
                 }
             }
         }

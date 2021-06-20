@@ -61,7 +61,7 @@ class MissionCreateViewModel(val repository: Repository) : ViewModel() {
     }
 
     companion object {
-        const val NEED_ADD_HOLDER = "this is add holder"
+        val NEED_ADD_HOLDER = ManagerApplication.instance.getString(R.string.ADD_HOLDER)
         private const val ONE_TIME = 0x00
         private const val EVERY_DAY = 0x01
         private const val EVERY_TWO_DAY = 0x02

@@ -5,6 +5,8 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.wency.petmanager.ManagerApplication
+import com.wency.petmanager.R
 import com.wency.petmanager.create.events.ScheduleCreateViewModel
 import com.wency.petmanager.data.UserInfo
 import com.wency.petmanager.databinding.ItemUserChooseButtonBinding
@@ -24,7 +26,6 @@ class UserListAdapter (
                 UserAddViewHolder(ItemUserChooseButtonBinding.inflate(layoutInflater, parent, false))
             else -> throw ClassCastException("Unknown viewType $viewType")
         }
-
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
@@ -43,15 +44,13 @@ class UserListAdapter (
                 }
                 holder.bind(user, viewModel.participantUser.contains(user.userId))
             }
+
             is UserAddViewHolder -> {
                 holder.itemView.setOnClickListener {
                     onClickListener.onClick(TYPE_ADDER_STRING, false)
                 }
             }
         }
-
-
-
     }
 
     class UserSelectorViewHolder(val binding: ItemUserSelectorBinding): RecyclerView.ViewHolder(binding.root){
@@ -86,6 +85,6 @@ class UserListAdapter (
 
         const val TYPE_USER = 0x00
         const val TYPE_ADDER = 0x01
-        const val TYPE_ADDER_STRING = "TYPE_ADDER"
+        val TYPE_ADDER_STRING = ManagerApplication.instance.getString(R.string.ADD_HOLDER)
     }
 }
