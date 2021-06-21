@@ -18,13 +18,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
-class NotificationReceiver: BroadcastReceiver() {
+class NotificationReceiver : BroadcastReceiver() {
     private var workJob = Job()
     private val coroutineScope = CoroutineScope(workJob + Dispatchers.Main)
     override fun onReceive(context: Context, intent: Intent?) {
         val purpose = intent?.getIntExtra(PURPOSE, 0)
 
-        if (intent?.action == Intent.ACTION_REBOOT){
+        if (intent?.action == Intent.ACTION_REBOOT) {
 //            get action reboot intent to reset the work
             val resetWork = SystemAlarmSetting()
             resetWork.assignWorkForDailyMission()
@@ -55,7 +55,6 @@ class NotificationReceiver: BroadcastReceiver() {
                         intent?.getStringExtra(EventNotificationWork.EVENT_LOCATION_NAME)
                     val eventTime = intent?.getStringExtra(EventNotificationWork.EVENT_TIME)
 
-
                     val detailEventIntent: Intent = Uri.parse(
                         ManagerApplication.instance.getString(R.string.URI_STRING_DETAIL)
                     ).let {
@@ -72,17 +71,33 @@ class NotificationReceiver: BroadcastReceiver() {
                         )
                     val builder = Notification.Builder(context, "$eventId")
 
-                    builder.setContentTitle("schedule reminder. $eventTitle")
+                    builder.setContentTitle("${context.getString(R.string.SCHEDULE_NEW_REMINDER_TITLE)}. $eventTitle")
                         .setSmallIcon(R.drawable.ic_paw_time__ui__06)
-                        .setContentText("$eventTime $eventTitle is Starting!!  \n Click for more")
+                        .setContentText("$eventTime $eventTitle ${context.getString(R.string.SCHEDULE_STARTING)}  ${context.getString(R.string.CLICK_FOR_MORE)}")
                         .setContentIntent(pendingIntent)
                         .setAutoCancel(true)
+//                  map action if location exist
+                    if (location != null) {
+                        val mapUri = Uri.parse(
+                            "${context.getString(R.string.GOOGLE_MAP_NAVIGATION_PATH)} $location , $locationName")
+                        val locationIntent = Intent(Intent.ACTION_VIEW, mapUri)
+                        locationIntent.setPackage(context.getString(R.string.GOOGLE_MAP_PATH))
+                        val startMapPendingIntent = PendingIntent.getActivity(
+                            context, 0, locationIntent, PendingIntent.FLAG_CANCEL_CURRENT)
+                        val action =
+                            Notification.Action.Builder(
+                                null,
+                                context.getString(R.string.MAP_NAVIGATE_BUTTON),
+                                startMapPendingIntent)
+                                .build()
+                        builder.addAction(action)
+                    }
 
                     val manager =
                         context.getSystemService(Service.NOTIFICATION_SERVICE) as NotificationManager
                     val channel = NotificationChannel(
                         "$eventId",
-                        ManagerApplication.instance.getString(R.string.SCHEDULE_REMINDER),
+                        context.getString(R.string.SCHEDULE_REMINDER),
                         NotificationManager.IMPORTANCE_HIGH
                     )
                     channel.enableLights(true)
@@ -96,10 +111,7 @@ class NotificationReceiver: BroadcastReceiver() {
                                 RemoteDataSource.deleteNotification(it, eventId)
                             }
                         }
-
                     }
-
-
                 }
             }
         }
@@ -108,8 +120,7 @@ class NotificationReceiver: BroadcastReceiver() {
     }
 
 
-
-    companion object{
+    companion object {
         const val PURPOSE_EVENT_NOTIFICATION = 0x00
         const val PURPOSE_MISSION_NOTIFICATION = 0x01
         const val PURPOSE_EVENT_NEW = 0x02

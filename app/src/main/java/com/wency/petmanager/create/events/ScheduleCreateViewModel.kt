@@ -315,11 +315,11 @@ class ScheduleCreateViewModel(val repository: Repository) : ViewModel() {
             }
         }
 
-        location.let {
-            dataToUpdate?.locationAddress = it.locationAddress
-            dataToUpdate?.locationName = it.locationName
+        location.locationLatlng?.let {
+            dataToUpdate?.locationAddress = location.locationAddress
+            dataToUpdate?.locationName = location.locationName
             dataToUpdate?.locationLatLng =
-                "${it.locationLatlng?.latitude},${it.locationLatlng?.longitude}"
+                "${it.latitude},${it.longitude}"
         }
 
         if (chosenTagList.isNotEmpty()) {

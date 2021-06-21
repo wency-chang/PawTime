@@ -1,5 +1,7 @@
 package com.wency.petmanager.detail
 
+import androidx.test.core.app.ApplicationProvider
+import com.wency.petmanager.ManagerApplication
 import com.wency.petmanager.create.events.ScheduleCreateViewModel
 import com.wency.petmanager.data.Event
 import com.wency.petmanager.data.FakeRepository
@@ -10,17 +12,23 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
+import org.mockito.Mock
 
 @RunWith(JUnit4::class)
 class ScheduleDetailTest: TestCase(){
     lateinit var scheduleDetailViewModel: ScheduleDetailViewModel
     private lateinit var repository: Repository
+    @Mock
+    lateinit var mockApplication: ManagerApplication
 
     @Before
     fun setViewModel(){
+        mockApplication = ApplicationProvider.getApplicationContext()
+        ManagerApplication.instance = mockApplication
         repository = FakeRepository()
         ServiceLocator.managerRepository = repository
         scheduleDetailViewModel = ScheduleDetailViewModel(repository, Event())
+
 
         scheduleDetailViewModel.notificationTimeList =
             mutableMapOf(
@@ -28,7 +36,6 @@ class ScheduleDetailTest: TestCase(){
             ScheduleCreateViewModel.HOUR to 0,
             ScheduleCreateViewModel.MINUTE to 0
         )
-
     }
 
     @Test

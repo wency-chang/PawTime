@@ -78,17 +78,17 @@ class EventNotificationWork(val context: Context, workerParameters: WorkerParame
             putExtra(NotificationReceiver.PURPOSE,
                 NotificationReceiver.PURPOSE_EVENT_NOTIFICATION
             )
-            putExtra(EVENT_LOCATION_NAME, eventNotification.locationName)
-            putExtra(EVENT_LOCATION, eventNotification.locationLatLng)
             putExtra(EVENT_TITLE, eventNotification.eventTitle)
             putExtra(EVENT_ID, eventNotification.eventId)
             eventNotification.eventTime?.let {
                 putExtra(EVENT_TIME, TimeFormat.notificationFormat.format(it.toDate()))
             }
-
+            if (eventNotification.locationName.isNotEmpty() && eventNotification.locationName.isNotEmpty()){
+                putExtra(EVENT_LOCATION_NAME, eventNotification.locationName)
+                putExtra(EVENT_LOCATION, eventNotification.locationLatLng)
+            }
         }
         return intent
-
     }
 
 
@@ -113,8 +113,7 @@ class EventNotificationWork(val context: Context, workerParameters: WorkerParame
         }
         detailEventIntent.putExtra(EVENT_ID, notion.eventId)
         detailEventIntent.putExtra(
-            NotificationReceiver.PURPOSE,
-            NotificationReceiver.PURPOSE_EVENT_NEW
+            NotificationReceiver.PURPOSE, NotificationReceiver.PURPOSE_EVENT_NEW
         )
 
         val pendingIntent: PendingIntent =
