@@ -41,8 +41,10 @@ class MissionRemindWork(val context: Context, workerParameters: WorkerParameters
                     is com.wency.petmanager.data.Result.Success -> {
                         if (result.data.userId.isNotEmpty()) {
                             userInfo = result.data
-                            userInfo.petList?.let { getMissionToday(it) }
-                            userInfo.petList?.let { deleteOverMission(it) }
+                            userInfo.petList?.let {
+                                getMissionToday(it)
+                                deleteOverMission(it)
+                            }
                         }
                     }
                 }
@@ -89,7 +91,7 @@ class MissionRemindWork(val context: Context, workerParameters: WorkerParameters
                                     }
                                     count += 1
                                 }
-                                if (count == petList.size){
+                                if (count == missionResult.data.size){
                                     sendNotification(inCompletedMission)
                                 }
                             }

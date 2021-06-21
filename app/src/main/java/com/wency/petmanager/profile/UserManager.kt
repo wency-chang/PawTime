@@ -45,10 +45,6 @@ object UserManager {
     var gso: GoogleSignInOptions? = null
 }
 object TimeFormat{
-
-    private val today: Date
-        get() = Date()
-
     @SuppressLint("SimpleDateFormat")
     val dateFormat = SimpleDateFormat("yyyy.MM.dd", Locale.ENGLISH)
     val dayOfWeekFormat = SimpleDateFormat("E", Locale.ENGLISH)
@@ -59,7 +55,7 @@ object TimeFormat{
     val dateNTimeFormat = SimpleDateFormat("yyyy.MM.dd hh:mm a", Locale.ENGLISH)
     val timeFormat12 = SimpleDateFormat("hh:mm a", Locale.ENGLISH)
 
-    val todayString: String = dateFormat.format(today)
+    val todayString: String = dateFormat.format(Date())
 
     val timeStamp8amToday = dateNTimeFormat.parse("$todayString 08:00 AM")?.let { Timestamp(it)}
 

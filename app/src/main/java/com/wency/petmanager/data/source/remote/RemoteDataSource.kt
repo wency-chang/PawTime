@@ -272,8 +272,6 @@ object RemoteDataSource : DataSource {
                         }
                     }
             }
-
-
         }
 
     override suspend fun getMissionList(petId: String): Result<List<MissionGroup>> =

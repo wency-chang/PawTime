@@ -43,7 +43,6 @@ class NotificationReceiver : BroadcastReceiver() {
                             .setConstraints(constrains)
                             .build()
                     WorkManager.getInstance(context).enqueue(checkMissionWorkRequest)
-
                 }
 
                 else -> {
@@ -115,10 +114,7 @@ class NotificationReceiver : BroadcastReceiver() {
                 }
             }
         }
-
-
     }
-
 
     companion object {
         const val PURPOSE_EVENT_NOTIFICATION = 0x00

@@ -128,7 +128,6 @@ class MainActivity : AppCompatActivity() {
                 viewModel.doneNavigated()
             }
         })
-
     }
 
     private fun setUpDrawer() {

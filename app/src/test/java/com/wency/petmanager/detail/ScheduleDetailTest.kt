@@ -1,6 +1,6 @@
 package com.wency.petmanager.detail
 
-import androidx.test.core.app.ApplicationProvider
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.wency.petmanager.ManagerApplication
 import com.wency.petmanager.create.events.ScheduleCreateViewModel
 import com.wency.petmanager.data.Event
@@ -9,26 +9,33 @@ import com.wency.petmanager.data.source.Repository
 import com.wency.petmanager.util.ServiceLocator
 import junit.framework.TestCase
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
+import org.junit.rules.TestRule
 import org.junit.runner.RunWith
-import org.junit.runners.JUnit4
 import org.mockito.Mock
+import org.mockito.MockitoAnnotations
+import org.mockito.junit.MockitoJUnitRunner
 
-@RunWith(JUnit4::class)
+@RunWith(MockitoJUnitRunner::class)
 class ScheduleDetailTest: TestCase(){
     lateinit var scheduleDetailViewModel: ScheduleDetailViewModel
     private lateinit var repository: Repository
+
+    @get:Rule
+    val testInstantTaskExecutorRule: TestRule = InstantTaskExecutorRule()
+
     @Mock
-    lateinit var mockApplication: ManagerApplication
+    lateinit var application: ManagerApplication
 
     @Before
     fun setViewModel(){
-        mockApplication = ApplicationProvider.getApplicationContext()
-        ManagerApplication.instance = mockApplication
+        MockitoAnnotations.initMocks(this)
+
+        ManagerApplication.instance = application
         repository = FakeRepository()
         ServiceLocator.managerRepository = repository
         scheduleDetailViewModel = ScheduleDetailViewModel(repository, Event())
-
 
         scheduleDetailViewModel.notificationTimeList =
             mutableMapOf(
