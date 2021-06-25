@@ -53,7 +53,7 @@
 ![image](https://user-images.githubusercontent.com/77084198/123385279-f32db800-d5c7-11eb-84bb-d0fe1da15121.png)
 
 
-* **Friend**- Search Your Friend to Join / Assign Owner
+* **Friends**- Search Your Friend to Join / Assign Owner
   * See Drawer for Friend List
   * Key the Email to Find Your Friend and Send Invite
   * Once become Friends, could Assign your Pet Owner with Friends from Pet Profile
